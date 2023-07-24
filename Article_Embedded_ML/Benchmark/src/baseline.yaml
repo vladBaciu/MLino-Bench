@@ -1,0 +1,13 @@
+
+training:
+  default_dataset: iris
+  models_directory: .\out_models
+
+target:
+  type: avr
+  mcu: atmega32u4
+  build_dir: .\avr_build
+
+runtime:
+  model_directory:
+  language:
