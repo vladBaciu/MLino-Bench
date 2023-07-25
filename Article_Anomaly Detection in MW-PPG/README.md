@@ -10,10 +10,13 @@ to accomplish this. Different methods for extracting and selecting features from
 signals are evaluated. Furthermore, a set of relevant features that can be used along with
 lightweight ML models for artifact detection are proposed.
 The main contributions presented in this paper are:
+
 • A set of features with high information gain in the classification context for anomaly
 detection in MW-PPG signals is proposed.
+
 • Evaluation of machine learning models at different window sizes for high-accurate
 anomaly detection in MW-PPG.
+
 • Examining the effectiveness of combining MW-PPG signals in detecting outliers and
 filtering anomalous windows from the signal.
 
@@ -31,5 +34,5 @@ for anomaly detection in multi-wavelength PPG (MW-PPG).
 
 # How ?
 
-Different ML models are evaluated for different datasets. There are two approaches employed: channel-level anomaly
+Different ML models are evaluated and different feature sets. There are two approaches employed: channel-level anomaly
 detection and sensor-level anomaly detection.
