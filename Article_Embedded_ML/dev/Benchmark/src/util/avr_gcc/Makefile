@@ -14,11 +14,7 @@ OBJDUMP = avr-objdump
 SIZE = avr-size
 
 
-all: elf hex
-
-elf: $(TARGET).elf
-hex: $(TARGET).hex
-eep: $(TARGET).eep
+all: $(TARGET).elf $(TARGET).hex
 
 $(TARGET).out: $(TARGET).c
 	@$(CC) -c $(CFLAGS) -I./ -o $(TARGET).out $(TARGET).c
@@ -33,12 +29,13 @@ $(TARGET).elf: $(TARGET).out
 	$(CC) $(CFLAGS) $(TARGET).out -o $(TARGET).elf $(LDFLAGS)
 	$(info Generate elf file...: $(TARGET).c)
 
+gccversion :
+	@$(CC) --version
 
 clean:
 	@rm -f $(TARGET).hex
 	@rm -f $(TARGET).elf
 	@rm -f $(TARGET).out
-	@rm -f $(TARGET).c
 	@rm -f $(TARGET).map
 
 # Targets used for flashing the MCU with different programmers
