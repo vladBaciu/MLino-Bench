@@ -5,6 +5,7 @@ import os
 class CompileAvrBenchmark:
     def __init__(self, build_info) -> None:
 
+        self.compile_errors_list = self.get_list_of_possible_errors()
         # Get current directory
         self.avr_gcc_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -51,3 +52,13 @@ class CompileAvrBenchmark:
         except subprocess.CalledProcessError as e:
             # If the make command returns a non-zero exit code, it will raise CalledProcessError
             print("Error occurred: {}".format(e))
+
+        return stderr_str
+
+    def get_list_of_possible_errors(self):
+
+        return {  "`.bss' is not within region `data'",
+                  "`.data' is not within region `data'",
+                  "`.data' will not fit in region `text'",
+                  "`.text' will not fit in region `text'"
+                }

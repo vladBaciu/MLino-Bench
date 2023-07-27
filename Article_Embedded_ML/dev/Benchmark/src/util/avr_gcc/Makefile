@@ -1,5 +1,5 @@
 TARGET=$(MODEL_PATH)
-MMCU=atmega328p
+MMCU=atmega2560
 F_CPU = 20000000
 
 CFLAGS=-mmcu=$(MMCU) -Wall -Os -DF_CPU=$(F_CPU)
@@ -21,12 +21,12 @@ $(TARGET).out: $(TARGET).c
 	$(info Building model source file...: $(TARGET).c)
 
 $(TARGET).hex: $(TARGET).elf
-	$(OBJCOPY) -O ihex -R .eeprom -R .fuse -R .lock -R .signature $(TARGET).elf $(TARGET).hex
-	$(SIZE) --mcu=$(MMCU) --format=avr $(TARGET).out
+	@$(OBJCOPY) -O ihex -R .eeprom -R .fuse -R .lock -R .signature $(TARGET).elf $(TARGET).hex
+	@$(SIZE) --mcu=$(MMCU) --format=avr $(TARGET).out
 	$(info Generating hex binary file...: $(TARGET).hex)
 
 $(TARGET).elf: $(TARGET).out
-	$(CC) $(CFLAGS) $(TARGET).out -o $(TARGET).elf $(LDFLAGS)
+	@$(CC) $(CFLAGS) $(TARGET).out -o $(TARGET).elf $(LDFLAGS)
 	$(info Generate elf file...: $(TARGET).c)
 
 gccversion :

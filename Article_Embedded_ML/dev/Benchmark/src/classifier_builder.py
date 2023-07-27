@@ -5,6 +5,8 @@ from util.dataLoader import DataLoader
 import util.common as com
 
 class ClassifierBuilder(DataLoader):
+    data_logger = list()
+
     def __init__(self) -> None:
         # Call parent constructor and load input data
         super(ClassifierBuilder, self).__init__()
@@ -32,6 +34,37 @@ class ClassifierBuilder(DataLoader):
                 self.X = self.iris_data.data
                 self.y = self.iris_data.target
 
+    def print_log_summary(self):
+        #search an entry of type (('sklearn-porter', 'extra_trees'), "`.text' will not fit in region `text'")
+        merged_errors = {}
+        # Get error message entry
+        for error in self.data_logger:
+            # Get framework and classifier name
+            key = error[0]
+            # Get compiler error
+            value = error[1]
+            # If if framework-classifier pair is already present, merge error messages
+            if key in merged_errors:
+                merged_errors[key].append(value)
+            else:
+                merged_errors[key] = [value]
+
+        # Print summary
+        if not merged_errors:
+            print("Builder log messages: all models built succesfully.")
+        else:
+            print("Builder log messages: ")
+            for key, error_messages in merged_errors.items():
+                tool_name, model_name = key
+                print(f"{tool_name} {model_name}:")
+                for message in error_messages:
+                    print(f"\t{message}")
+
+    def logger_builder(self, cls_pair, cc_toolchain, status):
+        for search_string in cc_toolchain.compile_errors_list:
+            if search_string in status:
+                self.data_logger.append((cls_pair, search_string))
+
     def build_classifier(self, port_framework, cls_name, cls_obj):
 
         if port_framework not in ['sklearn-porter', 'emlearn']:
@@ -56,8 +89,10 @@ class ClassifierBuilder(DataLoader):
         self.benchmark_info['runtime']['model_directory'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
 
         # Compile and benchmark the model
-        if(self.benchmark_info['target']['type'] == 'avr'):
+        if self.benchmark_info['target']['type'] == 'avr':
             from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
             cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
 
-        cc_toolchain.compile()
+        status = cc_toolchain.compile()
+
+        self.logger_builder((port_framework, cls_name), cc_toolchain, status)
