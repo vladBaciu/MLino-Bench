@@ -32,6 +32,6 @@ def get_model_path(src_root, output_dir_name, clf_type, framework):
     if not os.path.exists(framework_dir):
         os.makedirs(framework_dir)
 
-    model_path   = os.path.join(main_dir, output_dir_name, clf_type, framework, f'{framework}_{clf_type}.c')
+    model_path = os.path.join(main_dir, output_dir_name, clf_type, framework, f'{framework}_{clf_type}.c')
 
-    return model_path
+    return model_path, framework_dir

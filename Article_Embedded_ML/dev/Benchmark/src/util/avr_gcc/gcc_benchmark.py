@@ -32,7 +32,7 @@ class CompileAvrBenchmark:
             # If the make command returns a non-zero exit code, it will raise CalledProcessError
             print("Error occurred: {}".format(e))
 
-    def compile(self):
+    def  compile(self):
         make_command = ["make", "MODEL_PATH=" + r'{}'.format(self.model_path)]
         try:
             result = subprocess.run(

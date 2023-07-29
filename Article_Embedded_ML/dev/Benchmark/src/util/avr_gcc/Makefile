@@ -17,7 +17,7 @@ SIZE = avr-size
 all: $(TARGET).elf $(TARGET).hex
 
 $(TARGET).out: $(TARGET).c
-	@$(CC) -c $(CFLAGS) -I./ -o $(TARGET).out $(TARGET).c
+	@$(CC) -c $(CFLAGS) -I $(TARGET)/.. -o $(TARGET).out $(TARGET).c
 	$(info Building model source file...: $(TARGET).c)
 
 $(TARGET).hex: $(TARGET).elf

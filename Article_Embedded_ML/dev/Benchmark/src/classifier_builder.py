@@ -51,9 +51,9 @@ class ClassifierBuilder(DataLoader):
 
         # Print summary
         if not merged_errors:
-            print("Builder log messages: all models built succesfully.")
+            print("========== Builder log messages: all models built succesfully. ==========")
         else:
-            print("Builder log messages: ")
+            print("========== Builder log messages: ==========")
             for key, error_messages in merged_errors.items():
                 tool_name, model_name = key
                 print(f"{tool_name} {model_name}:")
@@ -61,9 +61,15 @@ class ClassifierBuilder(DataLoader):
                     print(f"\t{message}")
 
     def logger_builder(self, cls_pair, cc_toolchain, status):
-        for search_string in cc_toolchain.compile_errors_list:
-            if search_string in status:
-                self.data_logger.append((cls_pair, search_string))
+        common_error_found = False
+        if cc_toolchain:
+            for search_string in cc_toolchain.compile_errors_list:
+                if search_string in status:
+                    self.data_logger.append((cls_pair, search_string))
+                    common_error_found = True
+
+        if not common_error_found:
+            self.data_logger.append((cls_pair, status))
 
     def build_classifier(self, port_framework, cls_name, cls_obj):
 
@@ -76,23 +82,29 @@ class ClassifierBuilder(DataLoader):
             from sklearnporter_builder import SkLearnPorterBuilder
             self.builder = SkLearnPorterBuilder(self.X, self.y, (cls_name, cls_obj))
         elif self.builder_type == 'emlearn':
+            from emlearn_builder import EmlearnBuilder
+            self.builder = EmlearnBuilder(self.X, self.y, (cls_name, cls_obj))
+        elif self.builder_type == "micromlgen":
             pass
 
         # Create and train the model
-        self.builder.train()
+        status = self.builder.train()
 
-        # Check if the transpiler generates C or C++ code
-        self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
+        if status:
+            self.logger_builder((port_framework, cls_name), None, status)
+        else:
+            # Check if the transpiler generates C or C++ code
+            self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
 
-        # Export the C model
-        #todo maybe use file extension to detect c or c++
-        self.benchmark_info['runtime']['model_directory'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+            # Export the C model
+            #todo maybe use file extension to detect c or c++
+            self.benchmark_info['runtime']['model_directory'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
 
-        # Compile and benchmark the model
-        if self.benchmark_info['target']['type'] == 'avr':
-            from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
-            cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
+            # Compile and benchmark the model
+            if self.benchmark_info['target']['type'] == 'avr':
+                from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
+                cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
 
-        status = cc_toolchain.compile()
+            status = cc_toolchain.compile()
 
-        self.logger_builder((port_framework, cls_name), cc_toolchain, status)
+            self.logger_builder((port_framework, cls_name), cc_toolchain, status)
