@@ -21,8 +21,8 @@ if __name__ == "__main__":
     builder = CB.ClassifierBuilder()
     for name, cls in classifiers.items():
         builder.build_classifier('emlearn',  name, cls)
-    builder.print_log_summary()
 
     for name, cls in classifiers.items():
         builder.build_classifier('sklearn-porter',  name, cls)
+
     builder.print_log_summary()

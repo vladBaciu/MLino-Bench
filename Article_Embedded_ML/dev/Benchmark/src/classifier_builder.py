@@ -49,16 +49,13 @@ class ClassifierBuilder(DataLoader):
             else:
                 merged_errors[key] = [value]
 
-        # Print summary
-        if not merged_errors:
-            print("========== Builder log messages: all models built succesfully. ==========")
-        else:
-            print("========== Builder log messages: ==========")
-            for key, error_messages in merged_errors.items():
-                tool_name, model_name = key
-                print(f"{tool_name} {model_name}:")
-                for message in error_messages:
-                    print(f"\t{message}")
+
+        print("\n\n=============== Builder log messages: ===============\n\n")
+        for key, error_messages in merged_errors.items():
+            tool_name, model_name = key
+            print(f"{tool_name} {model_name}:")
+            for message in error_messages:
+                print(f"\t{message}")
 
     def logger_builder(self, cls_pair, cc_toolchain, status):
         common_error_found = False
@@ -76,6 +73,7 @@ class ClassifierBuilder(DataLoader):
         if port_framework not in ['sklearn-porter', 'emlearn']:
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
+
         self.builder_type = port_framework
 
         if self.builder_type == 'sklearn-porter':
@@ -107,4 +105,7 @@ class ClassifierBuilder(DataLoader):
 
             status = cc_toolchain.compile()
 
-            self.logger_builder((port_framework, cls_name), cc_toolchain, status)
+            if status:
+                self.logger_builder((port_framework, cls_name), cc_toolchain, status)
+            else:
+                self.logger_builder((port_framework, cls_name), cc_toolchain, "Model generated.")
