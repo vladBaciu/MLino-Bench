@@ -12,13 +12,16 @@ class SkLearnPorterBuilder:
 
     def train(self):
         self.clf_method.fit(self.X, self.y)
-        self.porter = Porter(self.clf_method, language='c')
+        try:
+            self.porter = Porter(self.clf_method, language='c')
+        except:
+            return "Model type not supported."
 
     def get_model_language(self) -> str:
         return 'c'
 
     def c_export(self, output_dir_name) -> str:
-        model_path = com.get_model_path(os.path.dirname( __file__ ), output_dir_name, self.clf_name, 'sklearnporter')
+        model_path, _ = com.get_model_path(os.path.dirname( __file__ ), output_dir_name, self.clf_name, 'sklearnporter')
 
         # Export model using sklearn-porter
         output = self.porter.export(embed_data=True)
