@@ -2,6 +2,8 @@ import os
 import util.common as com
 from sklearn_porter import Porter
 
+PORTER_TYPE = 'sklearnporter'
+GENERATED_FILE_EXT = 'h'
 class SkLearnPorterBuilder:
     def __init__(self, X_train, y_train, clf) -> None:
         self.X = X_train
@@ -19,22 +21,18 @@ class SkLearnPorterBuilder:
         except Exception as e:
             return f"An unexpected error occurred during training: {e}"
 
-    def get_model_language(self) -> str:
-        return 'c'
-
     def c_export(self, output_dir_name) -> str:
-        model_path, _ = com.get_model_path(os.path.dirname(__file__), output_dir_name, self.clf_name, 'sklearnporter')
-
-        # Export model using sklearn-porter
-        if self.porter is None:
-            return "Model not trained or supported for export to C."
-
+        model_path, framework_dir = com.create_build_path(os.path.dirname(__file__),
+                                                          output_dir_name, self.clf_name,
+                                                          PORTER_TYPE, GENERATED_FILE_EXT)
         try:
-            output = self.porter.export(embed_data=True)
+            content = self.porter.export(embed_data=True)
         except Exception as e:
             print(f"An unexpected error occurred during model export: {e}")
         else:
             with open(model_path, 'w') as f:
-                f.write(output)
+                f.write(content)
+            # Eliminate main function since the generated file is a header file and does not need it.
+            com.eliminate_main_function(model_path)
 
-            return model_path
+        return framework_dir

@@ -1,13 +1,14 @@
 
 training:
   default_dataset: iris
-  models_directory: .\out_models
+  models_directory: .\generated_models
 
 target:
-  type: avr
+  type: avr_gcc
   mcu: atmega32u4
-  build_dir: .\avr_build
+  compiler_stdout: False
 
 runtime:
-  model_directory:
-  language:
+  porter_type:
+  model_name:
+  generated_model_dir:

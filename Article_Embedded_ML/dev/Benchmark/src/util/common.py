@@ -1,6 +1,8 @@
 import yaml
 import os
-import re
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 ########################################################################
 # load parameters.yaml
@@ -16,7 +18,7 @@ def yaml_load():
 ########################################################################
 # tba
 ########################################################################
-def get_model_path(src_root, output_dir_name, clf_type, framework):
+def create_build_path(src_root, output_dir_name, clf_type, framework, ext):
     main_dir     = os.path.join(src_root, '..' )
 
     out_dir_root = os.path.join(main_dir, output_dir_name)
@@ -33,37 +35,41 @@ def get_model_path(src_root, output_dir_name, clf_type, framework):
     if not os.path.exists(framework_dir):
         os.makedirs(framework_dir)
 
-    model_path = os.path.join(main_dir, output_dir_name, clf_type, framework, f'{framework}_{clf_type}.c')
+    model_path = os.path.join(main_dir, output_dir_name, clf_type, framework, f'{framework}_{clf_type}.{ext}')
 
     return model_path, framework_dir
 
-def extract_custom_main(template_file_path):
-    # Read the main_template.c file
-    with open(template_file_path, 'r') as file:
-        template_c_code = file.read()
+########################################################################
+# tba
+########################################################################
+def eliminate_main_function(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
 
-    # Use regular expressions to find the custom main function in the template
-    pattern = r'\bint\s+main\s*\([^)]*\)\s*\{[^}]*\}'
-    match = re.search(pattern, template_c_code)
+    # Find the position of the main function
+    main_start = content.find("int main(")
+    if main_start == -1:
+        print("Main function not found in the file:", file_path)
+        return
 
-    if match:
-        # Extract the custom main function from the template
-        custom_main_code = match.group()
-        return custom_main_code
-    else:
-        print("Custom main function not found in the template.")
-        return None
+    # Find the opening brace of the main function
+    brace_count = 1
+    i = main_start + len("int main(int argc, const char * argv[]) {")
+    while brace_count > 0:
+        if i > len(content):
+            print("Error: Unbalanced braces in the main function.")
+            return
+        if content[i] == '{':
+            brace_count += 1
+        elif content[i] == '}':
+            brace_count -= 1
+        i += 1
+    # Find the closing brace of the main function
+    main_end = i
 
-def replace_main(c_code, new_main_code):
-    # Use regular expressions to find the main function in the C code
-    pattern = r'\bint\s+main\s*\([^)]*\)\s*\{[^}]*\}'
-    match = re.search(pattern, c_code)
+    # Remove the main function and its content
+    updated_content = content[:main_start] + content[main_end:]
 
-    if match:
-        # Replace the main function with the new_main_code
-        new_c_code = c_code[:match.start()] + new_main_code + c_code[match.end():]
-        return new_c_code
-    else:
-        # Place the new_main_code at the end of the C code
-        new_c_code = c_code.strip() + "\n\n" + new_main_code
-        return new_c_code
+    # Write the updated content back to the file
+    with open(file_path, 'w') as file:
+        file.write(updated_content)
