@@ -18,24 +18,29 @@ def yaml_load():
 ########################################################################
 # tba
 ########################################################################
-def create_build_path(src_root, output_dir_name, clf_type, framework, ext):
-    main_dir     = os.path.join(src_root, '..' )
+def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, ext):
 
-    out_dir_root = os.path.join(main_dir, output_dir_name)
+    # Get the parent directory of src_root (one level up)
+    parent_dir_one_level_up = os.path.dirname(src_root)
+
+    # Get the parent directory of parent_dir_one_level_up (two levels up, one level back)
+    parent_dir_two_levels_up = os.path.dirname(parent_dir_one_level_up)
+
+    out_dir_root = os.path.join(parent_dir_two_levels_up, output_dir_name)
     # checking if the directory out_dir exists or not.
     if not os.path.exists(out_dir_root):
         # if the out_dir directory is not present then create it.
         os.makedirs(out_dir_root)
 
-    clf_dir = os.path.join(main_dir, output_dir_name, clf_type)
+    clf_dir = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type)
     if not os.path.exists(clf_dir):
         os.makedirs(clf_dir)
 
-    framework_dir = os.path.join(main_dir, output_dir_name, clf_type, framework)
+    framework_dir = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type, framework)
     if not os.path.exists(framework_dir):
         os.makedirs(framework_dir)
 
-    model_path = os.path.join(main_dir, output_dir_name, clf_type, framework, f'{framework}_{clf_type}.{ext}')
+    model_path = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type, framework, f'{clf_name}.{ext}')
 
     return model_path, framework_dir
 

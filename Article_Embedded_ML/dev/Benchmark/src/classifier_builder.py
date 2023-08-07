@@ -77,7 +77,7 @@ class ClassifierBuilder(DataLoader):
         self.builder_type = port_framework
 
         if self.builder_type == 'sklearn-porter':
-            from sklearnporter_builder import SkLearnPorterBuilder
+            from sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
             self.builder = SkLearnPorterBuilder(self.X, self.y, (cls_name, cls_obj))
         elif self.builder_type == 'emlearn':
             from emlearn_builder import EmlearnBuilder
@@ -94,6 +94,8 @@ class ClassifierBuilder(DataLoader):
         else:
             self.benchmark_info["runtime"]["model_name"]          = cls_name
             self.benchmark_info["runtime"]["porter_type"]         = port_framework
+            self.benchmark_info["runtime"]["template_path"]       = self.builder.get_template_file()
+
             # Export model
             self.benchmark_info['runtime']['generated_model_dir'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
 

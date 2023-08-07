@@ -13,6 +13,7 @@ class CompileAvrBenchmark:
         self.model_name        = build_info["runtime"]["model_name"]
         self.porter_type       = build_info["runtime"]["porter_type"]
         self.print_proc_stdout = build_info["target"]["compiler_stdout"]
+        self.template          = build_info["runtime"]["template_path"]
 
         # Create Arduino Makefile
         self.create_makefile()
@@ -31,7 +32,9 @@ class CompileAvrBenchmark:
                 os.remove(makefile_path)
 
             # Create makefile in model's build directory
-            ardmk_init_command = ["python", "ardmk-init.py", "-t", "-d", self.model_path]
+            ardmk_init_command = ["python", "ardmk-init.py",
+                                  "-d", self.model_path,
+                                  "-t", "-o", "--template_path", self.template]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
 

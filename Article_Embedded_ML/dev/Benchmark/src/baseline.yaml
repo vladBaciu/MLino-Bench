@@ -1,7 +1,7 @@
 
 training:
   default_dataset: iris
-  models_directory: .\generated_models
+  models_directory: generated_models
 
 target:
   type: avr_gcc
@@ -12,3 +12,4 @@ runtime:
   porter_type:
   model_name:
   generated_model_dir:
+  template_path:

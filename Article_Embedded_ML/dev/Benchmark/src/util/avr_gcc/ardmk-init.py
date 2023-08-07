@@ -40,6 +40,7 @@ PARSER = argparse.ArgumentParser(prog='ardmk-init',
                                  description='Arduino Makefile and boilerplate project generator.\
         For use with Ard-Makefile: https://github.com/sudar/Arduino-Makefile.\
         Script created by John Whittington https://github.com/tuna-f1sh 2017\
+        Modified by Vlad Baciu 2023\
         \n\nVersion: ' + VERSION)
 PARSER.add_argument('-v', '--verbose', action='store_true',
                     help="print file contents during creation")
@@ -54,7 +55,11 @@ PARSER.add_argument('--cli', action='store_true', help='run with user prompts (r
 PARSER.add_argument('-P', '--project', action='store_true',
                     help='create boilerplate project with src, lib and bin folder structure')
 PARSER.add_argument('-t', '--template', action='store_true',
-                    help='create bare minimum Arduino source file')
+                    help='use template to generate main file')
+PARSER.add_argument('-o', '--overwrite', action='store_true',
+                    help='always overwrite generated file')
+PARSER.add_argument('--template_path', action='store',
+                    help='specify the file path of the template')
 PARSER.add_argument('-V', '--version', action='version', version='%(prog)s '+ VERSION)
 ARGS = PARSER.parse_args()
 
@@ -215,7 +220,7 @@ def write_template(filename):
     Write template Arduino .ino source
     """
     print("Writing " + os.path.abspath(filename) + ".ino...")
-    if os.path.isfile(filename + '.ino'):
+    if os.path.isfile(filename + '.ino') and not ARGS.overwrite:
         if not ARGS.cli:
             print(filename + '.ino' + ' already exists! Stopping.')
             return
@@ -225,7 +230,18 @@ def write_template(filename):
     src = open((filename + ".ino"), 'w')
     if ARGS.verbose:
         print(ARD_TEMPLATE)
-    src.write("/* Project: " + filename + " */\n" + ARD_TEMPLATE)
+    if ARGS.template_path is not None:
+        template_file_path = ARGS.template_path
+        # Read the content from the template file
+        try:
+            with open(template_file_path, 'r') as file:
+                template_content = file.read()
+        except FileNotFoundError:
+            if ARGS.cli:
+                print(f"Error: File '{template_file_path}' not found.")
+        src.write("/* Project: " + filename + " */\n" + template_content)
+    else:
+        src.write("/* Project: " + filename + " */\n" + ARD_TEMPLATE)
     src.close()
 
 def check_create_folder(folder):
