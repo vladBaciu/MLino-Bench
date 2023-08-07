@@ -24,13 +24,14 @@ class CompileAvrBenchmark:
         try:
             makefile_path = os.path.join(self.model_path, 'Makefile')
 
-            # Remove previously generated makefile. It might be not relevant if configuration changes.
+            # Remove previously generated makefile.
+            # It might be not relevant if configuration changes.
             if os.path.isfile(makefile_path):
                 com.logging.info(f"{self.porter_type}:{self.model_name} deleting old makefile ...")
                 os.remove(makefile_path)
 
             # Create makefile in model's build directory
-            ardmk_init_command = ["python", "ardmk-init.py", "-d", self.model_path]
+            ardmk_init_command = ["python", "ardmk-init.py", "-t", "-d", self.model_path]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
 
@@ -72,7 +73,8 @@ class CompileAvrBenchmark:
             raise RuntimeError(f"Error occurred during compilation: {e}")
 
         # Start separate thread to read stdout
-        stdout_thread = threading.Thread(target=self.read_stream, args=(proc.stdout, stdout_data, self.print_proc_stdout))
+        stdout_thread = threading.Thread(target=self.read_stream,
+                                         args=(proc.stdout, stdout_data, self.print_proc_stdout))
         stdout_thread.start()
 
         # Wait for the subprocess to finish
@@ -104,7 +106,8 @@ class CompileAvrBenchmark:
             raise RuntimeError(f"Error occurred during compilation: {e}")
 
         # Start separate thread to read stdout
-        stdout_thread = threading.Thread(target=self.read_stream, args=(proc.stdout, stdout_data, self.print_proc_stdout))
+        stdout_thread = threading.Thread(target=self.read_stream,
+                                         args=(proc.stdout, stdout_data, self.print_proc_stdout))
         stdout_thread.start()
 
         # Wait for the subprocess to finish

@@ -70,7 +70,7 @@ class ClassifierBuilder(DataLoader):
 
     def build_classifier(self, port_framework, cls_name, cls_obj):
 
-        if port_framework not in ['sklearn-porter', 'emlearn']:
+        if port_framework not in ['sklearn-porter', 'emlearn', 'micromlgen']:
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
 
@@ -83,7 +83,8 @@ class ClassifierBuilder(DataLoader):
             from emlearn_builder import EmlearnBuilder
             self.builder = EmlearnBuilder(self.X, self.y, (cls_name, cls_obj))
         elif self.builder_type == "micromlgen":
-            pass
+            from micromlgen_builder import MicromlgenBuilder
+            self.builder = MicromlgenBuilder(self.X, self.y, (cls_name, cls_obj))
 
         # Create and train the model
         status = self.builder.train()
@@ -91,21 +92,20 @@ class ClassifierBuilder(DataLoader):
         if status:
             self.logger_builder((port_framework, cls_name), None, status)
         else:
-            # Check if the transpiler generates C or C++ code
-            self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
-
-            # Export the C model
-            #todo maybe use file extension to detect c or c++
-            self.benchmark_info['runtime']['model_directory'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+            self.benchmark_info["runtime"]["model_name"]          = cls_name
+            self.benchmark_info["runtime"]["porter_type"]         = port_framework
+            # Export model
+            self.benchmark_info['runtime']['generated_model_dir'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
 
             # Compile and benchmark the model
-            if self.benchmark_info['target']['type'] == 'avr':
+            if self.benchmark_info['target']['type'] == 'avr_gcc':
                 from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
                 cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
 
-            status = cc_toolchain.compile()
-
-            if status:
+            return_code, status = cc_toolchain.compile()
+            if return_code:
+                # If any error occured during compilation, print stderr stream data
                 self.logger_builder((port_framework, cls_name), cc_toolchain, status)
             else:
-                self.logger_builder((port_framework, cls_name), cc_toolchain, "Model generated.")
+                # If no error occured during compilation, print program size
+                self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
