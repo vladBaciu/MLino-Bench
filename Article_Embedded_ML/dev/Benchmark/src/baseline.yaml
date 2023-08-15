@@ -2,6 +2,8 @@
 training:
   default_dataset: iris
   models_directory: generated_models
+  accuracy: True
+  class_accuracy: True
 
 target:
   type: avr_gcc

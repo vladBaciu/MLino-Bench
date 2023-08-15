@@ -1,23 +1,22 @@
 import os
 import util.common as com
 from sklearn_porter import Porter
+from sklearn.metrics import accuracy_score
 
-PORTER_TYPE = 'sklearnporter'
+PORTER_TYPE = 'sklearn-porter'
 GENERATED_FILE_EXT = 'h'
 GENERATED_FILE_NAME = "model"
 TEMPLATE_DIR  = 'template'
 TEMPLATE_FILE = 'main_template.in'
 
 class SkLearnPorterBuilder:
-    def __init__(self, X_train, y_train, clf) -> None:
-        self.X = X_train
-        self.y = y_train
+    def __init__(self, clf) -> None:
+
         self.clf_name = clf[0]
         self.clf_method = clf[1]
         self.porter = None
 
     def train(self):
-        self.clf_method.fit(self.X, self.y)
         try:
             self.porter = Porter(self.clf_method, language='c')
         except NotImplementedError:
@@ -34,14 +33,15 @@ class SkLearnPorterBuilder:
         try:
             content = self.porter.export(embed_data=True)
         except Exception as e:
-            print(f"An unexpected error occurred during model export: {e}")
+            com.logging.info(f"An unexpected error occurred during model export: {e}")
         else:
             with open(model_path, 'w') as f:
                 f.write(content)
             # Eliminate main function since the generated file is a header file and does not need it.
             com.eliminate_main_function(model_path)
 
-        return framework_dir
+
+        return framework_dir, model_path
 
     def get_template_file(self):
         return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)

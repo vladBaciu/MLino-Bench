@@ -1,8 +1,14 @@
 
-
-
+import os
+import subprocess
+import numpy as np
+from sklearn.model_selection import train_test_split
 from util.dataLoader import DataLoader
 import util.common as com
+
+from sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
+#from emlearn_builder import EmlearnBuilder
+#from micromlgen_builder import MicromlgenBuilder
 
 class ClassifierBuilder(DataLoader):
     data_logger = list()
@@ -12,7 +18,6 @@ class ClassifierBuilder(DataLoader):
         super(ClassifierBuilder, self).__init__()
         self.dataset = self.load_data()
 
-        self.builder_type = None
         self.builder      = None
 
         # Load benchmark baseline
@@ -33,6 +38,7 @@ class ClassifierBuilder(DataLoader):
                 self.iris_data = load_iris()
                 self.X = self.iris_data.data
                 self.y = self.iris_data.target
+                self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=50)
 
     def print_log_summary(self):
         #search an entry of type (('sklearn-porter', 'extra_trees'), "`.text' will not fit in region `text'")
@@ -74,17 +80,25 @@ class ClassifierBuilder(DataLoader):
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
 
-        self.builder_type = port_framework
+        cls_obj.fit(self.X_train, self.y_train)
 
-        if self.builder_type == 'sklearn-porter':
-            from sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
-            self.builder = SkLearnPorterBuilder(self.X, self.y, (cls_name, cls_obj))
-        elif self.builder_type == 'emlearn':
-            from emlearn_builder import EmlearnBuilder
-            self.builder = EmlearnBuilder(self.X, self.y, (cls_name, cls_obj))
-        elif self.builder_type == "micromlgen":
-            from micromlgen_builder import MicromlgenBuilder
-            self.builder = MicromlgenBuilder(self.X, self.y, (cls_name, cls_obj))
+        # Stats
+        if self.benchmark_info["training"]["accuracy"] == True:
+        # Make predictions on the testing data
+            model_train_acc = com.calculate_accuracy(port_framework , cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
+            model_test_acc  = com.calculate_accuracy(port_framework , cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
+
+        if self.benchmark_info["training"]["class_accuracy"] == True:
+            model_class_acc = com.calculate_all_accuracies(port_framework , cls_name,
+                                                           cls_obj.predict_proba(self.X_test),
+                                                           self.y_test, self.iris_data.target_names)
+
+        if port_framework == 'sklearn-porter':
+            self.builder = SkLearnPorterBuilder((cls_name, cls_obj))
+        elif port_framework == 'emlearn':
+            self.builder = EmlearnBuilder(self.X_train, self.X_test, self.y_train, self.y_test, (cls_name, cls_obj))
+        elif port_framework == "micromlgen":
+            self.builder = MicromlgenBuilder(self.X_train, self.X_test, self.y_train, self.y_test, (cls_name, cls_obj))
 
         # Create and train the model
         status = self.builder.train()
@@ -97,7 +111,13 @@ class ClassifierBuilder(DataLoader):
             self.benchmark_info["runtime"]["template_path"]       = self.builder.get_template_file()
 
             # Export model
-            self.benchmark_info['runtime']['generated_model_dir'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+            self.benchmark_info['runtime']['generated_model_dir'],\
+            self.benchmark_info['runtime']['generated_model_path'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+
+            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
+            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"),   self.X_test)
+
+
 
             # Compile and benchmark the model
             if self.benchmark_info['target']['type'] == 'avr_gcc':
@@ -105,9 +125,21 @@ class ClassifierBuilder(DataLoader):
                 cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
 
             return_code, status = cc_toolchain.compile()
+
             if return_code:
                 # If any error occured during compilation, print stderr stream data
                 self.logger_builder((port_framework, cls_name), cc_toolchain, status)
             else:
+                # Plot some stats
+                if self.benchmark_info["training"]["accuracy"] == True:
+                    self.logger_builder((port_framework, cls_name), cc_toolchain, f"Train ACC: {model_train_acc}, test ACC: {model_test_acc}")
+
+                if self.benchmark_info["training"]["class_accuracy"] == True:
+                    self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
+
+                self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size())
                 # If no error occured during compilation, print program size
                 self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
+
+                #dump configuration info of the model
+                com.yaml_dump(self.benchmark_info)

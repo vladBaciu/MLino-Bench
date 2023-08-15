@@ -188,6 +188,12 @@ def generate_makefile():
                                  validators=[validators.PathValidator()])
             ardmk = "ARDMK_DIR := " + ardmk + "\n"
 
+    # Get model name and set a compilation flag
+    file_content += "\nCPPFLAGS = -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper())
+
+    # Set optimization level to size
+    file_content += "\nOPTIMIZATION_LEVEL=s"
+
     # Generate also a map file
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"
 
