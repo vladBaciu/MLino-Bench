@@ -64,29 +64,19 @@ class CompileAvrBenchmark:
 
             com.logging.info(f"{self.porter_type}:{self.model_name} cleaning project ...")
 
-            proc = subprocess.Popen(
-                make_clean_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                cwd=self.model_dir,
-                universal_newlines=True,
-                encoding="utf-8"
-            )
+            subprocess.run(make_clean_command,
+                    cwd=self.model_dir,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    universal_newlines=True,
+                    encoding="utf-8",
+                    check=True)
 
-        except Exception as e:
-            # Handle other exceptions that may occur during subprocess execution
-            raise RuntimeError(f"Error occurred during compilation: {e}")
+            com.logging.info(f"{self.porter_type}:{self.model_name} project cleaning: OK")
 
-        # Start separate thread to read stdout
-        stdout_thread = threading.Thread(target=self.read_stream,
-                                         args=(proc.stdout, stdout_data, self.print_proc_stdout))
-        stdout_thread.start()
-
-        # Wait for the subprocess to finish
-        proc.wait()
-
-        # Wait for the thread to complete
-        stdout_thread.join()
+        except subprocess.CalledProcessError as e:
+            # Handle subprocess errors here
+            raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
 
     def compile(self):
         # Create a list to store the stdout data
@@ -97,36 +87,20 @@ class CompileAvrBenchmark:
 
             com.logging.info(f"{self.porter_type}:{self.model_name} compiling model ...")
 
-            proc = subprocess.Popen(
-                make_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                cwd=self.model_dir,
-                universal_newlines=True,
-                encoding="utf-8"
-            )
+            status = subprocess.run(make_command,
+                                cwd=self.model_dir,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                universal_newlines=True,
+                                encoding="utf-8",
+                                check=True)
 
-        except Exception as e:
-            # Handle other exceptions that may occur during subprocess execution
-            raise RuntimeError(f"Error occurred during compilation: {e}")
+            com.logging.info(f"{self.porter_type}:{self.model_name} compilation: OK")
+            return status.stdout
 
-        # Start separate thread to read stdout
-        stdout_thread = threading.Thread(target=self.read_stream,
-                                         args=(proc.stdout, stdout_data, self.print_proc_stdout))
-        stdout_thread.start()
-
-        # Wait for the subprocess to finish
-        proc.wait()
-
-        # Wait for the thread to complete
-        stdout_thread.join()
-
-        com.logging.info(f"{self.porter_type}:{self.model_name} compilation: OK")
-
-        if proc.returncode == 0:
-            return proc.returncode, str(stdout_data)
-        else:
-            return proc.returncode, proc.stderr.read()
+        except subprocess.CalledProcessError as e:
+            # Handle subprocess errors here
+            raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
 
     def get_model_size(self):
         try:
@@ -139,7 +113,7 @@ class CompileAvrBenchmark:
                 cpp_file.write(model_h_code)
 
             # Compile the C code to an object file using GCC
-            compile_command = ['avr-gcc', '-Os', '-c', 'temp.cpp', '-o', 'temp.o']
+            compile_command = ['avr-gcc', '-Os', '-c', 'temp.cpp', '-o', 'temp.o', '-I{}'.format(self.model_dir.replace("\\", "/"))]
             subprocess.run(compile_command, cwd=self.model_dir, check=True)
 
             # Use the 'size' command to get the sizes of different sections
@@ -167,11 +141,11 @@ class CompileAvrBenchmark:
                 bss_size   = size_tuple[2]
                 total_size = size_tuple[3]
 
-                com.logging.info(f"{self.porter_type}:{self.model_name} model size: {total_size}")
+                com.logging.info(f"{self.porter_type}:{self.model_name} model size: {total_size} bytes")
             else:
                 com.logging.info(f"{self.porter_type}:{self.model_name}: Failed to parse size information")
 
-            return f"Model size: text: {flash_size}; data: {data_size}; bss: {bss_size}; total: {total_size}"
+            return f"Model size: text: {flash_size}; data: {data_size}; bss: {bss_size}; total: {total_size} bytes"
 
         except FileNotFoundError as file_err:
             raise RuntimeError(f"Error: {file_err.strerror}: {file_err.filename}")
@@ -186,7 +160,7 @@ class CompileAvrBenchmark:
         text_section = self.parse_linker_output(linker_output, "Program:")
         data_section = self.parse_linker_output(linker_output, "Data:")
 
-        return f"Total flash: {text_section}, Total RAM: {data_section}"
+        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
 
     @staticmethod
     def parse_linker_output(input_string, section_name):
@@ -223,6 +197,7 @@ class CompileAvrBenchmark:
 
     @staticmethod
     def read_stream(stream, output_list, print_data):
+        print("CALL")
         for line in stream:
             # Check user option and decide if stdout pipe stream data should be printed or not
             if print_data:

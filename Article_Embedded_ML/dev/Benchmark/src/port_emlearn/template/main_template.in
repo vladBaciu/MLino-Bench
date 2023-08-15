@@ -8,7 +8,7 @@ void setup() {
 
 void loop() {
     /* place your code */
-    ans = predict(features);
+    ans = model_predict(features, 4);
     // print the results to the serial monitor:
     Serial.print("sensor = " );
     Serial.print(ans);

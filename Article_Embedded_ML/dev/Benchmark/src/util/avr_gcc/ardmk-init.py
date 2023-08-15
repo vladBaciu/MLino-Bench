@@ -188,8 +188,12 @@ def generate_makefile():
                                  validators=[validators.PathValidator()])
             ardmk = "ARDMK_DIR := " + ardmk + "\n"
 
-    # Get model name and set a compilation flag
-    file_content += "\nCPPFLAGS = -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper())
+    # Get model name and set it as a define compilation flag
+    file_content += "\nCPPFLAGS += -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper())
+
+    # Set model directory as include directory. Emlearn generates includes statements
+    # with angle brackets used for compiler-defined include paths
+    file_content += "\nCPPFLAGS += -I{}".format(ARGS.directory.replace("\\", "/"))
 
     # Set optimization level to size
     file_content += "\nOPTIMIZATION_LEVEL=s"

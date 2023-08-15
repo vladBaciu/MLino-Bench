@@ -6,9 +6,9 @@ from sklearn.model_selection import train_test_split
 from util.dataLoader import DataLoader
 import util.common as com
 
-from sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
-#from emlearn_builder import EmlearnBuilder
-#from micromlgen_builder import MicromlgenBuilder
+from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
+from port_emlearn.emlearn_builder import EmlearnBuilder
+#from micromlgen.micromlgen_builder import MicromlgenBuilder
 
 class ClassifierBuilder(DataLoader):
     data_logger = list()
@@ -96,7 +96,7 @@ class ClassifierBuilder(DataLoader):
         if port_framework == 'sklearn-porter':
             self.builder = SkLearnPorterBuilder((cls_name, cls_obj))
         elif port_framework == 'emlearn':
-            self.builder = EmlearnBuilder(self.X_train, self.X_test, self.y_train, self.y_test, (cls_name, cls_obj))
+            self.builder = EmlearnBuilder((cls_name, cls_obj))
         elif port_framework == "micromlgen":
             self.builder = MicromlgenBuilder(self.X_train, self.X_test, self.y_train, self.y_test, (cls_name, cls_obj))
 
@@ -124,22 +124,18 @@ class ClassifierBuilder(DataLoader):
                 from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
                 cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
 
-            return_code, status = cc_toolchain.compile()
+            status = cc_toolchain.compile()
 
-            if return_code:
-                # If any error occured during compilation, print stderr stream data
-                self.logger_builder((port_framework, cls_name), cc_toolchain, status)
-            else:
-                # Plot some stats
-                if self.benchmark_info["training"]["accuracy"] == True:
-                    self.logger_builder((port_framework, cls_name), cc_toolchain, f"Train ACC: {model_train_acc}, test ACC: {model_test_acc}")
+            # Plot some stats
+            if self.benchmark_info["training"]["accuracy"] == True:
+                self.logger_builder((port_framework, cls_name), cc_toolchain, f"Train ACC: {model_train_acc}, test ACC: {model_test_acc}")
 
-                if self.benchmark_info["training"]["class_accuracy"] == True:
-                    self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
+            if self.benchmark_info["training"]["class_accuracy"] == True:
+                self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
-                self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size())
-                # If no error occured during compilation, print program size
-                self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
+            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size())
+            # If no error occured during compilation, print program size
+            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
-                #dump configuration info of the model
-                com.yaml_dump(self.benchmark_info)
+            #dump configuration info of the model
+            com.yaml_dump(self.benchmark_info)
