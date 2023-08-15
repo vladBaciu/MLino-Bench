@@ -8,7 +8,7 @@ import util.common as com
 
 from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from port_emlearn.emlearn_builder import EmlearnBuilder
-#from micromlgen.micromlgen_builder import MicromlgenBuilder
+from port_micromlgen.micromlgen_builder import MicromlgenBuilder
 
 class ClassifierBuilder(DataLoader):
     data_logger = list()
@@ -98,7 +98,7 @@ class ClassifierBuilder(DataLoader):
         elif port_framework == 'emlearn':
             self.builder = EmlearnBuilder((cls_name, cls_obj))
         elif port_framework == "micromlgen":
-            self.builder = MicromlgenBuilder(self.X_train, self.X_test, self.y_train, self.y_test, (cls_name, cls_obj))
+            self.builder = MicromlgenBuilder((cls_name, cls_obj))
 
         # Create and train the model
         status = self.builder.train()
@@ -116,8 +116,6 @@ class ClassifierBuilder(DataLoader):
 
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"),   self.X_test)
-
-
 
             # Compile and benchmark the model
             if self.benchmark_info['target']['type'] == 'avr_gcc':
