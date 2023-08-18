@@ -60,6 +60,8 @@ PARSER.add_argument('-o', '--overwrite', action='store_true',
                     help='always overwrite generated file')
 PARSER.add_argument('--template_path', action='store',
                     help='specify the file path of the template')
+PARSER.add_argument('--optimization_level', action='store',
+                    help='specify the optimization level')
 PARSER.add_argument('-V', '--version', action='version', version='%(prog)s '+ VERSION)
 ARGS = PARSER.parse_args()
 
@@ -195,8 +197,8 @@ def generate_makefile():
     # with angle brackets used for compiler-defined include paths
     file_content += "\nCPPFLAGS += -I{}".format(ARGS.directory.replace("\\", "/"))
 
-    # Set optimization level to size
-    file_content += "\nOPTIMIZATION_LEVEL=s"
+    # Set optimization level
+    file_content += "\nOPTIMIZATION_LEVEL={}".format(ARGS.optimization_level)
 
     # Generate also a map file
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"

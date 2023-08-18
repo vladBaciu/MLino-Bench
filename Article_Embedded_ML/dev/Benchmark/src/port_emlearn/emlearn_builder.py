@@ -5,10 +5,11 @@ import emlearn
 
 PORTER_TYPE = 'emlearn'
 GENERATED_FILE_EXT = 'h'
+MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE_DIR  = 'template'
 TEMPLATE_FILE = 'main_template.in'
-
+CUSTOM_TEMPLATE = False
 class EmlearnBuilder:
     def __init__(self, clf) -> None:
         self.clf_name = clf[0]
@@ -32,20 +33,36 @@ class EmlearnBuilder:
         # Save the model using emlearn
         self.porter.save(file=model_path)
 
+        size_build_dir = os.path.join(framework_dir, 'size')
+        if not os.path.exists(size_build_dir):
+            os.makedirs(size_build_dir)
+
         # Copy common header file
         shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_common.h'), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_common.h'), size_build_dir)
 
         # Copy headers based on classifier type
         clf_type = str(type(self.clf_method))
         if any(clf in clf_type for clf in ("DecisionTree", "RandomForest", "ExtraTrees")):
             shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_trees.h'), framework_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_trees.h'), size_build_dir)
+
         elif "naive_bayes" in clf_type:
             shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_bayes.h'), framework_dir)
             shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_fixedpoint.h'), framework_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_bayes.h'), size_build_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_fixedpoint.h'), size_build_dir)
         elif "neural_network" in clf_type:
             shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_net.h'), framework_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), 'eml_net.h'), size_build_dir)
 
         return framework_dir, model_path
 
     def get_template_file(self):
         return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
+
+    def get_model_language(self):
+        return MODEL_LANGUAGE
+
+    def is_custom_template(self):
+        return CUSTOM_TEMPLATE

@@ -10,13 +10,14 @@ class CompileAvrBenchmark:
     def __init__(self, build_info) -> None:
         self.compile_errors_list = self.get_list_of_possible_errors()
 
-        self.model_dir         = build_info['runtime']['generated_model_dir']
-        self.model_path        = build_info['runtime']['generated_model_path']
-        self.model_name        = build_info["runtime"]["model_name"]
-        self.porter_type       = build_info["runtime"]["porter_type"]
-        self.print_proc_stdout = build_info["target"]["compiler_stdout"]
-        self.template          = build_info["runtime"]["template_path"]
-
+        self.model_dir          = build_info['runtime']['generated_model_dir']
+        self.model_path         = build_info['runtime']['generated_model_path']
+        self.model_name         = build_info["runtime"]["model_name"]
+        self.porter_type        = build_info["runtime"]["porter_type"]
+        self.template           = build_info["runtime"]["template_path"]
+        self.extension          = build_info["runtime"]["language"]
+        self.optimization_level = build_info["target"]["optimization_level"]
+        self.print_proc_stdout  = build_info["target"]["compiler_stdout"]
         # Create Arduino Makefile
         self.create_makefile()
 
@@ -36,7 +37,8 @@ class CompileAvrBenchmark:
             # Create makefile in model's build directory
             ardmk_init_command = ["python", "ardmk-init.py",
                                   "-d", self.model_dir,
-                                  "-t", "-o", "--template_path", self.template]
+                                  "-t", "-o", "--template_path", self.template,
+                                  "--optimization_level", self.optimization_level]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
 
@@ -102,32 +104,40 @@ class CompileAvrBenchmark:
             # Handle subprocess errors here
             raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
 
-    def get_model_size(self):
+    def get_model_size(self, builder):
+
+        build_path = os.path.join(self.model_dir, 'size')
+        if not os.path.exists(build_path):
+            os.makedirs(build_path)
+
         try:
             # Read the content of model.h (assuming model.h is available in the current directory)
             with open(self.model_path) as h_file:
                 model_h_code = h_file.read()
 
+            if builder.is_custom_template():
+                model_h_code = builder.generate_template(model_h_code, self.model_name)
+                self.optimization_level = 0 ## for cpp only
+
             # Write the content of model.h to model.cpp
-            with open(os.path.join(self.model_dir, 'temp.cpp'), 'w') as cpp_file:
-                cpp_file.write(model_h_code)
+            with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
+                c_file.write(model_h_code)
 
             # Compile the C code to an object file using GCC
-            compile_command = ['avr-gcc', '-Os', '-c', 'temp.cpp', '-o', 'temp.o', '-I{}'.format(self.model_dir.replace("\\", "/"))]
-            subprocess.run(compile_command, cwd=self.model_dir, check=True)
+            compile_command = ['avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
+                               '-O{}'.format(self.optimization_level), '-c', f'model.{self.extension}', '-o', 'model.o',
+                               '-I{}'.format(build_path.replace("\\", "/"))]
+            subprocess.run(compile_command, cwd=build_path, check=True)
 
             # Use the 'size' command to get the sizes of different sections
-            size_command = ['avr-size', 'temp.o']
+            size_command = ['avr-size', 'model.o']
             size_output = subprocess.run(size_command,
-                                         cwd=self.model_dir,
+                                         cwd=build_path,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE,
                                          universal_newlines=True,
                                          encoding="utf-8",
                                          check=True)
-
-            # Clean up the temporary files
-            subprocess.run(['rm', 'temp.cpp', 'temp.o'], cwd=self.model_dir, check=True)
 
             # Parse the size information to extract flash size, data size, bss size, and total size
             pattern = r"\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+[0-9a-fA-F]"

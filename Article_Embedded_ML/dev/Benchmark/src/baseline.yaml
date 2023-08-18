@@ -8,6 +8,7 @@ training:
 target:
   type: avr_gcc
   mcu: atmega32u4
+  optimization_level: s
   compiler_stdout: False
 
 runtime:
@@ -15,3 +16,4 @@ runtime:
   model_name:
   generated_model_dir:
   template_path:
+  language:

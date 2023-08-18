@@ -1,7 +1,7 @@
 /* Include model file */
 #include "model.h"
 
-#if !defined(SVC)
+#if !defined(SVC) && !defined(ADABOOST)
 float features[10] = { 1, 4, 5, 3,2,1, 5};
 #else
 double features[10] = { 1, 4, 5, 3,2,1, 5};

@@ -1,5 +1,16 @@
 /* Include model file */
+#include <stdint.h>
 #include "model.h"
+
+#if defined(RANDOM_FOREST)
+    Eloquent::ML::Port::RandomForest classifier;
+#elif defined(SVC)
+    Eloquent::ML::Port::SVM classifier;
+#elif defined(DECISION_TREE)
+    Eloquent::ML::Port::DecisionTree classifier;
+#elif defined(GAUSSIAN_NAIVE_BAYES)
+    Eloquent::ML::Port::GaussianNB classifier;
+#endif
 
 float features[10] = { 1, 4, 5, 3,2,1, 5};
 int ans = 0;
@@ -8,7 +19,7 @@ void setup() {
 
 void loop() {
     /* place your code */
-    ans = predict(features);
+    ans = classifier.predict(features);
     // print the results to the serial monitor:
     Serial.print("sensor = " );
     Serial.print(ans);

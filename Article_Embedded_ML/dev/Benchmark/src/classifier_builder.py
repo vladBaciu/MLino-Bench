@@ -113,6 +113,7 @@ class ClassifierBuilder(DataLoader):
             # Export model
             self.benchmark_info['runtime']['generated_model_dir'],\
             self.benchmark_info['runtime']['generated_model_path'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+            self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
 
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"),   self.X_test)
@@ -131,7 +132,7 @@ class ClassifierBuilder(DataLoader):
             if self.benchmark_info["training"]["class_accuracy"] == True:
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
-            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size())
+            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
             # If no error occured during compilation, print program size
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
