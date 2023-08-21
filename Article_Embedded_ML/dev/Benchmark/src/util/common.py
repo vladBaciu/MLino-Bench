@@ -6,40 +6,58 @@ import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-########################################################################
-# load parameters.yaml
-########################################################################
+# Load parameters from a YAML file
 def yaml_load():
+    """
+    Load parameters from a YAML file.
+
+    Returns:
+        dict: Loaded parameters from the YAML file.
+    """
+    # Get the directory of the script
     script_dir = os.path.dirname(__file__)
+    # Construct the absolute path to the YAML file
     abs_file_path = os.path.join(script_dir, "..\\baseline.yaml")
 
     with open(abs_file_path) as stream:
         param = yaml.safe_load(stream)
     return param
 
-########################################################################
-# tba
-########################################################################
+# Dump content into a YAML file
 def yaml_dump(content):
+    """
+    Dump content into a YAML file.
+
+    Args:
+        content (dict): Content to be written to the YAML file.
+    """
     abs_file_path = os.path.join(content['runtime']['generated_model_dir'], "config.yaml")
     with open(abs_file_path, 'w') as abs_file_path:
         yaml.dump(content, abs_file_path, default_flow_style=False)
 
-########################################################################
-# tba
-########################################################################
+# Create build paths for generated models
 def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, ext):
+    """
+    Create build paths for generated models.
 
+    Args:
+        src_root (str): Source root directory.
+        output_dir_name (str): Output directory name.
+        clf_type (str): Classifier type.
+        framework (str): Framework.
+        clf_name (str): Classifier name.
+        ext (str): File extension.
+
+    Returns:
+        tuple: Tuple containing model path and framework directory.
+    """
     # Get the parent directory of src_root (one level up)
     parent_dir_one_level_up = os.path.dirname(src_root)
-
     # Get the parent directory of parent_dir_one_level_up (two levels up, one level back)
     parent_dir_two_levels_up = os.path.dirname(parent_dir_one_level_up)
 
     out_dir_root = os.path.join(parent_dir_two_levels_up, output_dir_name)
-    # checking if the directory out_dir exists or not.
     if not os.path.exists(out_dir_root):
-        # if the out_dir directory is not present then create it.
         os.makedirs(out_dir_root)
 
     clf_dir = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type)
@@ -54,10 +72,14 @@ def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, 
 
     return model_path, framework_dir
 
-########################################################################
-# tba
-########################################################################
+# Eliminate the main function from a given file
 def eliminate_main_function(file_path):
+    """
+    Eliminate the main function from a given file.
+
+    Args:
+        file_path (str): Path to the file to process.
+    """
     with open(file_path, 'r') as file:
         content = file.read()
 
@@ -89,39 +111,50 @@ def eliminate_main_function(file_path):
     with open(file_path, 'w') as file:
         file.write(updated_content)
 
-
-# Classifier overall accuracy calculation
-# y_pred contains the outputs of the network for the validation data
-# labels are the correct answers
+# Calculate classifier overall accuracy
 def calculate_accuracy(framework, cls, y_pred, labels):
+    """
+    Calculate classifier overall accuracy.
+
+    Args:
+        framework (str): Framework name.
+        cls (str): Classifier name.
+        y_pred (numpy.ndarray): Predicted labels.
+        labels (numpy.ndarray): True labels.
+
+    Returns:
+        float: Calculated accuracy.
+    """
     y_pred_label = np.argmax(y_pred, axis=1)
     correct = np.sum(labels == y_pred_label)
     accuracy = 100 * correct / len(y_pred)
     logging.info(f"{framework}:{cls} overall accuracy = {accuracy:2.1f}")
     return accuracy
 
-
-# Classifier accuracy per class calculation
-# y_pred contains the outputs of the network for the validation data
-# labels are the correct answers
-# classes are the model's classes
+# Calculate classifier accuracy per class
 def calculate_all_accuracies(framework, cls, y_pred, labels, classes):
-    n_classes = len(classes)
+    """
+    Calculate classifier accuracy per class.
 
-    # Initialize array of accuracies
+    Args:
+        framework (str): Framework name.
+        cls (str): Classifier name.
+        y_pred (numpy.ndarray): Predicted labels.
+        labels (numpy.ndarray): True labels.
+        classes (list): List of class names.
+
+    Returns:
+        numpy.ndarray: Array of accuracies per class.
+    """
+    n_classes = len(classes)
     accuracies = np.zeros(n_classes)
 
-    # Loop on classes
     for class_item in range(n_classes):
         true_positives = 0
-        # Loop on all predictions
         for i in range(len(y_pred)):
-            # Check if it matches the class that we are working on
-            if (labels[i] == class_item):
-                # Get prediction label
+            if labels[i] == class_item:
                 y_pred_label = np.argmax(y_pred[i, :])
-                # Check if the prediction is correct
-                if (labels[i] == y_pred_label):
+                if labels[i] == y_pred_label:
                     true_positives += 1
 
         accuracies[class_item] = 100 * true_positives / np.sum(labels == class_item)
@@ -129,40 +162,38 @@ def calculate_all_accuracies(framework, cls, y_pred, labels, classes):
 
     return accuracies
 
-
-# Classifier ROC AUC calculation
-# y_pred contains the outputs of the network for the validation data
-# labels are the correct answers
-# classes are the model's classes
-# name is the model's name
+# Calculate classifier ROC AUC
 def calculate_auc(y_pred, labels, classes, name):
-    n_classes = len(classes)
+    """
+    Calculate classifier ROC AUC.
 
-    # thresholds, linear range, may need improvements for better precision
+    Args:
+        y_pred (numpy.ndarray): Predicted labels.
+        labels (numpy.ndarray): True labels.
+        classes (list): List of class names.
+        name (str): Model name.
+
+    Returns:
+        float: Calculated ROC AUC.
+    """
+    n_classes = len(classes)
     thresholds = np.arange(0.0, 1.01, .01)
-    # false positive rate
     fpr = np.zeros([n_classes, len(thresholds)])
-    # true positive rate
     tpr = np.zeros([n_classes, len(thresholds)])
-    # area under curve
     roc_auc = np.zeros(n_classes)
 
-    # get number of positive and negative examples in the dataset
+    n_normal = np.sum(labels == 0)
+
     for class_item in range(n_classes):
-        # Sum of all true positive answers
         all_positives = sum(labels == class_item)
-        # Sum of all true negative answers
         all_negatives = len(labels) - all_positives
 
-        # iterate through all thresholds and determine fraction of true positives
-        # and false positives found at this threshold
         for threshold_item in range(1, len(thresholds)):
             threshold = thresholds[threshold_item]
             false_positives = 0
             true_positives = 0
             for i in range(len(y_pred)):
-                # Check prediction for this threshold
-                if (y_pred[i, class_item] > threshold):
+                if y_pred[i, class_item] > threshold:
                     if labels[i] == class_item:
                         true_positives += 1
                     else:
@@ -170,16 +201,13 @@ def calculate_auc(y_pred, labels, classes, name):
             fpr[class_item, threshold_item] = false_positives / float(all_negatives)
             tpr[class_item, threshold_item] = true_positives / float(all_positives)
 
-        # Force boundary condition
         fpr[class_item, 0] = 1
         tpr[class_item, 0] = 1
 
-        # calculate area under curve, trapezoid integration
         for threshold_item in range(len(thresholds) - 1):
             roc_auc[class_item] += .5 * (tpr[class_item, threshold_item] + tpr[class_item, threshold_item + 1]) * (
-                        fpr[class_item, threshold_item] - fpr[class_item, threshold_item + 1]);
+                    fpr[class_item, threshold_item] - fpr[class_item, threshold_item + 1]);
 
-    # results
     roc_auc_avg = np.mean(roc_auc)
     print(f"Simplified average roc_auc = {roc_auc_avg:.3f}")
 
@@ -198,56 +226,37 @@ def calculate_auc(y_pred, labels, classes, name):
 
     return roc_auc
 
-
-# Classifier overall accuracy calculation
-# y_pred contains the outputs of the network for the validation data
-# y_true are the correct answers (0.0 for normal, 1.0 for anomaly)
-# using this function is not recommended
-def calculate_ae_accuracy(y_pred, y_true):
-    thresholds = np.amin(y_pred) + np.arange(0.0, 1.0, .01) * (np.amax(y_pred) - np.amin(y_pred))
-    accuracy = 0
-    for threshold in thresholds:
-        y_pred_binary = (y_pred > threshold).astype(int)
-        correct = np.sum(y_pred_binary == y_true)
-        accuracy_tmp = 100 * correct / len(y_pred_binary)
-        if accuracy_tmp > accuracy:
-            accuracy = accuracy_tmp
-
-    print(f"Overall accuracy = {accuracy:2.1f}")
-    return accuracy
-
-
-# Classifier overall accuracy calculation
-# y_pred contains the outputs of the network for the validation data
-# y_true are the correct answers (0.0 for normal, 1.0 for anomaly)
-# this is the function that should be used for accuracy calculations
+# Calculate autoencoder overall accuracy
 def calculate_ae_pr_accuracy(y_pred, y_true):
-    # initialize all arrays
+    """
+    Calculate autoencoder overall accuracy using precision-recall curve.
+
+    Args:
+        y_pred (numpy.ndarray): Predicted labels.
+        y_true (numpy.ndarray): True labels.
+
+    Returns:
+        float: Calculated accuracy.
+    """
     thresholds = np.amin(y_pred) + np.arange(0.0, 1.0, .01) * (np.amax(y_pred) - np.amin(y_pred))
     accuracy = 0
     n_normal = np.sum(y_true == 0)
     precision = np.zeros(len(thresholds))
     recall = np.zeros(len(thresholds))
 
-    # Loop on all the threshold values
     for threshold_item in range(len(thresholds)):
         threshold = thresholds[threshold_item]
-        # Binarize the result
         y_pred_binary = (y_pred > threshold).astype(int)
-        # Build matrix of TP, TN, FP and FN
         true_negative = np.sum((y_pred_binary[0:n_normal] == 0))
         false_positive = np.sum((y_pred_binary[0:n_normal] == 1))
         true_positive = np.sum((y_pred_binary[n_normal:] == 1))
         false_negative = np.sum((y_pred_binary[n_normal:] == 0))
-        # Calculate and store precision and recall
         precision[threshold_item] = true_positive / (true_positive + false_positive)
         recall[threshold_item] = true_positive / (true_positive + false_negative)
-        # See if the accuracy has improved
         accuracy_tmp = 100 * (precision[threshold_item] + recall[threshold_item]) / 2
         if accuracy_tmp > accuracy:
             accuracy = accuracy_tmp
 
-    # Results
     print(f"Precision/recall accuracy = {accuracy:2.1f}")
 
     plt.figure()
@@ -262,14 +271,19 @@ def calculate_ae_pr_accuracy(y_pred, y_true):
 
     return accuracy
 
-
-# Autoencoder ROC AUC calculation
-# y_pred contains the outputs of the network for the validation data
-# y_true are the correct answers (0.0 for normal, 1.0 for anomaly)
-# this is the function that should be used for accuracy calculations
-# name is the model's name
+# Calculate autoencoder ROC AUC
 def calculate_ae_auc(y_pred, y_true, name):
-    # initialize all arrays
+    """
+    Calculate autoencoder ROC AUC.
+
+    Args:
+        y_pred (numpy.ndarray): Predicted labels.
+        y_true (numpy.ndarray): True labels.
+        name (str): Model name.
+
+    Returns:
+        float: Calculated ROC AUC.
+    """
     thresholds = np.amin(y_pred) + np.arange(0.0, 1.01, .01) * (np.amax(y_pred) - np.amin(y_pred))
     roc_auc = 0
 
@@ -277,25 +291,19 @@ def calculate_ae_auc(y_pred, y_true, name):
     tpr = np.zeros(len(thresholds))
     fpr = np.zeros(len(thresholds))
 
-    # Loop on all the threshold values
     for threshold_item in range(1, len(thresholds)):
         threshold = thresholds[threshold_item]
-        # Binarize the result
         y_pred_binary = (y_pred > threshold).astype(int)
-        # Build TP and FP
         tpr[threshold_item] = np.sum((y_pred_binary[n_normal:] == 1)) / float(len(y_true) - n_normal)
         fpr[threshold_item] = np.sum((y_pred_binary[0:n_normal] == 1)) / float(n_normal)
 
-    # Force boundary condition
     fpr[0] = 1
     tpr[0] = 1
 
-    # Integrate
     for threshold_item in range(len(thresholds) - 1):
         roc_auc += .5 * (tpr[threshold_item] + tpr[threshold_item + 1]) * (
-                    fpr[threshold_item] - fpr[threshold_item + 1]);
+                fpr[threshold_item] - fpr[threshold_item + 1]);
 
-    # Results
     print(f"Simplified roc_auc = {roc_auc:.3f}")
 
     plt.figure()

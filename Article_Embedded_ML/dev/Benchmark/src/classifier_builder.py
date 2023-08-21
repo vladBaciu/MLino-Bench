@@ -1,4 +1,3 @@
-
 import os
 import subprocess
 import numpy as np
@@ -14,11 +13,18 @@ class ClassifierBuilder(DataLoader):
     data_logger = list()
 
     def __init__(self) -> None:
+        """
+        Initialize the ClassifierBuilder.
+
+        This constructor initializes the ClassifierBuilder by calling the parent DataLoader constructor
+        and loading input data.
+
+        """
         # Call parent constructor and load input data
         super(ClassifierBuilder, self).__init__()
         self.dataset = self.load_data()
 
-        self.builder      = None
+        self.builder = None
 
         # Load benchmark baseline
         self.benchmark_info = com.yaml_load()
@@ -27,6 +33,12 @@ class ClassifierBuilder(DataLoader):
         self.__load_dataset()
 
     def __load_dataset(self):
+        """
+        Load the dataset for benchmarking.
+
+        This method loads the user-defined data or falls back to default datasets if not implemented.
+
+        """
         # Load user-defined data
         self.dataset = self.load_data()
 
@@ -41,6 +53,12 @@ class ClassifierBuilder(DataLoader):
                 self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=50)
 
     def print_log_summary(self):
+        """
+        Print summary of log messages.
+
+        This method prints a summary of error messages from the data logger.
+
+        """
         #search an entry of type (('sklearn-porter', 'extra_trees'), "`.text' will not fit in region `text'")
         merged_errors = {}
         # Get error message entry
@@ -55,7 +73,6 @@ class ClassifierBuilder(DataLoader):
             else:
                 merged_errors[key] = [value]
 
-
         print("\n\n=============== Builder log messages: ===============\n\n")
         for key, error_messages in merged_errors.items():
             tool_name, model_name = key
@@ -64,6 +81,17 @@ class ClassifierBuilder(DataLoader):
                 print(f"\t{message}")
 
     def logger_builder(self, cls_pair, cc_toolchain, status):
+        """
+        Log builder information.
+
+        This method logs information about the builder, compiler toolchain, and status.
+
+        Args:
+            cls_pair (tuple): Classifier pair (framework, name).
+            cc_toolchain (object): Compiler toolchain object.
+            status (str): Compilation status or message.
+
+        """
         common_error_found = False
         if cc_toolchain:
             for search_string in cc_toolchain.compile_errors_list:
@@ -75,7 +103,20 @@ class ClassifierBuilder(DataLoader):
             self.data_logger.append((cls_pair, status))
 
     def build_classifier(self, port_framework, cls_name, cls_obj):
+        """
+        Build a classifier.
 
+        This method builds a classifier using the specified porting framework.
+
+        Args:
+            port_framework (str): Porting framework name.
+            cls_name (str): Classifier name.
+            cls_obj (object): Classifier object.
+
+        Raises:
+            AttributeError: If the given porter is not supported.
+
+        """
         if port_framework not in ['sklearn-porter', 'emlearn', 'micromlgen']:
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
@@ -84,12 +125,11 @@ class ClassifierBuilder(DataLoader):
 
         # Stats
         if self.benchmark_info["training"]["accuracy"] == True:
-        # Make predictions on the testing data
-            model_train_acc = com.calculate_accuracy(port_framework , cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
-            model_test_acc  = com.calculate_accuracy(port_framework , cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
+            model_train_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
+            model_test_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
 
         if self.benchmark_info["training"]["class_accuracy"] == True:
-            model_class_acc = com.calculate_all_accuracies(port_framework , cls_name,
+            model_class_acc = com.calculate_all_accuracies(port_framework, cls_name,
                                                            cls_obj.predict_proba(self.X_test),
                                                            self.y_test, self.iris_data.target_names)
 
@@ -106,17 +146,17 @@ class ClassifierBuilder(DataLoader):
         if status:
             self.logger_builder((port_framework, cls_name), None, status)
         else:
-            self.benchmark_info["runtime"]["model_name"]          = cls_name
-            self.benchmark_info["runtime"]["porter_type"]         = port_framework
-            self.benchmark_info["runtime"]["template_path"]       = self.builder.get_template_file()
+            self.benchmark_info["runtime"]["model_name"] = cls_name
+            self.benchmark_info["runtime"]["porter_type"] = port_framework
+            self.benchmark_info["runtime"]["template_path"] = self.builder.get_template_file()
 
             # Export model
-            self.benchmark_info['runtime']['generated_model_dir'],\
+            self.benchmark_info['runtime']['generated_model_dir'], \
             self.benchmark_info['runtime']['generated_model_path'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
             self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
 
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
-            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"),   self.X_test)
+            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"), self.X_test)
 
             # Compile and benchmark the model
             if self.benchmark_info['target']['type'] == 'avr_gcc':
@@ -133,7 +173,7 @@ class ClassifierBuilder(DataLoader):
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
-            # If no error occured during compilation, print program size
+            # If no error occurred during compilation, print program size
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
             #dump configuration info of the model

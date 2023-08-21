@@ -1,35 +1,41 @@
 import subprocess
-import sys
 import os
-import time
-import threading
 import util.common as com
 import re
 
 class CompileAvrBenchmark:
-    def __init__(self, build_info) -> None:
+    def __init__(self, build_info):
+        """
+        Initialize the CompileAvrBenchmark instance.
+
+        Args:
+            build_info (dict): Build information containing runtime and target details.
+        """
+        # List of possible compile errors
         self.compile_errors_list = self.get_list_of_possible_errors()
 
-        self.model_dir          = build_info['runtime']['generated_model_dir']
-        self.model_path         = build_info['runtime']['generated_model_path']
-        self.model_name         = build_info["runtime"]["model_name"]
-        self.porter_type        = build_info["runtime"]["porter_type"]
-        self.template           = build_info["runtime"]["template_path"]
-        self.extension          = build_info["runtime"]["language"]
+        # Extract build information
+        self.model_dir = build_info['runtime']['generated_model_dir']
+        self.model_path = build_info['runtime']['generated_model_path']
+        self.model_name = build_info["runtime"]["model_name"]
+        self.porter_type = build_info["runtime"]["porter_type"]
+        self.template = build_info["runtime"]["template_path"]
+        self.extension = build_info["runtime"]["language"]
         self.optimization_level = build_info["target"]["optimization_level"]
-        self.print_proc_stdout  = build_info["target"]["compiler_stdout"]
-        # Create Arduino Makefile
-        self.create_makefile()
+        self.print_proc_stdout = build_info["target"]["compiler_stdout"]
 
-        # Make execute a make clean first
+        # Create Arduino Makefile and run make clean
+        self.create_makefile()
         self.make_clean()
 
     def create_makefile(self):
+        """
+        Generate the Arduino Makefile for the project.
+        """
         try:
             makefile_path = os.path.join(self.model_dir, 'Makefile')
 
-            # Remove previously generated makefile.
-            # It might be not relevant if configuration changes.
+            # Remove previously generated makefile if it exists
             if os.path.isfile(makefile_path):
                 com.logging.info(f"{self.porter_type}:{self.model_name} deleting old makefile ...")
                 os.remove(makefile_path)
@@ -55,69 +61,78 @@ class CompileAvrBenchmark:
             com.logging.info(f"{self.porter_type}:{self.model_name} makefile generation: OK")
 
         except Exception as e:
-            # If the make command returns a non-zero exit code, it will raise CalledProcessError
             raise RuntimeError(f"Error occurred during 'ardmk-init.py': {e}")
 
     def make_clean(self):
-        stdout_data = []
-
+        """
+        Run 'make clean' to clean the project directory.
+        """
         try:
             make_clean_command = ["make", "clean", "-j8"]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} cleaning project ...")
 
             subprocess.run(make_clean_command,
-                    cwd=self.model_dir,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True,
-                    encoding="utf-8",
-                    check=True)
+                           cwd=self.model_dir,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,
+                           universal_newlines=True,
+                           encoding="utf-8",
+                           check=True)
 
             com.logging.info(f"{self.porter_type}:{self.model_name} project cleaning: OK")
 
         except subprocess.CalledProcessError as e:
-            # Handle subprocess errors here
             raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
 
     def compile(self):
-        # Create a list to store the stdout data
-        stdout_data = []
-
+        """
+        Compile the model using the generated makefile.
+        """
         try:
             make_command = ["make", "-j8"]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} compiling model ...")
 
             status = subprocess.run(make_command,
-                                cwd=self.model_dir,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                universal_newlines=True,
-                                encoding="utf-8",
-                                check=True)
+                                    cwd=self.model_dir,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    universal_newlines=True,
+                                    encoding="utf-8",
+                                    check=True)
 
             com.logging.info(f"{self.porter_type}:{self.model_name} compilation: OK")
             return status.stdout
 
         except subprocess.CalledProcessError as e:
-            # Handle subprocess errors here
             raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
 
     def get_model_size(self, builder):
+        """
+        Get the size of the compiled model.
 
+        Args:
+            builder: The model builder instance used for size calculation.
+
+        Returns:
+            str: Size information of the compiled model.
+        """
+        # Prepare build path
         build_path = os.path.join(self.model_dir, 'size')
         if not os.path.exists(build_path):
             os.makedirs(build_path)
 
         try:
-            # Read the content of model.h (assuming model.h is available in the current directory)
+            # Read the content of model.h
             with open(self.model_path) as h_file:
                 model_h_code = h_file.read()
 
+            # Generate template and set optimization level
             if builder.is_custom_template():
                 model_h_code = builder.generate_template(model_h_code, self.model_name)
-                self.optimization_level = 0 ## for cpp only
+                if self.extension == 'cpp': # for cpp only
+                    self.optimization_level = 0
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
@@ -129,7 +144,7 @@ class CompileAvrBenchmark:
                                '-I{}'.format(build_path.replace("\\", "/"))]
             subprocess.run(compile_command, cwd=build_path, check=True)
 
-            # Use the 'size' command to get the sizes of different sections
+            # Use the 'avr-size' command to get the sizes of different sections
             size_command = ['avr-size', 'model.o']
             size_output = subprocess.run(size_command,
                                          cwd=build_path,
@@ -139,18 +154,16 @@ class CompileAvrBenchmark:
                                          encoding="utf-8",
                                          check=True)
 
-            # Parse the size information to extract flash size, data size, bss size, and total size
+            # Parse the size information
             pattern = r"\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+[0-9a-fA-F]"
             match = re.findall(pattern, size_output.stdout)
 
             if match:
                 size_tuple = match[0]
-
                 flash_size = size_tuple[0]
-                data_size  = size_tuple[1]
-                bss_size   = size_tuple[2]
+                data_size = size_tuple[1]
+                bss_size = size_tuple[2]
                 total_size = size_tuple[3]
-
                 com.logging.info(f"{self.porter_type}:{self.model_name} model size: {total_size} bytes")
             else:
                 com.logging.info(f"{self.porter_type}:{self.model_name}: Failed to parse size information")
@@ -167,16 +180,33 @@ class CompileAvrBenchmark:
             raise RuntimeError(f"An error occurred: {str(e)}")
 
     def get_memory_footprint(self, linker_output):
+        """
+        Get the memory footprint of the compiled model from linker output.
+
+        Args:
+            linker_output (str): Linker output containing memory usage details.
+
+        Returns:
+            str: Memory footprint information.
+        """
         text_section = self.parse_linker_output(linker_output, "Program:")
         data_section = self.parse_linker_output(linker_output, "Data:")
-
         return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
 
     @staticmethod
     def parse_linker_output(input_string, section_name):
+        """
+        Parse linker output to extract memory usage information.
+
+        Args:
+            input_string (str): Linker output string.
+            section_name (str): Name of the memory section to extract.
+
+        Returns:
+            int: Size of the memory section.
+        """
         # Find the section name in the input string
         section_start_index = input_string.find(section_name)
-
         if section_start_index == -1:
             raise ValueError(f"Section '{section_name}' not found in the input string.")
 
@@ -198,6 +228,12 @@ class CompileAvrBenchmark:
 
     @staticmethod
     def get_list_of_possible_errors():
+        """
+        Get a list of possible compile errors.
+
+        Returns:
+            list: List of strings representing possible compile errors.
+        """
         return [
             "`.bss' is not within region `data'",
             "`.data' is not within region `data'",
@@ -207,7 +243,14 @@ class CompileAvrBenchmark:
 
     @staticmethod
     def read_stream(stream, output_list, print_data):
-        print("CALL")
+        """
+        Read and process data from a stream, optionally printing it.
+
+        Args:
+            stream: Input stream to read from.
+            output_list (list): List to store read lines.
+            print_data (bool): Whether to print the read data.
+        """
         for line in stream:
             # Check user option and decide if stdout pipe stream data should be printed or not
             if print_data:
