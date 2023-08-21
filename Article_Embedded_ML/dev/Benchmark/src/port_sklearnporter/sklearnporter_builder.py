@@ -29,7 +29,7 @@ class SkLearnPorterBuilder:
         except Exception as e:
             return f"An unexpected error occurred during training: {e}"
 
-    def c_export(self, output_dir_name):
+    def export_to_c(self, output_dir_name):
         """
         Export the trained model using sklearn-porter.
         """
@@ -54,7 +54,7 @@ class SkLearnPorterBuilder:
 
         return framework_dir, model_path
 
-    def get_template_file(self):
+    def get_template_file_path(self):
         """
         Get the path to the template file.
         """
@@ -66,7 +66,7 @@ class SkLearnPorterBuilder:
         """
         return MODEL_LANGUAGE
 
-    def is_custom_template(self):
+    def is_using_custom_template(self):
         """
         Check if a custom template is used.
         """

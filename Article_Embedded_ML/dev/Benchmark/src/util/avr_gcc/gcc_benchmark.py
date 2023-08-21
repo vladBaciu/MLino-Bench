@@ -129,7 +129,7 @@ class CompileAvrBenchmark:
                 model_h_code = h_file.read()
 
             # Generate template and set optimization level
-            if builder.is_custom_template():
+            if builder.is_using_custom_template():
                 model_h_code = builder.generate_template(model_h_code, self.model_name)
                 if self.extension == 'cpp': # for cpp only
                     self.optimization_level = 0

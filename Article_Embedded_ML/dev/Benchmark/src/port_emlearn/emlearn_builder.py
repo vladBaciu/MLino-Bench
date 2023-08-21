@@ -13,9 +13,9 @@ TEMPLATE_FILE = 'main_template.in'
 CUSTOM_TEMPLATE = False
 
 class EmlearnBuilder:
-    def __init__(self, clf):
-        self.clf_name = clf[0]
-        self.clf_method = clf[1]
+    def __init__(self, classifier):
+        self.classifier_name = classifier[0]
+        self.classifier_method = classifier[1]
         self.porter = None
 
     def train(self):
@@ -23,59 +23,29 @@ class EmlearnBuilder:
         Train the classifier and convert it using emlearn.
         """
         try:
-            self.porter = emlearn.convert(self.clf_method)
+            self.porter = emlearn.convert(self.classifier_method)
         except (NotImplementedError, ValueError) as e:
             return f"Model type not supported for emlearn conversion: {e}"
         except Exception as e:
             return f"An unexpected error occurred during training: {e}"
 
-    def c_export(self, output_dir_name):
+    def export_to_c(self, output_dir_name):
         """
         Export the trained model to C code.
         """
-        # Create paths for saving the model and framework files
-        model_path, framework_dir = com.create_build_path(
-            os.path.dirname(__file__),
-            output_dir_name,
-            self.clf_name,
-            PORTER_TYPE,
-            GENERATED_FILE_NAME,
-            GENERATED_FILE_EXT
-        )
+        model_path, framework_dir = self.create_output_paths(output_dir_name)
 
-        # Save the model using emlearn
         self.porter.save(file=model_path)
 
         size_build_dir = os.path.join(framework_dir, 'size')
-        if not os.path.exists(size_build_dir):
-            os.makedirs(size_build_dir)
+        self.create_directory_if_not_exists(size_build_dir)
 
-        # Copy common header file
-        common_header = 'eml_common.h'
-        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), framework_dir)
-        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), size_build_dir)
-
-        # Copy headers based on classifier type
-        clf_type = str(type(self.clf_method))
-        if any(clf in clf_type for clf in ("DecisionTree", "RandomForest", "ExtraTrees")):
-            tree_header = 'eml_trees.h'
-            shutil.copy(os.path.join(os.path.dirname(__file__), tree_header), framework_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), tree_header), size_build_dir)
-        elif "naive_bayes" in clf_type:
-            bayes_header = 'eml_bayes.h'
-            fixedpoint_header = 'eml_fixedpoint.h'
-            shutil.copy(os.path.join(os.path.dirname(__file__), bayes_header), framework_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), fixedpoint_header), framework_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), bayes_header), size_build_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), fixedpoint_header), size_build_dir)
-        elif "neural_network" in clf_type:
-            net_header = 'eml_net.h'
-            shutil.copy(os.path.join(os.path.dirname(__file__), net_header), framework_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), net_header), size_build_dir)
+        self.copy_common_header_files(framework_dir, size_build_dir)
+        self.copy_classifier_specific_headers(framework_dir, size_build_dir)
 
         return framework_dir, model_path
 
-    def get_template_file(self):
+    def get_template_file_path(self):
         """
         Get the path to the template file.
         """
@@ -87,8 +57,55 @@ class EmlearnBuilder:
         """
         return MODEL_LANGUAGE
 
-    def is_custom_template(self):
+    def is_using_custom_template(self):
         """
         Check if a custom template is used.
         """
         return CUSTOM_TEMPLATE
+
+    def create_output_paths(self, output_dir_name):
+        """
+        Create paths for saving the model and framework files.
+        """
+        model_path, framework_dir = com.create_build_path(
+            os.path.dirname(__file__),
+            output_dir_name,
+            self.classifier_name,
+            PORTER_TYPE,
+            GENERATED_FILE_NAME,
+            GENERATED_FILE_EXT
+        )
+        return model_path, framework_dir
+
+    def create_directory_if_not_exists(self, directory_path):
+        """
+        Create a directory if it doesn't exist.
+        """
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+
+    def copy_common_header_files(self, framework_dir, size_build_dir):
+        """
+        Copy common header files.
+        """
+        common_header = 'eml_common.h'
+        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), size_build_dir)
+
+    def copy_classifier_specific_headers(self, framework_dir, size_build_dir):
+        """
+        Copy headers based on classifier type.
+        """
+        clf_type = str(type(self.classifier_method))
+        headers_to_copy = []
+
+        if any(clf in clf_type for clf in ("DecisionTree", "RandomForest", "ExtraTrees")):
+            headers_to_copy.append('eml_trees.h')
+        elif "naive_bayes" in clf_type:
+            headers_to_copy.extend(['eml_bayes.h', 'eml_fixedpoint.h'])
+        elif "neural_network" in clf_type:
+            headers_to_copy.append('eml_net.h')
+
+        for header in headers_to_copy:
+            shutil.copy(os.path.join(os.path.dirname(__file__), header), framework_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), header), size_build_dir)

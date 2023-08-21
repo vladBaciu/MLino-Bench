@@ -18,11 +18,12 @@ TEMPLATE = """
     classifier.predict(features);
 }}
 """
-
 class MicromlgenBuilder:
+    """
+    Class for building and exporting models using micromlgen.
+    """
     def __init__(self, clf):
-        self.clf_name = clf[0]
-        self.clf_method = clf[1]
+        self.clf_name, self.clf_method = clf
         self.porter = None
 
     def train(self):
@@ -36,7 +37,7 @@ class MicromlgenBuilder:
         except Exception as e:
             return f"An unexpected error occurred during training: {e}"
 
-    def c_export(self, output_dir_name):
+    def export_to_c(self, output_dir_name):
         """
         Export the trained model to C++ code.
         """
@@ -55,7 +56,7 @@ class MicromlgenBuilder:
 
         return framework_dir, model_path
 
-    def get_template_file(self):
+    def get_template_file_path(self):
         """
         Get the path to the template file.
         """
@@ -65,15 +66,14 @@ class MicromlgenBuilder:
         """
         Generate a template based on the model code and model name.
         """
-        if model_name == 'decision_tree':
-            formatted_template = TEMPLATE.format("DecisionTree")
-        elif model_name == 'random_forest':
-            formatted_template = TEMPLATE.format("RandomForest")
-        elif model_name == 'svc':
-            formatted_template = TEMPLATE.format("SVM")
-        elif model_name == "gaussian_naive_bayes":
-            formatted_template = TEMPLATE.format("GaussianNB")
+        template_map = {
+            'decision_tree': 'DecisionTree',
+            'random_forest': 'RandomForest',
+            'svc': 'SVM',
+            'gaussian_naive_bayes': 'GaussianNB'
+        }
 
+        formatted_template = TEMPLATE.format(template_map.get(model_name, ''))
         model_code += formatted_template
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code
@@ -84,7 +84,7 @@ class MicromlgenBuilder:
         """
         return MODEL_LANGUAGE
 
-    def is_custom_template(self):
+    def is_using_custom_template(self):
         """
         Check if a custom template is used.
         """

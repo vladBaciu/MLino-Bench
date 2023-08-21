@@ -148,11 +148,11 @@ class ClassifierBuilder(DataLoader):
         else:
             self.benchmark_info["runtime"]["model_name"] = cls_name
             self.benchmark_info["runtime"]["porter_type"] = port_framework
-            self.benchmark_info["runtime"]["template_path"] = self.builder.get_template_file()
+            self.benchmark_info["runtime"]["template_path"] = self.builder.get_template_file_path()
 
             # Export model
             self.benchmark_info['runtime']['generated_model_dir'], \
-            self.benchmark_info['runtime']['generated_model_path'] = self.builder.c_export(self.benchmark_info['training']['models_directory'])
+            self.benchmark_info['runtime']['generated_model_path'] = self.builder.export_to_c(self.benchmark_info['training']['models_directory'])
             self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
 
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
