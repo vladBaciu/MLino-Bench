@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from util.dataLoader import DataLoader
 import util.common as com
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from port_emlearn.emlearn_builder import EmlearnBuilder
@@ -125,13 +127,20 @@ class ClassifierBuilder(DataLoader):
 
         # Stats
         if self.benchmark_info["training"]["accuracy"] == True:
-            model_train_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
-            model_test_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
+            try:
+                model_train_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
+                model_test_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
+            except AttributeError:
+                model_train_acc = accuracy_score(self.y_train, cls_obj.predict(self.X_train))
+                model_test_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
         if self.benchmark_info["training"]["class_accuracy"] == True:
-            model_class_acc = com.calculate_all_accuracies(port_framework, cls_name,
-                                                           cls_obj.predict_proba(self.X_test),
-                                                           self.y_test, self.iris_data.target_names)
+            try:
+                model_class_acc = com.calculate_all_accuracies(port_framework, cls_name,
+                                                               cls_obj.predict_proba(self.X_test),
+                                                               self.y_test, self.iris_data.target_names)
+            except AttributeError:
+                model_class_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
         if port_framework == 'sklearn-porter':
             self.builder = SkLearnPorterBuilder((cls_name, cls_obj))
