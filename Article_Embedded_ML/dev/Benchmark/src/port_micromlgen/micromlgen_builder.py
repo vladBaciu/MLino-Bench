@@ -31,7 +31,7 @@ class MicromlgenBuilder:
         Train the classifier and convert it using micromlgen.
         """
         try:
-            self.porter = port(self.clf_method)
+            self.porter = port(self.clf_method, tmp_file='tmp.json')
         except (NotImplementedError, ValueError) as e:
             return f"Model type not supported for micromlgen conversion: {e}"
         except Exception as e:
@@ -70,7 +70,8 @@ class MicromlgenBuilder:
             'decision_tree': 'DecisionTree',
             'random_forest': 'RandomForest',
             'svc': 'SVM',
-            'gaussian_naive_bayes': 'GaussianNB'
+            'gaussian_naive_bayes': 'GaussianNB',
+            'xgboost': 'XGBClassifier'
         }
 
         formatted_template = TEMPLATE.format(template_map.get(model_name, ''))

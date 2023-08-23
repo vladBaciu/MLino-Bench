@@ -10,6 +10,8 @@
     Eloquent::ML::Port::DecisionTree classifier;
 #elif defined(GAUSSIAN_NAIVE_BAYES)
     Eloquent::ML::Port::GaussianNB classifier;
+#elif defined(XGBOOST)
+    Eloquent::ML::Port::XGBClassifier classifier;
 #endif
 
 float features[10] = { 1, 4, 5, 3,2,1, 5};

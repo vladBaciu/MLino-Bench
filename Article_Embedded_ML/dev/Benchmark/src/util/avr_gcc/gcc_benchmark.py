@@ -3,6 +3,8 @@ import os
 import util.common as com
 import re
 
+TEMPLATE_TEXT_BASELINE = 1644
+TEMPLATE_DATA_BASELINE = 196
 class CompileAvrBenchmark:
     def __init__(self, build_info):
         """
@@ -131,8 +133,6 @@ class CompileAvrBenchmark:
             # Generate template and set optimization level
             if builder.is_using_custom_template():
                 model_h_code = builder.generate_template(model_h_code, self.model_name)
-                if self.extension == 'cpp': # for cpp only
-                    self.optimization_level = 0
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
@@ -191,7 +191,8 @@ class CompileAvrBenchmark:
         """
         text_section = self.parse_linker_output(linker_output, "Program:")
         data_section = self.parse_linker_output(linker_output, "Data:")
-        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
+        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes\n\
+                 Model text: {text_section - TEMPLATE_TEXT_BASELINE} bytes, Data: {data_section - TEMPLATE_DATA_BASELINE} bytes"
 
     @staticmethod
     def parse_linker_output(input_string, section_name):

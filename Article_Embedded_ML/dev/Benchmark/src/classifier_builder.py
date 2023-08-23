@@ -181,7 +181,9 @@ class ClassifierBuilder(DataLoader):
             if self.benchmark_info["training"]["class_accuracy"] == True:
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
-            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
+            # Determine size based on baseline, do not compile again.
+            #self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
+
             # If no error occurred during compilation, print program size
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
