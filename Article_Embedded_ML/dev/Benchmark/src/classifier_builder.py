@@ -182,7 +182,7 @@ class ClassifierBuilder(DataLoader):
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
             # Determine size based on baseline, do not compile again.
-            #self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
+            self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_model_size(self.builder))
 
             # If no error occurred during compilation, print program size
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))

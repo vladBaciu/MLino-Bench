@@ -10,7 +10,14 @@ MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE_DIR = 'template'
 TEMPLATE_FILE = 'main_template.in'
-CUSTOM_TEMPLATE = False
+CUSTOM_TEMPLATE = True
+TEMPLATE = """
+\nint main(void) {
+    float features[2];
+    int result = predict(features);
+    return result;
+}
+"""
 
 class SkLearnPorterBuilder:
     def __init__(self, clf):
@@ -60,14 +67,16 @@ class SkLearnPorterBuilder:
         """
         return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
 
+    def generate_size_template(self, model_code, model_name):
+        """
+        Generate a template based on the model code and model name.
+        """
+        model_code += "\n" + TEMPLATE
+        return model_code
+
     def get_model_language(self):
         """
         Get the model language.
         """
         return MODEL_LANGUAGE
 
-    def is_using_custom_template(self):
-        """
-        Check if a custom template is used.
-        """
-        return CUSTOM_TEMPLATE

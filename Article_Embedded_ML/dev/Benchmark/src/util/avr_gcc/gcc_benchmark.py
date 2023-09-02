@@ -128,15 +128,14 @@ class CompileAvrBenchmark:
         try:
             # Read the content of model.h
             with open(self.model_path) as h_file:
-                model_h_code = h_file.read()
+                model_size_code = h_file.read()
 
             # Generate template and set optimization level
-            if builder.is_using_custom_template():
-                model_h_code = builder.generate_template(model_h_code, self.model_name)
+            model_size_code = builder.generate_size_template(model_size_code, self.model_name)
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
-                c_file.write(model_h_code)
+                c_file.write(model_size_code)
 
             # Compile the C code to an object file using GCC
             compile_command = ['avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
@@ -191,8 +190,7 @@ class CompileAvrBenchmark:
         """
         text_section = self.parse_linker_output(linker_output, "Program:")
         data_section = self.parse_linker_output(linker_output, "Data:")
-        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes\n\
-                 Model text: {text_section - TEMPLATE_TEXT_BASELINE} bytes, Data: {data_section - TEMPLATE_DATA_BASELINE} bytes"
+        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
 
     @staticmethod
     def parse_linker_output(input_string, section_name):

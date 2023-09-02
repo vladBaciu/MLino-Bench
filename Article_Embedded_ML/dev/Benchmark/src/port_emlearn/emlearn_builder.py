@@ -10,7 +10,14 @@ MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE_DIR = 'template'
 TEMPLATE_FILE = 'main_template.in'
-CUSTOM_TEMPLATE = False
+CUSTOM_TEMPLATE = True
+TEMPLATE = """
+\nint main(void) {
+    float features[2];
+    int result = model_predict(features, 2);
+    return result;
+}
+"""
 
 class EmlearnBuilder:
     def __init__(self, classifier):
@@ -45,6 +52,13 @@ class EmlearnBuilder:
 
         return framework_dir, model_path
 
+    def generate_size_template(self, model_code, model_name):
+        """
+        Generate a template based on the model code and model name.
+        """
+        model_code += "\n" + TEMPLATE
+        return model_code
+
     def get_template_file_path(self):
         """
         Get the path to the template file.
@@ -56,12 +70,6 @@ class EmlearnBuilder:
         Get the model language.
         """
         return MODEL_LANGUAGE
-
-    def is_using_custom_template(self):
-        """
-        Check if a custom template is used.
-        """
-        return CUSTOM_TEMPLATE
 
     def create_output_paths(self, output_dir_name):
         """

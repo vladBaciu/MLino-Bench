@@ -15,7 +15,8 @@ TEMPLATE = """
 \nint main(void) {{
     float features[2];
     Eloquent::ML::Port::{0} classifier;
-    classifier.predict(features);
+    int result = classifier.predict(features);
+    return result;
 }}
 """
 class MicromlgenBuilder:
@@ -62,7 +63,7 @@ class MicromlgenBuilder:
         """
         return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
 
-    def generate_template(self, model_code, model_name):
+    def generate_size_template(self, model_code, model_name):
         """
         Generate a template based on the model code and model name.
         """
@@ -85,8 +86,3 @@ class MicromlgenBuilder:
         """
         return MODEL_LANGUAGE
 
-    def is_using_custom_template(self):
-        """
-        Check if a custom template is used.
-        """
-        return CUSTOM_TEMPLATE
