@@ -1,5 +1,5 @@
 import os
-import subprocess
+import shutil
 import numpy as np
 from sklearn.model_selection import train_test_split
 from util.dataLoader import DataLoader
@@ -10,6 +10,9 @@ from sklearn.metrics import confusion_matrix
 from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from port_emlearn.emlearn_builder import EmlearnBuilder
 from port_micromlgen.micromlgen_builder import MicromlgenBuilder
+
+TEMPLATE_DIR  = "api"
+TEMPLATE_FILE = "main.cpp"
 
 class ClassifierBuilder(DataLoader):
     data_logger = list()
@@ -157,12 +160,14 @@ class ClassifierBuilder(DataLoader):
         else:
             self.benchmark_info["runtime"]["model_name"] = cls_name
             self.benchmark_info["runtime"]["porter_type"] = port_framework
-            self.benchmark_info["runtime"]["template_path"] = self.builder.get_template_file_path()
+            self.benchmark_info["runtime"]["template_path"] = os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
 
             # Export model
             self.benchmark_info['runtime']['generated_model_dir'], \
             self.benchmark_info['runtime']['generated_model_path'] = self.builder.export_to_c(self.benchmark_info['training']['models_directory'])
             self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
+
+            self.copy_api_files(self.benchmark_info['runtime']['generated_model_dir'])
 
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
             np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"), self.X_test)
@@ -189,3 +194,12 @@ class ClassifierBuilder(DataLoader):
 
             #dump configuration info of the model
             com.yaml_dump(self.benchmark_info)
+
+    def copy_api_files(self, framework_dir):
+        """
+        Copy common API files.
+        """
+        shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.cpp"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.cpp"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.h"), framework_dir)
