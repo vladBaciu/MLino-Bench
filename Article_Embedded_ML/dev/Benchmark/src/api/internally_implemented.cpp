@@ -24,6 +24,7 @@ replaced by a fixed-size array.
 #include <string.h>
 
 #include "submitter_implemented.h"
+#include "infer_model.h"
 
 // Command buffer (incoming commands from host)
 char volatile g_cmd_buf[EE_CMD_SIZE + 1];

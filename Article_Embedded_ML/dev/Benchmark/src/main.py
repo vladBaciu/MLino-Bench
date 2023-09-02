@@ -42,6 +42,7 @@ if __name__ == "__main__":
     #for name, cls in classifiers.items():
     #    builder.build_classifier(frameworks[1],  name, cls)
     for name, cls in classifiers.items():
-        builder.build_classifier(frameworks[2],  name, cls)
+        builder.build_classifier(frameworks[0],  name, cls)
+
 
     builder.print_log_summary()

@@ -62,6 +62,8 @@ PARSER.add_argument('--template_path', action='store',
                     help='specify the file path of the template')
 PARSER.add_argument('--optimization_level', action='store',
                     help='specify the optimization level')
+PARSER.add_argument('--input_size', action='store',
+                    help='specify the number of features')
 PARSER.add_argument('-V', '--version', action='version', version='%(prog)s '+ VERSION)
 ARGS = PARSER.parse_args()
 
@@ -192,6 +194,9 @@ def generate_makefile():
 
     # Get model name and set it as a define compilation flag
     file_content += "\nCPPFLAGS += -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper())
+
+    #Set number of features
+    file_content += "\nCPPFLAGS += -DNUMBER_OF_FEATURES={}".format(ARGS.input_size)
 
     # Set model directory as include directory. Emlearn generates includes statements
     # with angle brackets used for compiler-defined include paths

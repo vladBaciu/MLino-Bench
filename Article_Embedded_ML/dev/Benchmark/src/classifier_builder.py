@@ -158,6 +158,7 @@ class ClassifierBuilder(DataLoader):
         if status:
             self.logger_builder((port_framework, cls_name), None, status)
         else:
+            self.benchmark_info["runtime"]["no_of_features"] = self.X_train.shape[1]
             self.benchmark_info["runtime"]["model_name"] = cls_name
             self.benchmark_info["runtime"]["porter_type"] = port_framework
             self.benchmark_info["runtime"]["template_path"] = os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
@@ -199,6 +200,7 @@ class ClassifierBuilder(DataLoader):
         """
         Copy common API files.
         """
+        self.builder.copy_custom_framework_files(framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.cpp"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.cpp"), framework_dir)

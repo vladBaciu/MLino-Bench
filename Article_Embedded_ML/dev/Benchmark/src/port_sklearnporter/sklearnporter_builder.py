@@ -1,4 +1,5 @@
 import os
+import shutil
 import util.common as com
 from sklearn_porter import Porter
 from sklearn.metrics import accuracy_score
@@ -66,6 +67,13 @@ class SkLearnPorterBuilder:
         Get the path to the template file.
         """
         return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
+
+    def copy_custom_framework_files(self, framework_dir):
+        """
+        Copy custom framework files.
+        """
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.cpp"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
 
     def generate_size_template(self, model_code, model_name):
         """

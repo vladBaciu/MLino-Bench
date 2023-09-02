@@ -22,6 +22,7 @@ class CompileAvrBenchmark:
         self.model_name = build_info["runtime"]["model_name"]
         self.porter_type = build_info["runtime"]["porter_type"]
         self.template = build_info["runtime"]["template_path"]
+        self.input_size = build_info["runtime"]["no_of_features"]
         self.extension = build_info["runtime"]["language"]
         self.optimization_level = build_info["target"]["optimization_level"]
         self.print_proc_stdout = build_info["target"]["compiler_stdout"]
@@ -46,7 +47,8 @@ class CompileAvrBenchmark:
             ardmk_init_command = ["python", "ardmk-init.py",
                                   "-d", self.model_dir,
                                   "-t", "-o", "--template_path", self.template,
-                                  "--optimization_level", self.optimization_level]
+                                  "--optimization_level", self.optimization_level,
+                                  "--input_size", str(self.input_size)]
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
 
