@@ -132,6 +132,8 @@ class CompileAvrBenchmark:
             with open(self.model_path) as h_file:
                 model_size_code = h_file.read()
 
+            com.logging.info(f"{self.porter_type}:{self.model_name} computing model size...")
+
             # Generate template and set optimization level
             model_size_code = builder.generate_size_template(model_size_code, self.model_name)
 
@@ -141,8 +143,9 @@ class CompileAvrBenchmark:
 
             # Compile the C code to an object file using GCC
             compile_command = ['avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
-                               '-O{}'.format(self.optimization_level), '-c', f'model.{self.extension}', '-o', 'model.o',
-                               '-I{}'.format(build_path.replace("\\", "/"))]
+                               '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
+                               '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
+                               '-D {}'.format(self.model_name.upper())]
             subprocess.run(compile_command, cwd=build_path, check=True)
 
             # Use the 'avr-size' command to get the sizes of different sections

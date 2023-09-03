@@ -12,7 +12,11 @@ GENERATED_FILE_NAME = "model"
 CUSTOM_TEMPLATE = True
 TEMPLATE = """
 \nint main(void) {
-    float features[2];
+#if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
+    float features[1];
+#else
+    double features[1];
+#endif
     int result = predict(features);
     return result;
 }

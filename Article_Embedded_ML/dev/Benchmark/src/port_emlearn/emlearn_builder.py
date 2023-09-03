@@ -11,8 +11,8 @@ GENERATED_FILE_NAME = "model"
 CUSTOM_TEMPLATE = True
 TEMPLATE = """
 \nint main(void) {
-    float features[2];
-    int result = model_predict(features, 2);
+    float features[1];
+    int result = model_predict(features, 1);
     return result;
 }
 """
@@ -83,6 +83,13 @@ class EmlearnBuilder:
         """
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
+
+    def copy_custom_framework_files(self, framework_dir):
+        """
+        Copy custom framework files.
+        """
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.cpp"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
 
     def copy_common_header_files(self, framework_dir, size_build_dir):
         """

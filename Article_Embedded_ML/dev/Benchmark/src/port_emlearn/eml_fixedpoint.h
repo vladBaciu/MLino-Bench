@@ -9,11 +9,11 @@ extern "C" {
 // Fixed-point helpers
 typedef int32_t eml_q16_t;
 #define EML_Q16_FRACT_BITS 16
-#define EML_Q16_ONE (1 << EML_Q16_FRACT_BITS)
+#define EML_Q16_ONE (1L << EML_Q16_FRACT_BITS)
 #define EML_Q16_FROMINT(x) ((x) << EML_Q16_FRACT_BITS)
-#define EML_Q16_FROMFLOAT(x) ((int)((x) * (1 << EML_Q16_FRACT_BITS)))
+#define EML_Q16_FROMFLOAT(x) ((int)((x) * (1L << EML_Q16_FRACT_BITS)))
 #define EML_Q16_TOINT(x) ((x) >> EML_Q16_FRACT_BITS)
-#define EML_Q16_TOFLOAT(x) (((float)(x)) / (1 << EML_Q16_FRACT_BITS))
+#define EML_Q16_TOFLOAT(x) (((float)(x)) / (1L << EML_Q16_FRACT_BITS))
 
 // TODO: namespace properly
 

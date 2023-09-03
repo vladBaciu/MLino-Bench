@@ -11,7 +11,7 @@ GENERATED_FILE_NAME = "model"
 CUSTOM_TEMPLATE = True
 TEMPLATE = """
 \nint main(void) {{
-    float features[2];
+    float features[1];
     Eloquent::ML::Port::{0} classifier;
     int result = classifier.predict(features);
     return result;
@@ -71,6 +71,13 @@ class MicromlgenBuilder:
         model_code += formatted_template
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code
+
+    def copy_custom_framework_files(self, framework_dir):
+        """
+        Copy custom framework files.
+        """
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.cpp"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
 
     def get_model_language(self):
         """
