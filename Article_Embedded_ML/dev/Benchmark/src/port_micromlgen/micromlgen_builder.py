@@ -8,8 +8,6 @@ PORTER_TYPE = 'micromlgen'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'cpp'
 GENERATED_FILE_NAME = "model"
-TEMPLATE_DIR = 'template'
-TEMPLATE_FILE = 'main_template.in'
 CUSTOM_TEMPLATE = True
 TEMPLATE = """
 \nint main(void) {{
@@ -56,12 +54,6 @@ class MicromlgenBuilder:
             f.write(model_content)
 
         return framework_dir, model_path
-
-    def get_template_file_path(self):
-        """
-        Get the path to the template file.
-        """
-        return os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
 
     def generate_size_template(self, model_code, model_name):
         """
