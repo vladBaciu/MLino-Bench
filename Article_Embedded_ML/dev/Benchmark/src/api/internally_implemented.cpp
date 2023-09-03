@@ -31,11 +31,7 @@ char volatile g_cmd_buf[EE_CMD_SIZE + 1];
 size_t volatile g_cmd_pos = 0u;
 
 // Generic buffer to db input.
-#if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
-float gp_buff[MAX_DB_INPUT_SIZE];
-#else
-double gp_buff[MAX_DB_INPUT_SIZE];
-#endif
+uint8_t gp_buff[MAX_DB_INPUT_SIZE];
 size_t g_buff_size = 0u;
 size_t g_buff_pos = 0u;
 

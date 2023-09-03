@@ -25,8 +25,6 @@ void th_infer() {
 }
 
 void th_results() {
-  const int nresults = 3;
-  int results[nresults];
   /**
    * The results need to be printed back in exactly this format; if easier
    * to just modify this loop than copy to results[] above, do that.
@@ -34,7 +32,7 @@ void th_results() {
   th_printf("m-results-[");
   for (size_t i = 0; i < OUTPUT_SIZE; i++) {
     /* N.B. Be sure %f is enabled in SDK */
-    th_printf("%.3f", model_output[i]);
+    th_printf("%d", model_output[i]);
     if (i < (OUTPUT_SIZE - 1)) {
       th_printf(",");
     }
