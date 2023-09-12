@@ -30,7 +30,7 @@ methods from th_libc.h and all testharness methods from th_lib.h are here.
 #define EE_MSG_TIMESTAMP "m-lap-us-%lu\r\n"
 #define TH_VENDOR_NAME_STRING "unspecified"
 #define TH_MODEL_VERSION "test"
-#define MAX_DB_INPUT_SIZE (10)
+#define MAX_DB_INPUT_SIZE (NUMBER_OF_FEATURES * sizeof(FEATURE_TYPE))
 #ifndef TH_MODEL_VERSION
 // See "internally_implemented.h" for a list
 #error "PLease set TH_MODEL_VERSION to one of the EE_MODEL_VERSION_* defines"

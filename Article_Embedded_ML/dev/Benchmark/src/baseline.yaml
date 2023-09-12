@@ -6,8 +6,12 @@ training:
   class_accuracy: True
 
 target:
+  #see Arduino-Makefile examples for more
   type: avr_gcc
-  mcu: atmega32u4
+  board: mega
+  board_sub: atmega2560
+  sam_family: False
+  monitor_port: COM7
   optimization_level: s
   compiler_stdout: False
 

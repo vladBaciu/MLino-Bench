@@ -26,6 +26,10 @@ class CompileAvrBenchmark:
         self.extension = build_info["runtime"]["language"]
         self.optimization_level = build_info["target"]["optimization_level"]
         self.print_proc_stdout = build_info["target"]["compiler_stdout"]
+        self.board = build_info["target"]["board"]
+        self.mcu = build_info["target"]["board_sub"]
+        self.port = build_info["target"]["monitor_port"]
+        self.sam_family = build_info["target"]["sam_family"]
 
         # Create Arduino Makefile and run make clean
         self.create_makefile()
@@ -48,7 +52,13 @@ class CompileAvrBenchmark:
                                   "-d", self.model_dir,
                                   "-t", "-o", "--template_path", self.template,
                                   "--optimization_level", self.optimization_level,
-                                  "--input_size", str(self.input_size)]
+                                  "--input_size", str(self.input_size),
+                                  "--board", self.board,
+                                  "--micro", self.mcu,
+                                  "--port", self.port
+                                  ]
+            if(self.sam_family == True):
+                ardmk_init_command.append("--sam")
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
 
@@ -145,7 +155,8 @@ class CompileAvrBenchmark:
             compile_command = ['avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
                                '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
                                '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
-                               '-D {}'.format(self.model_name.upper())]
+                               '-D {}'.format(self.model_name.upper()),
+                               '-mmcu={}'.format(self.mcu)]
             subprocess.run(compile_command, cwd=build_path, check=True)
 
             # Use the 'avr-size' command to get the sizes of different sections

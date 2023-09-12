@@ -6,12 +6,16 @@
 #include "submitter_implemented.h"
 
 void th_printf(const char *fmt, ... ){
-    char buf[128]; // resulting string limited to 128 chars
+    static char print_buf[1024]; // resulting string limited to 1024 chars
     va_list args;
-    va_start (args, fmt );
-    vsnprintf(buf, 128, fmt, args);
-    va_end (args);
-    Serial.print(buf);
+    va_start(args, fmt);
+    int r = vsnprintf(print_buf, sizeof(print_buf), fmt, args);
+    va_end(args);
+
+    if (r > 0)
+    {
+      Serial.print(print_buf);
+    }
 }
 
 void th_timestamp(void) {

@@ -12,6 +12,9 @@ void setup() {
 
 void loop() {
     int c;
-    c = th_getchar();
-    ee_serial_callback(c);
+    while (Serial.available() > 0)
+    {
+        c = th_getchar();
+        ee_serial_callback(c);
+    }
 }
