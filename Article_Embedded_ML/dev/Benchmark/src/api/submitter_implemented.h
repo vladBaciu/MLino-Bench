@@ -28,14 +28,16 @@ methods from th_libc.h and all testharness methods from th_lib.h are here.
 /// \detail This API is designed for performance evaluation only. In order to
 /// gather energy measurments we recommend using the EEMBC test suite.
 #define EE_MSG_TIMESTAMP "m-lap-us-%lu\r\n"
-#define TH_VENDOR_NAME_STRING "unspecified"
-#define TH_MODEL_VERSION "test"
+
+/* Data bytes size of input feature fector. */
 #define MAX_DB_INPUT_SIZE (NUMBER_OF_FEATURES * sizeof(FEATURE_TYPE))
+
 #ifndef TH_MODEL_VERSION
-// See "internally_implemented.h" for a list
-#error "PLease set TH_MODEL_VERSION to one of the EE_MODEL_VERSION_* defines"
-// e.g.: to inform the user of model `ic01` use this:
-// #define TH_MODEL_VERSION EE_MODEL_VERSION_IC01
+#define TH_MODEL_VERSION "unspecified"
+#endif
+
+#ifndef TH_VENDOR_NAME_STRING
+#define TH_VENDOR_NAME_STRING "unspecified"
 #endif
 
 // Use this to switch between DUT-direct (perf) & DUT-inderrect (energy) modes

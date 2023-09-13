@@ -1,3 +1,7 @@
+#define TH_VENDOR_NAME_STRING "sklearnporter"
+
+#define TH_MODEL_VERSION "sklearnporter"
+
 #if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
 #define FEATURE_TYPE    float
 #else

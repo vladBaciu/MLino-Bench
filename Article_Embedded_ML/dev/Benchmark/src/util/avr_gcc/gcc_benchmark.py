@@ -100,7 +100,6 @@ class CompileAvrBenchmark:
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error occurred during cleaning: {e.stderr}")
 
-    @staticmethod
     def read_and_print_stream(self,stream, prefix):
         for line in stream:
             print(f"{prefix}: {line}", end='')

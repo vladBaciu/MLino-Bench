@@ -23,14 +23,8 @@ The file name has been changed and some functions removed.
 #ifndef MLPERF_TINY_V0_1_API_INTERNALLY_IMPLEMENTED_H_
 #define MLPERF_TINY_V0_1_API_INTERNALLY_IMPLEMENTED_H_
 
-#define EE_MONITOR_VERSION "2.2.0"
-#define EE_FW_VERSION "ULPMark for tinyML Firmware V0.0.1"
-
-/* Version 1.0 of the benchmark only supports these models */
-#define EE_MODEL_VERSION_KWS01 "kws01"
-#define EE_MODEL_VERSION_VWW01 "vww01"
-#define EE_MODEL_VERSION_AD01 "ad01"
-#define EE_MODEL_VERSION_IC01 "ic01"
+#define EE_MONITOR_VERSION "2.2.1"
+#define EE_FW_VERSION "MLMarkIno V0.0.1"
 
 typedef enum { EE_ARG_CLAIMED, EE_ARG_UNCLAIMED } arg_claimed_t;
 typedef enum { EE_STATUS_OK = 0, EE_STATUS_ERROR } ee_status_t;
