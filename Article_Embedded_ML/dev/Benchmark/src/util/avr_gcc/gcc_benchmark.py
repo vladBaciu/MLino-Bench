@@ -2,6 +2,7 @@ import subprocess
 import os
 import util.common as com
 import re
+import threading
 
 TEMPLATE_TEXT_BASELINE = 1644
 TEMPLATE_DATA_BASELINE = 196
@@ -69,7 +70,7 @@ class CompileAvrBenchmark:
                 stderr=subprocess.PIPE,
                 cwd=os.path.dirname(os.path.realpath(__file__)),
                 universal_newlines=True,
-                encoding="utf-8",
+                encoding="utf-8"
             )
 
             com.logging.info(f"{self.porter_type}:{self.model_name} makefile generation: OK")
@@ -97,7 +98,55 @@ class CompileAvrBenchmark:
             com.logging.info(f"{self.porter_type}:{self.model_name} project cleaning: OK")
 
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Error occurred during compilation: {e.stderr}")
+            raise RuntimeError(f"Error occurred during cleaning: {e.stderr}")
+
+    @staticmethod
+    def read_and_print_stream(self,stream, prefix):
+        for line in stream:
+            print(f"{prefix}: {line}", end='')
+
+    def make_upload(self):
+        """
+        Run 'make upload' to flash the binary.
+        """
+        try:
+            make_upload_command = ["make", "upload"]
+
+            com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary model ...")
+
+            # Start the subprocess and capture its output for stdout and stderr
+            process = subprocess.Popen(
+                make_upload_command,
+                cwd=self.model_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                encoding="utf-8",
+            )
+
+            # Create a thread to read and print the stderr stream
+            stderr_thread = threading.Thread(target=self.read_and_print_stream, args=(process.stderr, "subprocess"))
+
+            # Start the stderr thread
+            stderr_thread.start()
+
+            # Read and print the stdout stream
+            for line in process.stdout:
+                print(f"subprocess: {line}", end='')
+
+            # Wait for the subprocess to finish
+            process.wait()
+
+            # Wait for the stderr thread to finish
+            stderr_thread.join()
+
+            if process.returncode == 0:
+                com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary successfully")
+            else:
+                com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary failed")
+
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Error occurred during flashing: {e.stderr}")
 
     def compile(self):
         """

@@ -193,6 +193,8 @@ class ClassifierBuilder(DataLoader):
             # If no error occurred during compilation, print program size
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
+            status = cc_toolchain.make_upload()
+
             #dump configuration info of the model
             com.yaml_dump(self.benchmark_info)
 

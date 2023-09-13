@@ -11,7 +11,7 @@ target:
   board: mega
   board_sub: atmega2560
   sam_family: False
-  monitor_port: COM7
+  monitor_port: '8'
   optimization_level: s
   compiler_stdout: False
 
