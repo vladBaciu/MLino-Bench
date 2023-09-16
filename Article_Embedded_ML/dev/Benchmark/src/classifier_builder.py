@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from util.dataLoader import DataLoader
 import util.common as com
+from util.serial_profiler import SerialProfiler
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
@@ -194,6 +195,15 @@ class ClassifierBuilder(DataLoader):
             self.logger_builder((port_framework, cls_name), cc_toolchain, cc_toolchain.get_memory_footprint(status))
 
             status = cc_toolchain.make_upload()
+
+            #if status:
+            benchmarkProfiler = SerialProfiler(self.benchmark_info)
+
+            acc = benchmarkProfiler.do_inference()
+            self.logger_builder((port_framework, cls_name), cc_toolchain, f"On target accuracy {acc}")
+
+            time_us = benchmarkProfiler.get_inference_time()
+            self.logger_builder((port_framework, cls_name), cc_toolchain, f"Inference time {time_us} us")
 
             #dump configuration info of the model
             com.yaml_dump(self.benchmark_info)

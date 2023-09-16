@@ -32,14 +32,6 @@ methods from th_libc.h and all testharness methods from th_lib.h are here.
 /* Data bytes size of input feature fector. */
 #define MAX_DB_INPUT_SIZE (NUMBER_OF_FEATURES * sizeof(FEATURE_TYPE))
 
-#ifndef TH_MODEL_VERSION
-#define TH_MODEL_VERSION "unspecified"
-#endif
-
-#ifndef TH_VENDOR_NAME_STRING
-#define TH_VENDOR_NAME_STRING "unspecified"
-#endif
-
 // Use this to switch between DUT-direct (perf) & DUT-inderrect (energy) modes
 #ifndef EE_CFG_ENERGY_MODE
 #define EE_CFG_ENERGY_MODE 0

@@ -21,7 +21,7 @@ void th_printf(const char *fmt, ... ){
 void th_timestamp(void) {
   unsigned long microSeconds = 0ul;
   /* USER CODE 2 BEGIN */
-  microSeconds = millis();
+  microSeconds = micros();
   /* USER CODE 2 END */
   /* This message must NOT be changed. */
   th_printf(EE_MSG_TIMESTAMP, microSeconds);

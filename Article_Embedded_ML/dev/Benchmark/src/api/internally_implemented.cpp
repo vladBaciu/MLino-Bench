@@ -110,7 +110,11 @@ arg_claimed_t ee_profile_parse(char *command) {
   if (strncmp(command, "profile", EE_CMD_SIZE) == 0) {
     th_printf("m-profile-[%s]\r\n", EE_FW_VERSION);
     th_printf("m-model-[%s]\r\n", TH_MODEL_VERSION);
-  } else if (strncmp(command, "help", EE_CMD_SIZE) == 0) {
+  }
+  else if (strncmp(command, "fsize", EE_CMD_SIZE) == 0) {
+    th_printf("m-fsize-[%d]\r\n", sizeof(FEATURE_TYPE));
+  }
+  else if (strncmp(command, "help", EE_CMD_SIZE) == 0) {
     th_printf("%s\r\n", EE_FW_VERSION);
     th_printf("\r\n");
     /* These are the three common functions for all IoTConnect f/w. */
@@ -127,6 +131,7 @@ arg_claimed_t ee_profile_parse(char *command) {
         "infer N [W=0]: Load input, execute N inferences after W warmup "
         "loops\r\n");
     th_printf("results      : Return the result fp32 vector\r\n");
+    th_printf("fsize        : Return input feature size in bytes\r\n");
   } else if (ee_buffer_parse(command) == EE_ARG_CLAIMED) {
   } else if (strncmp(command, "infer", EE_CMD_SIZE) == 0) {
     size_t n = 1;
