@@ -19,6 +19,7 @@ replaced by a fixed-size array.
 
 #include "internally_implemented.h"
 
+#include <Arduino.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -178,6 +179,9 @@ arg_claimed_t ee_profile_parse(char *command) {
  *
  */
 void ee_infer(size_t n, size_t n_warmup) {
+  unsigned long microSeconds1 = 0ul;
+  unsigned long microSeconds2 = 0ul;
+
   th_load_features(); /* if necessary */
   th_printf("m-warmup-start-%d\r\n", n_warmup);
   while (n_warmup-- > 0) {
@@ -185,13 +189,17 @@ void ee_infer(size_t n, size_t n_warmup) {
   }
   th_printf("m-warmup-done\r\n");
   th_printf("m-infer-start-%d\r\n", n);
-  th_timestamp();
+  microSeconds1 = micros();
   //th_pre();
   while (n-- > 0) {
     th_infer(); /* call the API inference function */
   }
   //th_post();
-  th_timestamp();
+  microSeconds2 = micros();
+
+  th_printf(EE_MSG_TIMESTAMP, microSeconds1);
+  th_printf(EE_MSG_TIMESTAMP, microSeconds2);
+
   th_printf("m-infer-done\r\n");
   th_results();
 }

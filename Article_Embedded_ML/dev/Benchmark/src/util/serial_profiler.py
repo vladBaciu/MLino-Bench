@@ -7,6 +7,8 @@ import os
 import common as com
 from sklearn.metrics import accuracy_score
 
+WARMUP_ITER = 10
+INFER_ITER  = 20
 
 class SerialProfiler:
     def __init__(self, build_info):
@@ -145,7 +147,7 @@ class SerialProfiler:
             self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes.encode() + bytes("%", 'utf-8'))
             self.wait_ready_ack()
 
-            self.mcu_serial.write(bytes("infer 1 1%", 'utf-8'))
+            self.mcu_serial.write(bytes(f"infer {INFER_ITER} {WARMUP_ITER}%", 'utf-8'))
             data = self.wait_ready_ack()
 
             time = self.get_ellapsed_time(data)
@@ -156,7 +158,7 @@ class SerialProfiler:
                 break
 
         for start_end_times in ellapsed_time:
-            time_diff = (start_end_times[1] - start_end_times[0])
+            time_diff = (start_end_times[1] - start_end_times[0])/INFER_ITER
             diff_ellapsed_time += time_diff
         mean_ellapsed_time = diff_ellapsed_time / len(ellapsed_time)
 
