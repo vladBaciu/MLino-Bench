@@ -37,7 +37,7 @@ class SerialProfiler:
         else:
             return f'/dev/ttyUSB{com_number}'
 
-    def wait_ready_ack(self, timeout=10):
+    def wait_ready_ack(self, timeout=5):
         start_time = time.time()
         data = []
         mcu_ready = False
@@ -145,10 +145,16 @@ class SerialProfiler:
             self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes.encode() + bytes("%", 'utf-8'))
             self.wait_ready_ack()
 
-            self.mcu_serial.write(bytes("infer 1 10%", 'utf-8'))
+            self.mcu_serial.write(bytes("infer 1 1%", 'utf-8'))
             data = self.wait_ready_ack()
 
-            ellapsed_time.append(self.get_ellapsed_time(data))
+            time = self.get_ellapsed_time(data)
+            if time:
+                ellapsed_time.append(time)
+            else:
+                # Break if board is not responding anymore: e.g AdaBoost dynamic mem allocation.
+                break
+
         for start_end_times in ellapsed_time:
             time_diff = (start_end_times[1] - start_end_times[0])
             diff_ellapsed_time += time_diff

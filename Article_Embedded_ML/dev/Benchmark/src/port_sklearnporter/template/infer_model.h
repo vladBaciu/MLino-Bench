@@ -1,13 +1,23 @@
-#define TH_VENDOR_NAME_STRING "sklearnporter"
+#ifndef INFER_MODEL_H
+#define INFER_MODEL_H
 
-#define TH_MODEL_VERSION "sklearnporter"
+#include "model.h"
+#include "feature_specific.h"
 
-#if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
-#define FEATURE_TYPE    float
-#else
-#define FEATURE_TYPE    double
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-size_t th_load_features();
-void th_infer(void);
-void th_results();
+#define TH_VENDOR_NAME_STRING "sklearnporter"
+#define TH_MODEL_VERSION "sklearnporter"
+
+int model_output[OUTPUT_SIZE] = {0UL};
+FEATURE_TYPE input[NUMBER_OF_FEATURES] = {0U};
+
+static inline void th_infer(void){model_output[0] = predict(&input[0]);}
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif // INFER_MODEL_H

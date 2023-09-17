@@ -1,4 +1,4 @@
-
+#Use string input data, integers not allowed :eg field: '1' instead of field: 1
 training:
   default_dataset: iris
   models_directory: generated_models
@@ -11,7 +11,7 @@ target:
   board: mega
   board_sub: atmega2560
   sam_family: False
-  monitor_port: '8'
+  monitor_port: '9'
   optimization_level: s
   compiler_stdout: False
 

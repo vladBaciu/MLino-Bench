@@ -73,5 +73,6 @@ int th_atoi(const char *str);
 void *th_memset(void *b, int c, size_t len);
 void *th_memcpy(void *dst, const void *src, size_t n);
 int th_vprintf(const char *format, va_list ap);
-
+size_t th_load_features();
+void th_results();
 #endif  // MLPERF_TINY_V0_1_API_SUBMITTER_IMPLEMENTED_H_

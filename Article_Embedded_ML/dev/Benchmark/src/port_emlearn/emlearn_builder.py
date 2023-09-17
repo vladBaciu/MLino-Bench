@@ -88,8 +88,8 @@ class EmlearnBuilder:
         """
         Copy custom framework files.
         """
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.cpp"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
 
     def copy_common_header_files(self, framework_dir, size_build_dir):
         """

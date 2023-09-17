@@ -68,8 +68,8 @@ class SkLearnPorterBuilder:
         """
         Copy custom framework files.
         """
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.cpp"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
 
     def generate_size_template(self, model_code, model_name):
         """

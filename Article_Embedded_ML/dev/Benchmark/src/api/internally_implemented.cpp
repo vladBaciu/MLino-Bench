@@ -186,11 +186,11 @@ void ee_infer(size_t n, size_t n_warmup) {
   th_printf("m-warmup-done\r\n");
   th_printf("m-infer-start-%d\r\n", n);
   th_timestamp();
-  th_pre();
+  //th_pre();
   while (n-- > 0) {
     th_infer(); /* call the API inference function */
   }
-  th_post();
+  //th_post();
   th_timestamp();
   th_printf("m-infer-done\r\n");
   th_results();
