@@ -46,17 +46,16 @@ class ClassifierBuilder(DataLoader):
 
         """
         # Load user-defined data
-        self.dataset = self.load_data()
-
+        self.y_train, self.X_train, self.y_test, self.X_test = self.load_data()
         # Fallback to default datasets supported if user-defined data is not implemented
-        if self.dataset == None:
-            # If dataset is the sklearn Iris dataset.
-            if self.benchmark_info["training"]["default_dataset"] == 'iris':
-                from sklearn.datasets import load_iris
-                self.iris_data = load_iris()
-                self.X = self.iris_data.data
-                self.y = self.iris_data.target
-                self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=50)
+        #if self.X_train == None:
+        #    # If dataset is the sklearn Iris dataset.
+        #    if self.benchmark_info["training"]["default_dataset"] == 'iris':
+        #        from sklearn.datasets import load_iris
+        #        self.iris_data = load_iris()
+        #        self.X = self.iris_data.data
+        #        self.y = self.iris_data.target
+        #        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.25, random_state=50)
 
     def print_log_summary(self):
         """
@@ -134,7 +133,7 @@ class ClassifierBuilder(DataLoader):
             try:
                 model_train_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
                 model_test_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
-            except AttributeError:
+            except:
                 model_train_acc = accuracy_score(self.y_train, cls_obj.predict(self.X_train))
                 model_test_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
@@ -171,8 +170,7 @@ class ClassifierBuilder(DataLoader):
 
             self.copy_api_files(self.benchmark_info['runtime']['generated_model_dir'])
 
-            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy"), self.y_test)
-            np.save(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy"), self.X_test)
+            self.save_npy_files()
 
             # Compile and benchmark the model
             if self.benchmark_info['target']['type'] == 'avr_gcc':
@@ -199,10 +197,8 @@ class ClassifierBuilder(DataLoader):
             #if status:
             benchmarkProfiler = SerialProfiler(self.benchmark_info)
 
-            acc = benchmarkProfiler.do_inference()
+            time_us, acc = benchmarkProfiler.do_inference()
             self.logger_builder((port_framework, cls_name), cc_toolchain, f"On target accuracy {acc}")
-
-            time_us = benchmarkProfiler.get_inference_time()
             self.logger_builder((port_framework, cls_name), cc_toolchain, f"Inference time {time_us} us")
 
             #dump configuration info of the model
@@ -217,3 +213,15 @@ class ClassifierBuilder(DataLoader):
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.cpp"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.h"), framework_dir)
+
+    def save_npy_files(self):
+        labels_file_path = os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy")
+        data_file_path = os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_data.npy")
+
+        if os.path.exists(labels_file_path):
+            os.remove(labels_file_path)
+        if os.path.exists(data_file_path):
+            os.remove(data_file_path)
+
+        np.save(labels_file_path, self.y_test)
+        np.save(data_file_path, self.X_test)

@@ -6,7 +6,7 @@
 #include "submitter_implemented.h"
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(57600);
     ee_benchmark_initialize();
 }
 

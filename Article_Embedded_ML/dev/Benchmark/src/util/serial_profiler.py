@@ -7,8 +7,8 @@ import os
 import common as com
 from sklearn.metrics import accuracy_score
 
-WARMUP_ITER = 10
-INFER_ITER  = 20
+WARMUP_ITER = 1
+INFER_ITER  = 1
 
 class SerialProfiler:
     def __init__(self, build_info):
@@ -25,7 +25,7 @@ class SerialProfiler:
 
         try:
             self.mcu_serial = serial.Serial(port=self.get_com_port_name(build_info["target"]["monitor_port"]),
-                                baudrate=9600, timeout=.1)
+                                baudrate=57600, timeout=.1)
             self.wait_ready_ack()
             com.logging.info(f"{self.porter_type}:{self.model_name} Serial connection established: OK")
 
@@ -39,7 +39,7 @@ class SerialProfiler:
         else:
             return f'/dev/ttyUSB{com_number}'
 
-    def wait_ready_ack(self, timeout=5):
+    def wait_ready_ack(self, timeout=50):
         start_time = time.time()
         data = []
         mcu_ready = False
@@ -92,39 +92,8 @@ class SerialProfiler:
 
     def do_inference(self):
         # Initialize an empty list to store the extracted numbers
-        inference_result = []
-
-        f_bytes = self.get_fsize()
-        if f_bytes == 8:
-            np_f_array = self.get_f64_data_bytes()
-        else:
-            np_f_array = self.get_f32_data_bytes()
-
-        com.logging.info(f"{self.porter_type}:{self.model_name} Running inference ...")
-
-        step = self.no_of_features * f_bytes
-        for i in range(0,len(self.expected_labels)):
-            features = np_f_array[i*step: (i*step) + step]
-            str_hex_bytes = ''.join('{:02x}'.format(x) for x in features)
-
-            self.mcu_serial.write(bytes(f"db load {step}%", 'utf-8'))
-            self.wait_ready_ack()
-
-            self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes.encode() + bytes("%", 'utf-8'))
-            self.wait_ready_ack()
-
-            self.mcu_serial.write(bytes("infer 1 0%", 'utf-8'))
-            data = self.wait_ready_ack()
-
-            inference_result.append(self.get_inference_result(data))
-        acc = accuracy_score(self.expected_labels, inference_result)
-        com.logging.info(f"{self.porter_type}:{self.model_name} On target accuracy: {acc}")
-
-        return acc
-
-    def get_inference_time(self):
-        # Initialize an empty list to store the extracted numbers
         ellapsed_time = []
+        inference_result = []
         diff_ellapsed_time = 0
 
         f_bytes = self.get_fsize()
@@ -142,20 +111,25 @@ class SerialProfiler:
             str_hex_bytes = ''.join('{:02x}'.format(x) for x in features)
 
             self.mcu_serial.write(bytes(f"db load {step}%", 'utf-8'))
-            self.wait_ready_ack()
-
-            self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes.encode() + bytes("%", 'utf-8'))
-            self.wait_ready_ack()
+            data = self.wait_ready_ack()
+            for j in range(0, int(len(str_hex_bytes)/16)):
+                self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes[j*16: (j*16) + 16].encode() + bytes("%", 'utf-8'))
+                data = self.wait_ready_ack()
 
             self.mcu_serial.write(bytes(f"infer {INFER_ITER} {WARMUP_ITER}%", 'utf-8'))
             data = self.wait_ready_ack()
+            print("Infer BUFF", data)
 
+            inference_result.append(self.get_inference_result(data))
             time = self.get_ellapsed_time(data)
             if time:
                 ellapsed_time.append(time)
             else:
                 # Break if board is not responding anymore: e.g AdaBoost dynamic mem allocation.
                 break
+
+        acc = accuracy_score(self.expected_labels, inference_result)
+        com.logging.info(f"{self.porter_type}:{self.model_name} On target accuracy: {acc}")
 
         for start_end_times in ellapsed_time:
             time_diff = (start_end_times[1] - start_end_times[0])/INFER_ITER
@@ -164,4 +138,4 @@ class SerialProfiler:
 
         com.logging.info(f"{self.porter_type}:{self.model_name} Inference time: {mean_ellapsed_time} us")
 
-        return mean_ellapsed_time
+        return mean_ellapsed_time, acc
