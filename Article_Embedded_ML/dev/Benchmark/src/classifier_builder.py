@@ -126,6 +126,7 @@ class ClassifierBuilder(DataLoader):
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
 
+        com.logging.info(f"{port_framework}:{cls_name} Training model ...")
         cls_obj.fit(self.X_train, self.y_train)
 
         # Stats

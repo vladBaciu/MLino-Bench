@@ -2,9 +2,13 @@ import numpy as np
 import os
 import glob
 import re
+from sklearn.preprocessing import StandardScaler
+
 class GasDataLoader:
     def __init__(self) -> None:
         self.dummy = None
+    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 6), random_state=1)
+    #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
 
     def _load_file(self, filename):
         """internal function that loads one .dat file at the time
@@ -87,12 +91,18 @@ class GasDataLoader:
         return train_labels, train_features, val_labels, val_features
 
 class DataLoader:
-
     def __init__(self) -> None:
         self.dummy = None
 
     def load_data(self):
         tmp = GasDataLoader()
-        train_labels, train_features, test_labels, test_features = tmp.load_data(4)
-        return tmp.split_data(train_labels, train_features)
+        _, _, train_labels, train_features = tmp.load_data(0)
+        scaler = StandardScaler()
+
+        train_labels, train_features, val_labels, val_features = tmp.split_data(train_labels, train_features)
+
+        train_features = scaler.fit_transform(train_features)
+        val_features = scaler.transform(val_features)
+
+        return train_labels, train_features, val_labels, val_features
 

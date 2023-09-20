@@ -25,7 +25,7 @@ class SerialProfiler:
 
         try:
             self.mcu_serial = serial.Serial(port=self.get_com_port_name(build_info["target"]["monitor_port"]),
-                                baudrate=57600, timeout=.1)
+                                baudrate=115200, timeout=.1)
             self.wait_ready_ack()
             com.logging.info(f"{self.porter_type}:{self.model_name} Serial connection established: OK")
 
@@ -104,7 +104,7 @@ class SerialProfiler:
 
         step = self.no_of_features * f_bytes
 
-        com.logging.info(f"{self.porter_type}:{self.model_name} Measuring inference time ...")
+        com.logging.info(f"{self.porter_type}:{self.model_name} Measuring accuracy and inference time ...")
 
         for i in range(0,len(self.expected_labels)):
             features = np_f_array[i*step: (i*step) + step]
@@ -118,9 +118,9 @@ class SerialProfiler:
 
             self.mcu_serial.write(bytes(f"infer {INFER_ITER} {WARMUP_ITER}%", 'utf-8'))
             data = self.wait_ready_ack()
-            print("Infer BUFF", data)
 
             inference_result.append(self.get_inference_result(data))
+
             time = self.get_ellapsed_time(data)
             if time:
                 ellapsed_time.append(time)
