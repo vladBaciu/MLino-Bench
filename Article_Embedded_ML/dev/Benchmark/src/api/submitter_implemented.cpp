@@ -10,7 +10,7 @@ extern FEATURE_TYPE input[NUMBER_OF_FEATURES];
 extern int model_output[OUTPUT_SIZE];
 
 void th_printf(const char *fmt, ... ){
-    static char print_buf[1024]; // resulting string limited to 1024 chars
+    static char print_buf[EE_CMD_SIZE];
     va_list args;
     va_start(args, fmt);
     int r = vsnprintf(print_buf, sizeof(print_buf), fmt, args);
@@ -62,9 +62,8 @@ size_t th_load_features() {
   if (bytes / sizeof(FEATURE_TYPE) != NUMBER_OF_FEATURES) {
     th_printf("Input db has %d elemented, expected %d\n", bytes / sizeof(FEATURE_TYPE),
               NUMBER_OF_FEATURES);
-
-    return bytes;
   }
+  return bytes;
 }
 
 void th_results() {

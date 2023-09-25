@@ -195,6 +195,8 @@ class CompileAvrBenchmark:
             # Generate template and set optimization level
             model_size_code = builder.generate_size_template(model_size_code, self.model_name)
 
+            builder.copy_files_to_size_dir(self.model_path)
+
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
                 c_file.write(model_size_code)

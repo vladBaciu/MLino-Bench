@@ -181,8 +181,21 @@ arg_claimed_t ee_profile_parse(char *command) {
 void ee_infer(size_t n, size_t n_warmup) {
   unsigned long microSeconds1 = 0ul;
   unsigned long microSeconds2 = 0ul;
+  size_t bytes = 0ul;
 
-  th_load_features(); /* if necessary */
+  bytes = th_load_features();
+
+  #if TH_VENDOR_NAME_STRING == "embml"
+    for(uint16_t j=0; j < NUMBER_OF_FEATURES; j++)
+    {
+      #ifdef CONVERT_TO_FIXED_POINT
+      instance[j] = ftype_to_fixed(input[j]);
+      #else
+      instance[j] = input[j];
+      #endif /* CONVERT_TO_FIXED_POINT */
+    }
+  #endif /* TH_VENDOR_NAME_STRING == "embml" */
+
   th_printf("m-warmup-start-%d\r\n", n_warmup);
   while (n_warmup-- > 0) {
     th_infer(); /* call the API inference function */

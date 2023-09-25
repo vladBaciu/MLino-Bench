@@ -4,10 +4,11 @@ import sklearn.neural_network
 import sklearn.naive_bayes
 import sklearn.svm
 from xgboost import XGBClassifier
+from sefr import SEFR
 
 import classifier_builder as CB
 
-frameworks  = ['sklearn-porter', 'emlearn', 'micromlgen']
+frameworks  = ['sklearn-porter', 'emlearn', 'micromlgen', 'embml']
 classifiers = {
     #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
@@ -23,7 +24,7 @@ classifiers = {
 }
 
 sklearnporter_classifiers = {
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
@@ -34,7 +35,7 @@ sklearnporter_classifiers = {
 }
 
 emlearn_classifiers = {
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
@@ -48,8 +49,7 @@ micromlgen_classifiers = {
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
     #'xgboost': XGBClassifier(eval_metric='merror')
-    #'SEFR'
-    #"RVM"
+    #'sefr_classifier': SEFR(), #binary classifier
 }
 
 m2gen = {
@@ -57,10 +57,11 @@ m2gen = {
 }
 embml = {
     #MLPClassifier for MLP classifiers;
-    #LogisticRegression for logistic regression classifiers;
     #LinearSVC for SVM classifiers with linear kernel;
-    #SVC for SVM classifiers -- with polynomial and RBF kernels;
-    #DecisionTreeClassifier for decision tree models.
+    'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-4, hidden_layer_sizes=(5, 6), random_state=1),
+    #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
+    #'decision_tree': sklearn.tree.DecisionTreeClassifier()
 }
 
 if __name__ == "__main__":
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     #    builder.build_classifier(frameworks[0],  name, cls)
     #for name, cls in classifiers.items():
     #    builder.build_classifier(frameworks[1],  name, cls)
-    for name, cls in emlearn_classifiers.items():
-        builder.build_classifier(frameworks[1],  name, cls)
+    for name, cls in embml.items():
+        builder.build_classifier(frameworks[3],  name, cls)
 
     builder.print_log_summary()

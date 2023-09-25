@@ -90,19 +90,24 @@ class GasDataLoader:
 
         return train_labels, train_features, val_labels, val_features
 
-class DataLoader:
-    def __init__(self) -> None:
-        self.dummy = None
-
-    def load_data(self):
+    def load_dataset(self):
         tmp = GasDataLoader()
         _, _, train_labels, train_features = tmp.load_data(0)
-        scaler = StandardScaler()
-
         train_labels, train_features, val_labels, val_features = tmp.split_data(train_labels, train_features)
 
+        scaler = StandardScaler()
         train_features = scaler.fit_transform(train_features)
         val_features = scaler.transform(val_features)
 
-        return train_labels, train_features, val_labels, val_features
+        return train_features, train_labels, val_features, val_labels
 
+class DataLoader:
+    def __init__(self, data_set):
+        self.data_set = data_set
+
+    def load_data(self):
+        try:
+          class_instance = globals()[self.data_set]()
+          return class_instance.load_dataset()
+        except KeyError:
+          print(f"Dataset {self.data_set} not found")

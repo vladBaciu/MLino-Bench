@@ -1,39 +1,40 @@
 import os
 import shutil
 import util.common as com
-from sklearn_porter import Porter
-from sklearn.metrics import accuracy_score
+import embml
+import pickle
 
 # Constants
-PORTER_TYPE = 'sklearn-porter'
+PORTER_TYPE = 'embml'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 CUSTOM_TEMPLATE = True
 TEMPLATE = """
 \nint main(void) {
-#if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
-    float features[1];
-#else
-    double features[1];
-#endif
-    int result = predict(features);
+    int result = classify();
     return result;
 }
 """
 
-class SkLearnPorterBuilder:
+class EmbmlBuilder:
     def __init__(self, clf):
         self.clf_name = clf[0]
         self.clf_method = clf[1]
         self.porter = None
+
+        self.py_model_file = os.path.join(os.path.dirname(__file__), "tmp.pkl")
+        self.c_model_file  = os.path.join(os.path.dirname(__file__), "tmp.c")
 
     def train(self):
         """
         Train the classifier and create a porter for export.
         """
         try:
-            self.porter = Porter(self.clf_method, language='c')
+            # Save the model to a file using pickle
+            with open(self.py_model_file, 'wb') as model_file:
+                pickle.dump(self.clf_method, model_file)
+            self.porter = embml.sklearnModel(self.py_model_file, self.c_model_file, opts='-rules')
         except NotImplementedError:
             return "Model type not supported for export to C."
         except Exception as e:
@@ -52,16 +53,9 @@ class SkLearnPorterBuilder:
             GENERATED_FILE_EXT
         )
 
-        try:
-            content = self.porter.export(embed_data=True)
-        except Exception as e:
-            com.logging.info(f"An unexpected error occurred during model export: {e}")
-        else:
-            with open(model_path, 'w') as f:
-                f.write(content)
-            # Eliminate main function since the generated file is a header file and does not need it.
-            com.eliminate_main_function(model_path)
+        shutil.copy(self.c_model_file, model_path)
 
+        #todo delete tmp.c and pkl
         return framework_dir, model_path
 
     def copy_custom_framework_files(self, framework_dir):
@@ -70,12 +64,13 @@ class SkLearnPorterBuilder:
         """
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template/FixedNum.h"), framework_dir)
 
     def generate_size_template(self, model_code, model_name):
         """
         Generate a template based on the model code and model name.
         """
-        model_code += "\n" + TEMPLATE
+        model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code + TEMPLATE
         return model_code
 
     def get_model_language(self):
@@ -84,3 +79,7 @@ class SkLearnPorterBuilder:
         """
         return MODEL_LANGUAGE
 
+
+    def copy_files_to_size_dir(self, model_build_dir):
+        size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
+        shutil.copy(os.path.join(os.path.dirname(model_build_dir), "FixedNum.h"), size_build_dir)

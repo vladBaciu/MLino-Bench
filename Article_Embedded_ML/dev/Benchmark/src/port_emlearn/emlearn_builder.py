@@ -32,7 +32,7 @@ class EmlearnBuilder:
         except (NotImplementedError, ValueError) as e:
             return f"Model type not supported for emlearn conversion: {e}"
         except Exception as e:
-            return f"An unexpected error occurred during training: {e}"
+            return f"An unexpected error occurred during model creation: {e}"
 
     def export_to_c(self, output_dir_name):
         """

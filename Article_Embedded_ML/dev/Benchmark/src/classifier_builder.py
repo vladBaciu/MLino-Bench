@@ -11,32 +11,22 @@ from sklearn.metrics import confusion_matrix
 from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from port_emlearn.emlearn_builder import EmlearnBuilder
 from port_micromlgen.micromlgen_builder import MicromlgenBuilder
+from port_embml.embml_builder import EmbmlBuilder
 
 TEMPLATE_DIR  = "api"
 TEMPLATE_FILE = "main.cpp"
 
-class ClassifierBuilder(DataLoader):
+class ClassifierBuilder():
     data_logger = list()
 
     def __init__(self) -> None:
-        """
-        Initialize the ClassifierBuilder.
-
-        This constructor initializes the ClassifierBuilder by calling the parent DataLoader constructor
-        and loading input data.
-
-        """
-        # Call parent constructor and load input data
-        super(ClassifierBuilder, self).__init__()
-        self.dataset = self.load_data()
-
         self.builder = None
 
         # Load benchmark baseline
         self.benchmark_info = com.yaml_load()
 
-        # Load dataset used for benchmarking
-        self.__load_dataset()
+        self.data_loader = DataLoader(self.benchmark_info["training"]["default_dataset"])
+        self.X_train, self.y_train, self.X_test, self.y_test = self.data_loader.load_data()
 
     def __load_dataset(self):
         """
@@ -122,7 +112,7 @@ class ClassifierBuilder(DataLoader):
             AttributeError: If the given porter is not supported.
 
         """
-        if port_framework not in ['sklearn-porter', 'emlearn', 'micromlgen']:
+        if port_framework not in ['sklearn-porter', 'emlearn', 'micromlgen', 'embml']:
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
 
@@ -152,6 +142,8 @@ class ClassifierBuilder(DataLoader):
             self.builder = EmlearnBuilder((cls_name, cls_obj))
         elif port_framework == "micromlgen":
             self.builder = MicromlgenBuilder((cls_name, cls_obj))
+        elif port_framework == "embml":
+            self.builder = EmbmlBuilder((cls_name, cls_obj))
 
         # Create and train the model
         status = self.builder.train()

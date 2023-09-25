@@ -34,7 +34,7 @@ class MicromlgenBuilder:
         except (NotImplementedError, ValueError) as e:
             return f"Model type not supported for micromlgen conversion: {e}"
         except Exception as e:
-            return f"An unexpected error occurred during training: {e}"
+            return f"An unexpected error occurred during model creation: {e}"
 
     def export_to_c(self, output_dir_name):
         """
@@ -64,7 +64,8 @@ class MicromlgenBuilder:
             'random_forest': 'RandomForest',
             'svc': 'SVM',
             'gaussian_naive_bayes': 'GaussianNB',
-            'xgboost': 'XGBClassifier'
+            'xgboost': 'XGBClassifier',
+            'sefr_classifier': 'SEFR'
         }
 
         formatted_template = TEMPLATE.format(template_map.get(model_name, ''))

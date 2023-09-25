@@ -24,6 +24,8 @@ Eloquent::ML::Port::DecisionTree classifier;
 Eloquent::ML::Port::GaussianNB classifier;
 #elif defined(XGBOOST)
 Eloquent::ML::Port::XGBClassifier classifier;
+#elif defined(SEFR_CLASSIFIER)
+Eloquent::ML::Port::SEFR classifier;
 #endif
 
 static inline void th_infer(){model_output[0] = classifier.predict(&input[0]);}
