@@ -7,21 +7,19 @@ import matplotlib.pyplot as plt
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load parameters from a YAML file
-def yaml_load():
+def yaml_load(file_path):
     """
     Load parameters from a YAML file.
+
+    Args:
+        file_path (str): Path to the YAML file.
 
     Returns:
         dict: Loaded parameters from the YAML file.
     """
-    # Get the directory of the script
-    script_dir = os.path.dirname(__file__)
-    # Construct the absolute path to the YAML file
-    abs_file_path = os.path.join(script_dir, "..\\baseline.yaml")
-
-    with open(abs_file_path) as stream:
-        param = yaml.safe_load(stream)
-    return param
+    with open(file_path) as stream:
+        params = yaml.safe_load(stream)
+    return params
 
 # Dump content into a YAML file
 def yaml_dump(content):
@@ -31,9 +29,9 @@ def yaml_dump(content):
     Args:
         content (dict): Content to be written to the YAML file.
     """
-    abs_file_path = os.path.join(content['runtime']['generated_model_dir'], "config.yaml")
-    with open(abs_file_path, 'w') as abs_file_path:
-        yaml.dump(content, abs_file_path, default_flow_style=False)
+    file_path = os.path.join(content['runtime']['generated_model_dir'], "config.yaml")
+    with open(file_path, 'w') as file:
+        yaml.dump(content, file, default_flow_style=False)
 
 # Create build paths for generated models
 def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, ext):
@@ -57,18 +55,15 @@ def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, 
     parent_dir_two_levels_up = os.path.dirname(parent_dir_one_level_up)
 
     out_dir_root = os.path.join(parent_dir_two_levels_up, output_dir_name)
-    if not os.path.exists(out_dir_root):
-        os.makedirs(out_dir_root)
+    os.makedirs(out_dir_root, exist_ok=True)
 
-    clf_dir = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type)
-    if not os.path.exists(clf_dir):
-        os.makedirs(clf_dir)
+    clf_dir = os.path.join(out_dir_root, clf_type)
+    os.makedirs(clf_dir, exist_ok=True)
 
-    framework_dir = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type, framework)
-    if not os.path.exists(framework_dir):
-        os.makedirs(framework_dir)
+    framework_dir = os.path.join(clf_dir, framework)
+    os.makedirs(framework_dir, exist_ok=True)
 
-    model_path = os.path.join(parent_dir_two_levels_up, output_dir_name, clf_type, framework, f'{clf_name}.{ext}')
+    model_path = os.path.join(framework_dir, f'{clf_name}.{ext}')
 
     return model_path, framework_dir
 

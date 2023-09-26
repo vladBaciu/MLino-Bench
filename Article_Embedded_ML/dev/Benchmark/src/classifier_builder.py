@@ -23,7 +23,7 @@ class ClassifierBuilder():
         self.builder = None
 
         # Load benchmark baseline
-        self.benchmark_info = com.yaml_load()
+        self.benchmark_info = com.yaml_load(os.path.join(os.path.dirname(__file__), "config.yaml"))
 
         self.data_loader = DataLoader(self.benchmark_info["training"]["default_dataset"])
         self.X_train, self.y_train, self.X_test, self.y_test = self.data_loader.load_data()
@@ -120,7 +120,7 @@ class ClassifierBuilder():
         cls_obj.fit(self.X_train, self.y_train)
 
         # Stats
-        if self.benchmark_info["training"]["accuracy"] == True:
+        if self.benchmark_info["training"]["accuracy"]:
             try:
                 model_train_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_train), self.y_train)
                 model_test_acc = com.calculate_accuracy(port_framework, cls_name, cls_obj.predict_proba(self.X_test), self.y_test)
@@ -128,7 +128,7 @@ class ClassifierBuilder():
                 model_train_acc = accuracy_score(self.y_train, cls_obj.predict(self.X_train))
                 model_test_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
-        if self.benchmark_info["training"]["class_accuracy"] == True:
+        if self.benchmark_info["training"]["class_accuracy"]:
             try:
                 model_class_acc = com.calculate_all_accuracies(port_framework, cls_name,
                                                                cls_obj.predict_proba(self.X_test),
@@ -136,14 +136,7 @@ class ClassifierBuilder():
             except AttributeError:
                 model_class_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
-        if port_framework == 'sklearn-porter':
-            self.builder = SkLearnPorterBuilder((cls_name, cls_obj))
-        elif port_framework == 'emlearn':
-            self.builder = EmlearnBuilder((cls_name, cls_obj))
-        elif port_framework == "micromlgen":
-            self.builder = MicromlgenBuilder((cls_name, cls_obj))
-        elif port_framework == "embml":
-            self.builder = EmbmlBuilder((cls_name, cls_obj))
+        self.builder = self.get_builder(port_framework, (cls_name, cls_obj))
 
         # Create and train the model
         status = self.builder.train()
@@ -166,17 +159,14 @@ class ClassifierBuilder():
             self.save_npy_files()
 
             # Compile and benchmark the model
-            if self.benchmark_info['target']['type'] == 'avr_gcc':
-                from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
-                cc_toolchain = CompileAvrBenchmark(self.benchmark_info)
-
+            cc_toolchain = self.get_compiler_toolchain()
             status = cc_toolchain.compile()
 
             # Plot some stats
-            if self.benchmark_info["training"]["accuracy"] == True:
+            if self.benchmark_info["training"]["accuracy"]:
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Train ACC: {model_train_acc}, test ACC: {model_test_acc}")
 
-            if self.benchmark_info["training"]["class_accuracy"] == True:
+            if self.benchmark_info["training"]["class_accuracy"]:
                 self.logger_builder((port_framework, cls_name), cc_toolchain, f"Class ACC: {model_class_acc}")
 
             # Determine size based on baseline, do not compile again.
@@ -196,6 +186,45 @@ class ClassifierBuilder():
 
             #dump configuration info of the model
             com.yaml_dump(self.benchmark_info)
+
+    def get_builder(self, port_framework, cls_pair):
+        """
+        Get the builder object for the specified porting framework.
+
+        Args:
+            port_framework (str): Porting framework name.
+            cls_pair (tuple): Classifier pair (framework, name).
+
+        Returns:
+            object: Builder object.
+
+        Raises:
+            AttributeError: If the given porter is not supported.
+
+        """
+        if port_framework == 'sklearn-porter':
+            return SkLearnPorterBuilder(cls_pair)
+        elif port_framework == 'emlearn':
+            return EmlearnBuilder(cls_pair)
+        elif port_framework == "micromlgen":
+            return MicromlgenBuilder(cls_pair)
+        elif port_framework == "embml":
+            return EmbmlBuilder(cls_pair)
+        else:
+            error = "The given porter '{}' is not supported.".format(port_framework)
+            raise AttributeError(error)
+
+    def get_compiler_toolchain(self):
+        """
+        Get the compiler toolchain object.
+
+        Returns:
+            object: Compiler toolchain object.
+
+        """
+        if self.benchmark_info['target']['type'] == 'avr_gcc':
+            from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
+            return CompileAvrBenchmark(self.benchmark_info)
 
     def copy_api_files(self, framework_dir):
         """

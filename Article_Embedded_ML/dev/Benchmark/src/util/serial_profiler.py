@@ -32,7 +32,6 @@ class SerialProfiler:
         except serial.SerialException as e:
             raise RuntimeError(f"Serial communication error: {e}")
 
-
     def get_com_port_name(self, com_number):
         if platform.system() == 'Windows':
             return f'COM{com_number}'
@@ -64,17 +63,11 @@ class SerialProfiler:
         return np_f64_array.tobytes()
 
     def search_patern(self, data, pattern):
-        extracted_data = []
-        for item in data:
-            match = re.search(pattern, item)
-            if match:
-                number = int(match.group(1))  # Extract the number from the matched pattern
-                extracted_data.append(number)
-        return extracted_data
+        return [int(re.search(pattern, item).group(1)) for item in data if re.search(pattern, item)]
 
     def get_inference_result(self, data):
-            pattern = b"m-results-\[(\d+)\]"
-            return self.search_patern(data, pattern)
+        pattern = b"m-results-\[(\d+)\]"
+        return self.search_patern(data, pattern)
 
     def get_ellapsed_time(self, data):
         pattern = b"m-lap-us-(\d+)"
@@ -102,16 +95,15 @@ class SerialProfiler:
         else:
             np_f_array = self.get_f32_data_bytes()
 
-        step = self.no_of_features * f_bytes
-
         com.logging.info(f"{self.porter_type}:{self.model_name} Measuring accuracy and inference time ...")
 
         for i in range(0,len(self.expected_labels)):
-            features = np_f_array[i*step: (i*step) + step]
+            features = np_f_array[i*self.no_of_features*f_bytes: (i+1)*self.no_of_features*f_bytes]
             str_hex_bytes = ''.join('{:02x}'.format(x) for x in features)
 
-            self.mcu_serial.write(bytes(f"db load {step}%", 'utf-8'))
+            self.mcu_serial.write(bytes(f"db load {self.no_of_features*f_bytes}%", 'utf-8'))
             data = self.wait_ready_ack()
+            # Send chuncks of 16 bytes
             for j in range(0, int(len(str_hex_bytes)/16)):
                 self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes[j*16: (j*16) + 16].encode() + bytes("%", 'utf-8'))
                 data = self.wait_ready_ack()

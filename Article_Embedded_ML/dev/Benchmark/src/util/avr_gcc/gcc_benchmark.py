@@ -4,8 +4,7 @@ import util.common as com
 import re
 import threading
 
-TEMPLATE_TEXT_BASELINE = 1644
-TEMPLATE_DATA_BASELINE = 196
+
 class CompileAvrBenchmark:
     def __init__(self, build_info):
         """
@@ -18,19 +17,10 @@ class CompileAvrBenchmark:
         self.compile_errors_list = self.get_list_of_possible_errors()
 
         # Extract build information
-        self.model_dir = build_info['runtime']['generated_model_dir']
-        self.model_path = build_info['runtime']['generated_model_path']
-        self.model_name = build_info["runtime"]["model_name"]
-        self.porter_type = build_info["runtime"]["porter_type"]
-        self.template = build_info["runtime"]["template_path"]
-        self.input_size = build_info["runtime"]["no_of_features"]
-        self.extension = build_info["runtime"]["language"]
-        self.optimization_level = build_info["target"]["optimization_level"]
-        self.print_proc_stdout = build_info["target"]["compiler_stdout"]
-        self.board = build_info["target"]["board"]
-        self.mcu = build_info["target"]["board_sub"]
-        self.port = build_info["target"]["monitor_port"]
-        self.sam_family = build_info["target"]["sam_family"]
+        self.build_info = build_info
+        self.model_dir, self.model_path, self.model_name, self.porter_type, \
+        self.template, self.input_size, self.extension, self.optimization_level, \
+        self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family = self.extract_build_info()
 
         # Create Arduino Makefile and run make clean
         self.create_makefile()
@@ -49,16 +39,17 @@ class CompileAvrBenchmark:
                 os.remove(makefile_path)
 
             # Create makefile in model's build directory
-            ardmk_init_command = ["python", "ardmk-init.py",
-                                  "-d", self.model_dir,
-                                  "-t", "-o", "--template_path", self.template,
-                                  "--optimization_level", self.optimization_level,
-                                  "--input_size", str(self.input_size),
-                                  "--board", self.board,
-                                  "--micro", self.mcu,
-                                  "--port", self.port
-                                  ]
-            if(self.sam_family == True):
+            ardmk_init_command = [
+                "python", "ardmk-init.py",
+                "-d", self.model_dir,
+                "-t", "-o", "--template_path", self.template,
+                "--optimization_level", self.optimization_level,
+                "--input_size", str(self.input_size),
+                "--board", self.board,
+                "--micro", self.mcu,
+                "--port", self.port
+            ]
+            if self.sam_family:
                 ardmk_init_command.append("--sam")
 
             com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
@@ -87,20 +78,22 @@ class CompileAvrBenchmark:
 
             com.logging.info(f"{self.porter_type}:{self.model_name} cleaning project ...")
 
-            subprocess.run(make_clean_command,
-                           cwd=self.model_dir,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE,
-                           universal_newlines=True,
-                           encoding="utf-8",
-                           check=True)
+            subprocess.run(
+                make_clean_command,
+                cwd=self.model_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                encoding="utf-8",
+                check=True
+            )
 
             com.logging.info(f"{self.porter_type}:{self.model_name} project cleaning: OK")
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error occurred during cleaning: {e.stderr}")
 
-    def read_and_print_stream(self,stream, prefix):
+    def read_and_print_stream(self, stream, prefix):
         for line in stream:
             print(f"{prefix}: {line}", end='')
 
@@ -156,13 +149,15 @@ class CompileAvrBenchmark:
 
             com.logging.info(f"{self.porter_type}:{self.model_name} compiling model ...")
 
-            status = subprocess.run(make_command,
-                                    cwd=self.model_dir,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    universal_newlines=True,
-                                    encoding="utf-8",
-                                    check=True)
+            status = subprocess.run(
+                make_command,
+                cwd=self.model_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                encoding="utf-8",
+                check=True
+            )
 
             com.logging.info(f"{self.porter_type}:{self.model_name} compilation: OK")
             return status.stdout
@@ -193,31 +188,27 @@ class CompileAvrBenchmark:
             com.logging.info(f"{self.porter_type}:{self.model_name} computing model size...")
 
             # Generate template and set optimization level
-            model_size_code = builder.generate_size_template(model_size_code, self.model_name)
-
-            builder.copy_files_to_size_dir(self.model_path)
+            model_size_code = builder.generate_size_template(model_size_code, self.model_name, self.model_path)
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
                 c_file.write(model_size_code)
 
             # Compile the C code to an object file using GCC
-            compile_command = ['avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
-                               '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
-                               '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
-                               '-D {}'.format(self.model_name.upper()),
-                               '-mmcu={}'.format(self.mcu)]
+            compile_command = self.get_compile_command(build_path)
             subprocess.run(compile_command, cwd=build_path, check=True)
 
             # Use the 'avr-size' command to get the sizes of different sections
             size_command = ['avr-size', 'model.o']
-            size_output = subprocess.run(size_command,
-                                         cwd=build_path,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         universal_newlines=True,
-                                         encoding="utf-8",
-                                         check=True)
+            size_output = subprocess.run(
+                size_command,
+                cwd=build_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                encoding="utf-8",
+                check=True
+            )
 
             # Parse the size information
             pattern = r"\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+[0-9a-fA-F]"
@@ -243,6 +234,24 @@ class CompileAvrBenchmark:
 
         except Exception as e:
             raise RuntimeError(f"An error occurred: {str(e)}")
+
+    def get_compile_command(self, build_path):
+        """
+        Get the compile command for the model.
+
+        Args:
+            build_path (str): The build path for the model.
+
+        Returns:
+            list: The compile command for the model.
+        """
+        return [
+            'avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
+            '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
+            '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
+            '-D {}'.format(self.model_name.upper()),
+            '-mmcu={}'.format(self.mcu)
+        ]
 
     def get_memory_footprint(self, linker_output):
         """
@@ -321,3 +330,23 @@ class CompileAvrBenchmark:
             if print_data:
                 print(line.strip())
             output_list.append(line.strip())
+
+    def extract_build_info(self):
+         """
+         Extract build information from the build_info dictionary.
+         """
+         model_dir = self.build_info['runtime']['generated_model_dir']
+         model_path = self.build_info['runtime']['generated_model_path']
+         model_name = self.build_info["runtime"]["model_name"]
+         porter_type = self.build_info["runtime"]["porter_type"]
+         template = self.build_info["runtime"]["template_path"]
+         input_size = self.build_info["runtime"]["no_of_features"]
+         extension = self.build_info["runtime"]["language"]
+         optimization_level = self.build_info["target"]["optimization_level"]
+         print_proc_stdout = self.build_info["target"]["compiler_stdout"]
+         board = self.build_info["target"]["board"]
+         mcu = self.build_info["target"]["board_sub"]
+         port = self.build_info["target"]["monitor_port"]
+         sam_family = self.build_info["target"]["sam_family"]
+
+         return model_dir, model_path, model_name, porter_type, template, input_size, extension, optimization_level, print_proc_stdout, board, mcu, port, sam_family

@@ -3,20 +3,22 @@ import shutil
 import util.common as com
 from micromlgen import port
 
+
 # Constants
 PORTER_TYPE = 'micromlgen'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'cpp'
 GENERATED_FILE_NAME = "model"
-CUSTOM_TEMPLATE = True
 TEMPLATE = """
-\nint main(void) {{
+int main(void) {{
     float features[1];
     Eloquent::ML::Port::{0} classifier;
     int result = classifier.predict(features);
     return result;
 }}
 """
+
+
 class MicromlgenBuilder:
     """
     Class for building and exporting models using micromlgen.
@@ -55,7 +57,7 @@ class MicromlgenBuilder:
 
         return framework_dir, model_path
 
-    def generate_size_template(self, model_code, model_name):
+    def generate_size_template(self, model_code, model_name, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """
@@ -85,4 +87,3 @@ class MicromlgenBuilder:
         Get the model language.
         """
         return MODEL_LANGUAGE
-

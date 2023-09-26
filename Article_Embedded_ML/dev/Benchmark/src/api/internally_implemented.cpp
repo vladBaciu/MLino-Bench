@@ -185,7 +185,7 @@ void ee_infer(size_t n, size_t n_warmup) {
 
   bytes = th_load_features();
 
-  #if TH_VENDOR_NAME_STRING == "embml"
+  #ifdef USE_INSTANCE_BUFFER
     for(uint16_t j=0; j < NUMBER_OF_FEATURES; j++)
     {
       #ifdef CONVERT_TO_FIXED_POINT
@@ -194,7 +194,7 @@ void ee_infer(size_t n, size_t n_warmup) {
       instance[j] = input[j];
       #endif /* CONVERT_TO_FIXED_POINT */
     }
-  #endif /* TH_VENDOR_NAME_STRING == "embml" */
+  #endif /* USE_INSTANCE_BUFFER */
 
   th_printf("m-warmup-start-%d\r\n", n_warmup);
   while (n_warmup-- > 0) {

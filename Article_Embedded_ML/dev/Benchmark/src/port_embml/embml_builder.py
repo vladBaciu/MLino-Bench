@@ -4,27 +4,31 @@ import util.common as com
 import embml
 import pickle
 
+
 # Constants
 PORTER_TYPE = 'embml'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
-CUSTOM_TEMPLATE = True
 TEMPLATE = """
-\nint main(void) {
+int main(void) {
     int result = classify();
     return result;
 }
 """
 
+
 class EmbmlBuilder:
+    """
+    Class for building and exporting models using embml.
+    """
     def __init__(self, clf):
         self.clf_name = clf[0]
         self.clf_method = clf[1]
         self.porter = None
 
         self.py_model_file = os.path.join(os.path.dirname(__file__), "tmp.pkl")
-        self.c_model_file  = os.path.join(os.path.dirname(__file__), "tmp.c")
+        self.c_model_file = os.path.join(os.path.dirname(__file__), "tmp.c")
 
     def train(self):
         """
@@ -55,21 +59,27 @@ class EmbmlBuilder:
 
         shutil.copy(self.c_model_file, model_path)
 
-        #todo delete tmp.c and pkl
+        # Remove temporary files
+        os.remove(self.c_model_file)
+        os.remove(self.py_model_file)
+
         return framework_dir, model_path
 
     def copy_custom_framework_files(self, framework_dir):
         """
         Copy custom framework files.
         """
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/FixedNum.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template", "infer_model.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template", "feature_specific.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template", "FixedNum.h"), framework_dir)
 
-    def generate_size_template(self, model_code, model_name):
+    def generate_size_template(self, model_code, model_name, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """
+        size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
+        shutil.copy(os.path.join(os.path.dirname(model_build_dir), "FixedNum.h"), size_build_dir)
+
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code + TEMPLATE
         return model_code
 
@@ -78,8 +88,3 @@ class EmbmlBuilder:
         Get the model language.
         """
         return MODEL_LANGUAGE
-
-
-    def copy_files_to_size_dir(self, model_build_dir):
-        size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
-        shutil.copy(os.path.join(os.path.dirname(model_build_dir), "FixedNum.h"), size_build_dir)

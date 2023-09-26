@@ -4,14 +4,14 @@ import util.common as com
 from sklearn_porter import Porter
 from sklearn.metrics import accuracy_score
 
+
 # Constants
 PORTER_TYPE = 'sklearn-porter'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
-CUSTOM_TEMPLATE = True
 TEMPLATE = """
-\nint main(void) {
+int main(void) {
 #if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
     float features[1];
 #else
@@ -22,7 +22,11 @@ TEMPLATE = """
 }
 """
 
+
 class SkLearnPorterBuilder:
+    """
+    Class for building and exporting models using sklearn-porter.
+    """
     def __init__(self, clf):
         self.clf_name = clf[0]
         self.clf_method = clf[1]
@@ -33,7 +37,7 @@ class SkLearnPorterBuilder:
         Train the classifier and create a porter for export.
         """
         try:
-            self.porter = Porter(self.clf_method, language='c')
+            self.porter = Porter(self.clf_method, language=MODEL_LANGUAGE)
         except NotImplementedError:
             return "Model type not supported for export to C."
         except Exception as e:
@@ -68,10 +72,10 @@ class SkLearnPorterBuilder:
         """
         Copy custom framework files.
         """
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
-        shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template", "infer_model.h"), framework_dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "template", "feature_specific.h"), framework_dir)
 
-    def generate_size_template(self, model_code, model_name):
+    def generate_size_template(self, model_code, model_name, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """
@@ -83,4 +87,3 @@ class SkLearnPorterBuilder:
         Get the model language.
         """
         return MODEL_LANGUAGE
-

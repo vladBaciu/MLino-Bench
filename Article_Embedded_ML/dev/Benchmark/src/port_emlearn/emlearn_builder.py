@@ -3,24 +3,27 @@ import shutil
 import util.common as com
 import emlearn
 
+
 # Constants
 PORTER_TYPE = 'emlearn'
 GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
-CUSTOM_TEMPLATE = True
 TEMPLATE = """
-\nint main(void) {
+int main(void) {{
     float features[1];
     int result = model_predict(features, 1);
     return result;
-}
+}}
 """
 
+
 class EmlearnBuilder:
+    """
+    Class for building and exporting models using emlearn.
+    """
     def __init__(self, classifier):
-        self.classifier_name = classifier[0]
-        self.classifier_method = classifier[1]
+        self.classifier_name, self.classifier_method = classifier
         self.porter = None
 
     def train(self):
@@ -41,20 +44,20 @@ class EmlearnBuilder:
         model_path, framework_dir = self.create_output_paths(output_dir_name)
 
         self.porter.save(file=model_path)
-
-        size_build_dir = os.path.join(framework_dir, 'size')
-        self.create_directory_if_not_exists(size_build_dir)
-
-        self.copy_common_header_files(framework_dir, size_build_dir)
-        self.copy_classifier_specific_headers(framework_dir, size_build_dir)
+        self.copy_porter_headers(framework_dir)
 
         return framework_dir, model_path
 
-    def generate_size_template(self, model_code, model_name):
+    def generate_size_template(self, model_code, model_name, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """
-        model_code += "\n" + TEMPLATE
+        size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
+        self.copy_porter_headers(size_build_dir)
+
+        formatted_template = TEMPLATE.format(model_name)
+        model_code += formatted_template
+        model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code
 
     def get_model_language(self):
@@ -77,13 +80,6 @@ class EmlearnBuilder:
         )
         return model_path, framework_dir
 
-    def create_directory_if_not_exists(self, directory_path):
-        """
-        Create a directory if it doesn't exist.
-        """
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-
     def copy_custom_framework_files(self, framework_dir):
         """
         Copy custom framework files.
@@ -91,28 +87,24 @@ class EmlearnBuilder:
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
 
-    def copy_common_header_files(self, framework_dir, size_build_dir):
+    def copy_porter_headers(self, dest_dir):
         """
-        Copy common header files.
+        Copy common and classifier-specific header files.
         """
         common_header = 'eml_common.h'
-        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), framework_dir)
-        shutil.copy(os.path.join(os.path.dirname(__file__), common_header), size_build_dir)
+        classifier_headers = {
+            "DecisionTree": ['eml_trees.h'],
+            "RandomForest": ['eml_trees.h'],
+            "ExtraTrees": ['eml_trees.h'],
+            "naive_bayes": ['eml_bayes.h', 'eml_fixedpoint.h'],
+            "neural_network": ['eml_net.h']
+        }
 
-    def copy_classifier_specific_headers(self, framework_dir, size_build_dir):
-        """
-        Copy headers based on classifier type.
-        """
+        # Copy common header file
+        shutil.copy2(os.path.join(os.path.dirname(__file__), 'template', common_header), dest_dir)
+
+        # Copy classifier-specific header files
         clf_type = str(type(self.classifier_method))
-        headers_to_copy = []
-
-        if any(clf in clf_type for clf in ("DecisionTree", "RandomForest", "ExtraTrees")):
-            headers_to_copy.append('eml_trees.h')
-        elif "naive_bayes" in clf_type:
-            headers_to_copy.extend(['eml_bayes.h', 'eml_fixedpoint.h'])
-        elif "neural_network" in clf_type:
-            headers_to_copy.append('eml_net.h')
-
+        headers_to_copy = classifier_headers.get(clf_type, [])
         for header in headers_to_copy:
-            shutil.copy(os.path.join(os.path.dirname(__file__), header), framework_dir)
-            shutil.copy(os.path.join(os.path.dirname(__file__), header), size_build_dir)
+            shutil.copy(os.path.join(os.path.dirname(__file__), 'template', header), dest_dir)
