@@ -27,7 +27,7 @@ class M2cgenBuilder:
         self.clf_method = clf[1]
         self.code = None
 
-    def train(self):
+    def invokePorter(self):
         """
         Train the classifier and create a porter for export.
         """

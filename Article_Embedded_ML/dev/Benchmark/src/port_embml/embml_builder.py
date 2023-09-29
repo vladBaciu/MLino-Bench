@@ -30,7 +30,7 @@ class EmbmlBuilder:
         self.py_model_file = os.path.join(os.path.dirname(__file__), "tmp.pkl")
         self.c_model_file = os.path.join(os.path.dirname(__file__), "tmp.c")
 
-    def train(self):
+    def invokePorter(self):
         """
         Train the classifier and create a porter for export.
         """

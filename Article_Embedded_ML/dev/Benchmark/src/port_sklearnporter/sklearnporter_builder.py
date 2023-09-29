@@ -31,7 +31,7 @@ class SkLearnPorterBuilder:
         self.clf_method = clf[1]
         self.porter = None
 
-    def train(self):
+    def invokePorter(self):
         """
         Train the classifier and create a porter for export.
         """

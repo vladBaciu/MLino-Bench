@@ -26,7 +26,7 @@ class EmlearnBuilder:
         self.classifier_name, self.classifier_method = classifier
         self.porter = None
 
-    def train(self):
+    def invokePorter(self):
         """
         Train the classifier and convert it using emlearn.
         """

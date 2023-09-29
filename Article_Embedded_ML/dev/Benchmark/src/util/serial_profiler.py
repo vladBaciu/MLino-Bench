@@ -83,7 +83,7 @@ class SerialProfiler:
         f_bytes = self.get_feature_bytes(data)
         return f_bytes[0]
 
-    def do_inference(self):
+    def measure_acc_and_time(self):
         # Initialize an empty list to store the extracted numbers
         ellapsed_time = []
         inference_result = []

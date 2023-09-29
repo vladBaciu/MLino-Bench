@@ -27,7 +27,7 @@ class MicromlgenBuilder:
         self.clf_name, self.clf_method = clf
         self.porter = None
 
-    def train(self):
+    def invokePorter(self):
         """
         Train the classifier and convert it using micromlgen.
         """

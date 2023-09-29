@@ -137,7 +137,7 @@ class ClassifierBuilder():
 
         com.logging.info(f"{port_framework}:{cls_name} Invoke porter ...")
         # Create and train the model
-        status = self.builder.train()
+        status = self.builder.invokePorter()
 
         if status:
             self.logger_builder((port_framework, cls_name), None, status)
@@ -180,9 +180,9 @@ class ClassifierBuilder():
             #if status:
             benchmarkProfiler = SerialProfiler(self.benchmark_info)
 
-            time_us, acc = benchmarkProfiler.do_inference()
+            time_us, acc = benchmarkProfiler.measure_acc_and_time()
             self.logger_builder((port_framework, cls_name), cc_toolchain, f"On target accuracy {acc}")
-            self.logger_builder((port_framework, cls_name), cc_toolchain, f"Inference time {time_us} us")
+            self.logger_builder((port_framework, cls_name), cc_toolchain, f"Classification time {time_us} us")
 
             #dump configuration info of the model
             com.yaml_dump(self.benchmark_info)
