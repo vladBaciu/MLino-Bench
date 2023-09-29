@@ -1,42 +1,38 @@
 import os
 import shutil
 import util.common as com
-from sklearn_porter import Porter
-
+import m2cgen as m2c
 
 # Constants
-PORTER_TYPE = 'sklearn-porter'
-GENERATED_FILE_EXT = 'h'
+PORTER_TYPE = 'm2cgen'
+GENERATED_FILE_EXT = 'c'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE = """
 int main(void) {
-#if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
-    float features[1];
-#else
-    double features[1];
-#endif
-    int result = predict(features);
-    return result;
+    double input[5];
+    double output[5];
+
+    predict(input, output);
 }
 """
 
 
-class SkLearnPorterBuilder:
+class M2cgenBuilder:
     """
-    Class for building and exporting models using sklearn-porter.
+    Class for building and exporting models using m2gen.
     """
     def __init__(self, clf):
         self.clf_name = clf[0]
         self.clf_method = clf[1]
-        self.porter = None
+        self.code = None
 
     def train(self):
         """
         Train the classifier and create a porter for export.
         """
         try:
-            self.porter = Porter(self.clf_method, language=MODEL_LANGUAGE)
+            self.code = m2c.export_to_c(self.clf_method, function_name="predict")
         except NotImplementedError:
             return "Model type not supported for export to C."
         except Exception as e:
@@ -55,15 +51,9 @@ class SkLearnPorterBuilder:
             GENERATED_FILE_EXT
         )
 
-        try:
-            content = self.porter.export(embed_data=True)
-        except Exception as e:
-            com.logging.info(f"An unexpected error occurred during model export: {e}")
-        else:
-            with open(model_path, 'w') as f:
-                f.write(content)
-            # Eliminate main function since the generated file is a header file and does not need it.
-            com.eliminate_main_function(model_path)
+        content = self.code
+        with open(model_path, 'w') as f:
+            f.write(content)
 
         return framework_dir, model_path
 

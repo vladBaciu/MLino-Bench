@@ -6,12 +6,12 @@ from util.dataLoader import DataLoader
 import util.common as com
 from util.serial_profiler import SerialProfiler
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
 
 from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from port_emlearn.emlearn_builder import EmlearnBuilder
 from port_micromlgen.micromlgen_builder import MicromlgenBuilder
 from port_embml.embml_builder import EmbmlBuilder
+from port_m2cgen.m2cgen_builder import M2cgenBuilder
 
 TEMPLATE_DIR  = "api"
 TEMPLATE_FILE = "main.cpp"
@@ -112,12 +112,11 @@ class ClassifierBuilder():
             AttributeError: If the given porter is not supported.
 
         """
-        if port_framework not in ['sklearn-porter', 'emlearn', 'micromlgen', 'embml']:
-            error = "The given porter '{}' is not supported.".format(port_framework)
-            raise AttributeError(error)
+        self.builder = self.get_builder(port_framework, (cls_name, cls_obj))
 
         com.logging.info(f"{port_framework}:{cls_name} Training model ...")
         cls_obj.fit(self.X_train, self.y_train)
+        com.logging.info(f"{port_framework}:{cls_name} Training done ...")
 
         # Stats
         if self.benchmark_info["training"]["accuracy"]:
@@ -136,8 +135,7 @@ class ClassifierBuilder():
             except AttributeError:
                 model_class_acc = accuracy_score(self.y_test, cls_obj.predict(self.X_test))
 
-        self.builder = self.get_builder(port_framework, (cls_name, cls_obj))
-
+        com.logging.info(f"{port_framework}:{cls_name} Invoke porter ...")
         # Create and train the model
         status = self.builder.train()
 
@@ -152,6 +150,8 @@ class ClassifierBuilder():
             # Export model
             self.benchmark_info['runtime']['generated_model_dir'], \
             self.benchmark_info['runtime']['generated_model_path'] = self.builder.export_to_c(self.benchmark_info['training']['models_directory'])
+
+            # Get model language
             self.benchmark_info['runtime']['language'] = self.builder.get_model_language()
 
             self.copy_api_files(self.benchmark_info['runtime']['generated_model_dir'])
@@ -210,6 +210,8 @@ class ClassifierBuilder():
             return MicromlgenBuilder(cls_pair)
         elif port_framework == "embml":
             return EmbmlBuilder(cls_pair)
+        elif port_framework == "m2cgen":
+            return M2cgenBuilder(cls_pair)
         else:
             error = "The given porter '{}' is not supported.".format(port_framework)
             raise AttributeError(error)
@@ -235,6 +237,8 @@ class ClassifierBuilder():
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "internally_implemented.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.cpp"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, "submitter_implemented.h"), framework_dir)
+        # Set output length
+        self.set_output_len()
 
     def save_npy_files(self):
         labels_file_path = os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "y_labels.npy")
@@ -247,3 +251,27 @@ class ClassifierBuilder():
 
         np.save(labels_file_path, self.y_test)
         np.save(data_file_path, self.X_test)
+
+    def get_output_size(self):
+        """
+        Get the number of output classes from y_train and y_test.
+        """
+        unique_classes = np.union1d(self.y_train, self.y_test)
+        return len(unique_classes)
+
+    def set_output_len(self):
+        """
+        Read feature_specific.h file and set the output length macro.
+        """
+        # Get output size
+        output_size = self.get_output_size()
+
+        # Read feature_specific.h file and replace the output length macro with output_size
+        feature_specific_file = os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "feature_specific.h")
+        with open(feature_specific_file, 'r') as file:
+            filedata = file.read()
+
+        filedata = filedata.replace("PY_OUTPUT_LEN", str(output_size))
+
+        with open(feature_specific_file, 'w') as file:
+            file.write(filedata)

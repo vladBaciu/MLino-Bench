@@ -8,7 +8,7 @@ from sefr import SEFR
 
 import classifier_builder as CB
 
-frameworks  = ['sklearn-porter', 'emlearn', 'micromlgen', 'embml']
+frameworks  = ['sklearn-porter', 'emlearn', 'micromlgen', 'embml', 'm2cgen']
 classifiers = {
     #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
@@ -35,7 +35,7 @@ sklearnporter_classifiers = {
 }
 
 emlearn_classifiers = {
-    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
@@ -53,12 +53,17 @@ micromlgen_classifiers = {
 }
 
 m2gen = {
-    #tba
+    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
+    'nuSVC': sklearn.svm.NuSVC(gamma=0.1)
+    #'xgboost': XGBClassifier(eval_metric='merror')
+
+
 }
 embml = {
     #MLPClassifier for MLP classifiers;
     #LinearSVC for SVM classifiers with linear kernel;
-    'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-4, hidden_layer_sizes=(5, 6), random_state=1),
+    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-4, hidden_layer_sizes=(5, 6), random_state=1),
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
     #'decision_tree': sklearn.tree.DecisionTreeClassifier()
@@ -67,11 +72,14 @@ embml = {
 if __name__ == "__main__":
     builder = CB.ClassifierBuilder()
 
+    for name, cls in m2gen.items():
+        builder.build_classifier(frameworks[4],  name, cls)
+       #builder.build_classifier(frameworks[1],  name, cls)
+       #builder.build_classifier(frameworks[2],  name, cls)
+       #builder.build_classifier(frameworks[3],  name, cls)
     #for name, cls in classifiers.items():
-    #    builder.build_classifier(frameworks[0],  name, cls)
-    #for name, cls in classifiers.items():
-    #    builder.build_classifier(frameworks[1],  name, cls)
-    for name, cls in embml.items():
-        builder.build_classifier(frameworks[3],  name, cls)
+    #    builder.build_classifier(frameworks[2],  name, cls)
+    #for name, cls in embml.items():
+    #    builder.build_classifier(frameworks[3],  name, cls)
 
     builder.print_log_summary()
