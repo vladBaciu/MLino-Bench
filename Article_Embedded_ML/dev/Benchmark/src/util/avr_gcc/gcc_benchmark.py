@@ -6,7 +6,7 @@ import threading
 
 
 class CompileAvrBenchmark:
-    def __init__(self, build_info):
+    def __init__(self, build_info, clean_project):
         """
         Initialize the CompileAvrBenchmark instance.
 
@@ -23,8 +23,9 @@ class CompileAvrBenchmark:
         self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family = self.extract_build_info()
 
         # Create Arduino Makefile and run make clean
-        self.create_makefile()
-        self.make_clean()
+        if clean_project == True:
+            self.create_makefile()
+            self.make_clean()
 
     def create_makefile(self):
         """
