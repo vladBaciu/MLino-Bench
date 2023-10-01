@@ -22,6 +22,8 @@ class CompileAvrBenchmark:
         self.template, self.input_size, self.extension, self.optimization_level, \
         self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family = self.extract_build_info()
 
+        self.total_model_size = 0
+
         # Create Arduino Makefile and run make clean
         if clean_project == True:
             self.create_makefile()
@@ -224,6 +226,8 @@ class CompileAvrBenchmark:
                 com.logging.info(f"{self.porter_type}:{self.model_name} model size: {total_size} bytes")
             else:
                 com.logging.info(f"{self.porter_type}:{self.model_name}: Failed to parse size information")
+
+            self.total_model_size = total_size
 
             return f"Model size: text: {flash_size}; data: {data_size}; bss: {bss_size}; total: {total_size} bytes"
 

@@ -60,9 +60,10 @@ class GasDataLoader:
 
         return train_labels, train_features, test_labels, test_features
 
-    def split_data(self,lists_of_labels, lists_of_features):
-        """combines the different numpy arrays into a single numpy array, permutes the datapoint and their corresponinglabels and splits data into training and validation
-           at rate  9:1
+    def split_data(self,lists_of_labels, lists_of_features, ratio=0.8):
+        """
+           Combines different numpy arrays into a single numpy array, permutes the datapoint and their corresponing
+           labels and splits data into training and validation at rate  8:2
 
         Args:
           list_of_labels: list of numpy vectors of labels
@@ -75,6 +76,8 @@ class GasDataLoader:
           val_features: a (single) permuted numpy array of features to be used for validation
 
         """
+        val_labels, val_features = None, None
+
         labels = np.concatenate(lists_of_labels, axis=0)
         features = np.concatenate(lists_of_features, axis=0)
 
@@ -82,22 +85,27 @@ class GasDataLoader:
         p = np.random.permutation(labels.shape[0])
         labels = labels[p]
         features = features[p,:]
-        train_labels = labels[0:int(0.9*numel)]
-        train_features = features[0:int(0.9*numel), :]
+        train_labels = labels[0:int(ratio*numel)]
+        train_features = features[0:int(ratio*numel), :]
 
-        val_labels = labels[int(0.9*numel)+1:]
-        val_features = features[int(0.9*numel)+1:, :]
+        if ratio != 1:
+          val_labels = labels[int(ratio*numel)+1:]
+          val_features = features[int(ratio*numel)+1:, :]
 
         return train_labels, train_features, val_labels, val_features
 
-    def load_dataset(self):
-        tmp = GasDataLoader()
-        _, _, train_labels, train_features = tmp.load_data(0)
-        train_labels, train_features, val_labels, val_features = tmp.split_data(train_labels, train_features)
+    def load_dataset(self, split_test_train):
+        val_features, val_labels = None, None
 
+        dataLoader = GasDataLoader()
         scaler = StandardScaler()
+
+        _, _, train_labels, train_features = dataLoader.load_data(0)
+        train_labels, train_features, val_labels, val_features = dataLoader.split_data(train_labels, train_features, split_test_train)
+
         train_features = scaler.fit_transform(train_features)
-        val_features = scaler.transform(val_features)
+        if split_test_train != 1:
+          val_features = scaler.transform(val_features)
 
         return train_features, train_labels, val_features, val_labels
 
@@ -105,9 +113,9 @@ class DataLoader:
     def __init__(self, data_set):
         self.data_set = data_set
 
-    def load_data(self):
+    def load_data(self, split_test_train):
         try:
           class_instance = globals()[self.data_set]()
-          return class_instance.load_dataset()
+          return class_instance.load_dataset(split_test_train)
         except KeyError:
           print(f"Dataset {self.data_set} not found")
