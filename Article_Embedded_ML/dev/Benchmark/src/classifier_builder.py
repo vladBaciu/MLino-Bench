@@ -34,14 +34,15 @@ SUPPORTED_PORTER_FRAMEWORKS = {
 class ClassifierBuilder():
     data_logger = list()
 
-    def __init__(self, config_data) -> None:
+    def __init__(self, config_data, log_data) -> None:
         self.X_train, self.y_train, self.X_test, self.y_test = [], [], [], []
         self.builder, self.port_framework, self.cls_name, self.cls_obj = None, None, None, None
 
         # Init benchmark config data
         self.benchmark_info = config_data
+        self.log_data = log_data
 
-    def build_classifier(self, port_framework, cls_name, cls_obj, X_train, X_test, y_train, y_test, clean_project=True):
+    def build_classifier(self, port_framework, cls_name, cls_obj, X_train, X_test, y_train, y_test, metrics = None, clean_project=True):
         """
         Build a classifier using the specified porting framework.
 
@@ -71,18 +72,20 @@ class ClassifierBuilder():
 
         # Call the porter and prepare compilation artifacts if necessary
         if not self.call_porter():
-            if clean_project:
-                self.prepare_compilation_artifacts()
+            self.prepare_compilation_artifacts()
             cc_toolchain = self.compile_model(clean_project)
-            cc_toolchain.make_upload()
 
-            # Call the profiler to measure the on-target accuracy and classification time
-            time_us, acc = self.call_profiler()
+            # If accuracy or classification time is requested, call the profiler to measure the on-target accuracy and classification time
+            if metrics['time_us'] or metrics['accuracy']:
+                cc_toolchain.make_upload()
+
+                # Call the profiler to measure the on-target accuracy and classification time
+                time_us, acc = self.call_profiler()
 
         # Dump configuration info of the model
         com.yaml_dump(self.benchmark_info)
 
-        return time_us, acc
+        return acc, time_us, cc_toolchain.total_model_size
 
     def call_profiler(self):
         """
@@ -96,8 +99,9 @@ class ClassifierBuilder():
         time_us, acc = benchmark_profiler.measure_acc_and_time()
 
         # Log the on-target accuracy and classification time
-        self.logger_builder(None, f"On-target accuracy: {acc}")
-        self.logger_builder(None, f"Classification time: {time_us} us")
+        if self.log_data:
+            self.logger_builder(None, f"On-target accuracy: {acc}")
+            self.logger_builder(None, f"Classification time: {time_us} us")
 
         return time_us, acc
 
@@ -117,9 +121,14 @@ class ClassifierBuilder():
         # Compile the model and log the status
         status = cc_toolchain.compile()
 
+        # Get the model size and total memory footprint
+        model_size_str = cc_toolchain.get_model_size(self.builder)
+        total_program_size_str = cc_toolchain.get_memory_footprint(status)
+
         # Log the model size and memory footprint
-        self.logger_builder(cc_toolchain, cc_toolchain.get_model_size(self.builder))
-        self.logger_builder(cc_toolchain, cc_toolchain.get_memory_footprint(status))
+        if self.log_data:
+            self.logger_builder(cc_toolchain, model_size_str)
+            self.logger_builder(cc_toolchain, total_program_size_str)
 
         return cc_toolchain
 
@@ -152,10 +161,10 @@ class ClassifierBuilder():
                 model_class_acc = accuracy_score(self.y_test, self.cls_obj.predict(self.X_test))
 
         # Log the model accuracy and class accuracy, if requested
-        if self.benchmark_info["training"]["accuracy"]:
+        if self.benchmark_info["training"]["accuracy"] and self.log_data:
             self.logger_builder(None, f"Test ACC: {model_test_acc}")
 
-        if self.benchmark_info["training"]["class_accuracy"]:
+        if self.benchmark_info["training"]["class_accuracy"] and self.log_data:
             self.logger_builder(None, f"Class ACC: {model_class_acc}")
 
     def call_porter(self):
@@ -173,7 +182,8 @@ class ClassifierBuilder():
 
         # Log the porter status
         if status:
-            self.logger_builder(None, status)
+            if self.log_data:
+                self.logger_builder(None, status)
         else:
             com.logging.info(f"{self.port_framework}:{self.cls_name} Invoke porter: OK")
 
@@ -486,7 +496,7 @@ if __name__ == "__main__":
     data_loader = DataLoader(config_data["training"]["dataset"])
     X_train, y_train, X_test, y_test = data_loader.load_data()
 
-    builder = ClassifierBuilder(config_data)
+    builder = ClassifierBuilder(config_data=config_data, log_data=True)
 
     for name, cls in m2gen.items():
         builder.build_classifier(frameworks[4],  name, cls, X_train, X_test, y_train, y_test)

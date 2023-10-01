@@ -22,3 +22,4 @@ runtime:
   template_path:
   language:
   no_of_features:
+  test_samples_on_target: '100'
