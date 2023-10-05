@@ -42,7 +42,8 @@ class ClassifierBuilder():
         self.benchmark_info = config_data
         self.log_data = log_data
 
-    def build_classifier(self, port_framework, cls_name, cls_obj, X_train, X_test, y_train, y_test, metrics = None, clean_project=True):
+    def build_classifier(self, port_framework, cls_name, cls_obj, X_train, X_test, y_train, y_test,
+                         metrics = {'time_us': True, 'accuracy': True}, clean_project=True):
         """
         Build a classifier using the specified porting framework.
 
@@ -494,12 +495,12 @@ if __name__ == "__main__":
     config_data = com.yaml_load("./config.yaml")
 
     data_loader = DataLoader(config_data["training"]["dataset"])
-    X_train, y_train, X_test, y_test = data_loader.load_data()
+    X_train, y_train, X_test, y_test = data_loader.load_data(0.8)
 
     builder = ClassifierBuilder(config_data=config_data, log_data=True)
 
     for name, cls in m2gen.items():
-        builder.build_classifier(frameworks[4],  name, cls, X_train, X_test, y_train, y_test)
+        builder.build_classifier(frameworks[2],  name, cls, X_train, X_test, y_train, y_test)
        #builder.build_classifier(frameworks[1],  name, cls)
        #builder.build_classifier(frameworks[2],  name, cls)
        #builder.build_classifier(frameworks[3],  name, cls)
