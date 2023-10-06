@@ -83,10 +83,10 @@ class ClassifierBuilder():
                 # Call the profiler to measure the on-target accuracy and classification time
                 time_us, acc = self.call_profiler()
 
-        # Dump configuration info of the model
-        com.yaml_dump(self.benchmark_info)
+            # Dump configuration info of the model
+            com.yaml_dump(self.benchmark_info)
 
-        return acc, time_us, cc_toolchain.total_model_size
+            return acc, time_us, cc_toolchain.total_model_size
 
     def call_profiler(self):
         """
@@ -119,12 +119,15 @@ class ClassifierBuilder():
         # Get the compiler toolchain object
         cc_toolchain = self.get_compiler_toolchain(clean_project)
 
+        # Get the model size
+        model_size_str = cc_toolchain.get_model_size(self.builder)
+
         # Compile the model and log the status
         status = cc_toolchain.compile()
 
-        # Get the model size and total memory footprint
-        model_size_str = cc_toolchain.get_model_size(self.builder)
+
         total_program_size_str = cc_toolchain.get_memory_footprint(status)
+        com.logging.info(f"{self.port_framework}:{self.cls_name} {total_program_size_str}")
 
         # Log the model size and memory footprint
         if self.log_data:
@@ -151,15 +154,18 @@ class ClassifierBuilder():
         # Calculate the model accuracy and class accuracy, if requested
         if self.benchmark_info["training"]["accuracy"]:
             try:
-                model_test_acc = com.calculate_accuracy(self.port_framework, self.cls_name, self.cls_obj.predict_proba(self.X_test), self.y_test)
-            except:
                 model_test_acc = accuracy_score(self.y_test, self.cls_obj.predict(self.X_test))
+                com.logging.info(f"{self.port_framework}:{self.cls_name} Test acc: {model_test_acc}")
+            except:
+                model_test_acc = com.calculate_accuracy(self.port_framework, self.cls_name, self.cls_obj.predict_proba(self.X_test), self.y_test)
 
         if self.benchmark_info["training"]["class_accuracy"]:
             try:
-                model_class_acc = com.calculate_all_accuracies(self.port_framework, self.cls_name, self.cls_obj.predict_proba(self.X_test), self.y_test, np.union1d(self.y_train, self.y_test))
-            except AttributeError:
                 model_class_acc = accuracy_score(self.y_test, self.cls_obj.predict(self.X_test))
+                com.logging.info(f"{self.port_framework}:{self.cls_name} Test class acc: {model_class_acc}")
+            except AttributeError:
+                model_class_acc = com.calculate_all_accuracies(self.port_framework, self.cls_name, self.cls_obj.predict_proba(self.X_test),
+                                                               self.y_test, np.union1d(self.y_train, self.y_test))
 
         # Log the model accuracy and class accuracy, if requested
         if self.benchmark_info["training"]["accuracy"] and self.log_data:
@@ -445,8 +451,8 @@ classifiers = {
 }
 
 sklearnporter_classifiers = {
-    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
+    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=100,random_state=0),
@@ -457,10 +463,10 @@ sklearnporter_classifiers = {
 
 emlearn_classifiers = {
     #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
+    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 6), random_state=1)
+    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(3, 3), random_state=1)
     #'sequential': tba
 }
 
@@ -474,7 +480,7 @@ micromlgen_classifiers = {
 }
 
 m2gen = {
-    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
+    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
     #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
     #'nuSVC': sklearn.svm.NuSVC(gamma=0.1)
     #'xgboost': XGBClassifier(eval_metric='merror')
@@ -499,8 +505,8 @@ if __name__ == "__main__":
 
     builder = ClassifierBuilder(config_data=config_data, log_data=True)
 
-    for name, cls in m2gen.items():
-        builder.build_classifier(frameworks[2],  name, cls, X_train, X_test, y_train, y_test)
+    for name, cls in sklearnporter_classifiers.items():
+        builder.build_classifier(frameworks[0],  name, cls, X_train, X_test, y_train, y_test)
        #builder.build_classifier(frameworks[1],  name, cls)
        #builder.build_classifier(frameworks[2],  name, cls)
        #builder.build_classifier(frameworks[3],  name, cls)

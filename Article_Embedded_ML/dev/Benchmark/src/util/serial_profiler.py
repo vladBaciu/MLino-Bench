@@ -111,14 +111,19 @@ class SerialProfiler:
 
             self.mcu_serial.write(bytes(f"db load {self.no_of_features*f_bytes}%", 'utf-8'))
             data = self.wait_ready_ack()
+
             # Send chuncks of 16 bytes
             for j in range(0, int(len(str_hex_bytes)/16)):
                 self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes[j*16: (j*16) + 16].encode() + bytes("%", 'utf-8'))
                 data = self.wait_ready_ack()
 
+            remaining_bytes = len(str_hex_bytes) % 16
+            if(remaining_bytes != 0):
+                self.mcu_serial.write(bytes("db ", 'utf-8') + str_hex_bytes[-remaining_bytes:].encode() + bytes("%", 'utf-8'))
+                data = self.wait_ready_ack()
+
             self.mcu_serial.write(bytes(f"infer {INFER_ITER} {WARMUP_ITER}%", 'utf-8'))
             data = self.wait_ready_ack()
-
             inference_result.append(self.get_inference_result(data))
 
             time = self.get_ellapsed_time(data)

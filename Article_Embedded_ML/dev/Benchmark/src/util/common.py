@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
+ACC_SCALE = 1
+
 # Load parameters from a YAML file
 def yaml_load(file_path):
     """
@@ -29,9 +31,10 @@ def yaml_dump(content):
     Args:
         content (dict): Content to be written to the YAML file.
     """
-    file_path = os.path.join(content['runtime']['generated_model_dir'], "config.yaml")
-    with open(file_path, 'w') as file:
-        yaml.dump(content, file, default_flow_style=False)
+    if content['runtime']['generated_model_dir']:
+        file_path = os.path.join(content['runtime']['generated_model_dir'], "config.yaml")
+        with open(file_path, 'w') as file:
+            yaml.dump(content, file, default_flow_style=False)
 
 # Create build paths for generated models
 def create_build_path(src_root, output_dir_name, clf_type, framework, clf_name, ext):
@@ -122,7 +125,7 @@ def calculate_accuracy(framework, cls, y_pred, labels):
     """
     y_pred_label = np.argmax(y_pred, axis=1)
     correct = np.sum(labels == y_pred_label)
-    accuracy = 100 * correct / len(y_pred)
+    accuracy = ACC_SCALE * correct / len(y_pred)
     logging.info(f"{framework}:{cls} overall accuracy = {accuracy:2.1f}")
     return accuracy
 
@@ -152,7 +155,7 @@ def calculate_all_accuracies(framework, cls, y_pred, labels, classes):
                 if labels[i] == y_pred_label:
                     true_positives += 1
 
-        accuracies[class_item] = 100 * true_positives / np.sum(labels == class_item)
+        accuracies[class_item] = ACC_SCALE * true_positives / np.sum(labels == class_item)
         logging.info(f"{framework}:{cls} class accuracy = {accuracies[class_item]:2.1f} ({classes[class_item]})")
 
     return accuracies
@@ -248,7 +251,7 @@ def calculate_ae_pr_accuracy(y_pred, y_true):
         false_negative = np.sum((y_pred_binary[n_normal:] == 0))
         precision[threshold_item] = true_positive / (true_positive + false_positive)
         recall[threshold_item] = true_positive / (true_positive + false_negative)
-        accuracy_tmp = 100 * (precision[threshold_item] + recall[threshold_item]) / 2
+        accuracy_tmp = ACC_SCALE * (precision[threshold_item] + recall[threshold_item]) / 2
         if accuracy_tmp > accuracy:
             accuracy = accuracy_tmp
 

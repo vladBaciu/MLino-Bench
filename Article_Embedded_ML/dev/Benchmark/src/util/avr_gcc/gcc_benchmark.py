@@ -273,6 +273,18 @@ class CompileAvrBenchmark:
         return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
 
     @staticmethod
+    def check_memory_usage(input_string):
+        pattern = r'\(\s*([\d.]+)%\s*Full\s*\)'
+
+        # Use re.findall to find all matching percentage values in the input string
+        percentage_values = re.findall(pattern, input_string)
+        for percentage in percentage_values:
+            percentage_float = float(percentage)
+            if percentage_float > 100:
+                error_message = f"Error: {percentage_float}% is greater than the maximum."
+                raise RuntimeError(error_message)
+
+    @staticmethod
     def parse_linker_output(input_string, section_name):
         """
         Parse linker output to extract memory usage information.
@@ -302,6 +314,8 @@ class CompileAvrBenchmark:
         # Extract the digits and convert to an integer
         bytes_str = input_string[digit_start_index:digit_end_index]
         bytes_count = int(bytes_str)
+
+        CompileAvrBenchmark.check_memory_usage(input_string)
 
         return bytes_count
 

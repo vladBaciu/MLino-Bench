@@ -127,6 +127,57 @@ class SensorlessDriveDataLoader:
         val_features = self.scaler.transform(val_features)
 
         return train_features, train_labels, val_features, val_labels
+
+class HARDataLoader:
+    def __init__(self):
+        self.scaler = StandardScaler()
+        self.csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'csv_data')
+        self.features_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'features.txt')
+        self.train_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'train')
+        self.test_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'test')
+
+    def get_csv_data(self):
+        # Create directories if they don't exist
+        os.makedirs(self.csv_file, exist_ok=True)
+
+        # Load training data
+        X_train = pd.read_csv(os.path.join(self.train_file, 'X_train.txt'), delim_whitespace=True, header=None)
+        subject_train = pd.read_csv(os.path.join(self.train_file, 'subject_train.txt'), header=None, names=['subject'])
+        y_train = pd.read_csv(os.path.join(self.train_file, 'y_train.txt'), header=None, names=['Activity'])
+
+        # Combine training data into a single DataFrame
+        train = pd.concat([X_train.iloc[:, :80], subject_train, y_train], axis=1)
+
+        # Load test data
+        X_test = pd.read_csv(os.path.join(self.test_file, 'X_test.txt'), delim_whitespace=True, header=None)
+        subject_test = pd.read_csv(os.path.join(self.test_file, 'subject_test.txt'), header=None, names=['subject'])
+        y_test = pd.read_csv(os.path.join(self.test_file, 'y_test.txt'), header=None, names=['Activity'])
+
+        # Combine test data into a single DataFrame
+        test = pd.concat([X_test.iloc[:, :80], subject_test, y_test], axis=1)
+
+        # Write data to CSV files
+        train.to_csv(os.path.join(self.csv_file, 'train.csv'), index=False)
+        test.to_csv(os.path.join(self.csv_file, 'test.csv'), index=False)
+
+    def load_dataset(self, split_test_train):
+        #Get csv data if not already present
+        if not os.path.exists(os.path.join(self.csv_file, 'train.csv')):
+            self.get_csv_data()
+
+        train_data = pd.read_csv(os.path.join(self.csv_file, 'train.csv'))
+        test_data = pd.read_csv(os.path.join(self.csv_file, 'test.csv'))
+
+        train_features = train_data.drop(['subject', 'Activity'], axis=1)
+        train_labels = train_data.Activity.values
+
+        val_features = test_data.drop(['subject', 'Activity'], axis=1)
+        val_labels = test_data.Activity.values
+
+        train_features = self.scaler.fit_transform(train_features)
+        val_features = self.scaler.transform(val_features)
+
+        return train_features, train_labels, val_features, val_labels
 class DataLoader:
     def __init__(self, data_set):
         self.data_set = data_set
