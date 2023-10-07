@@ -3,7 +3,7 @@ import os
 import glob
 import re
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 
 class GasDataLoader:
@@ -178,6 +178,99 @@ class HARDataLoader:
         val_features = self.scaler.transform(val_features)
 
         return train_features, train_labels, val_features, val_labels
+
+class GestureDataLoader:
+    def load_dataset(self, split_test_train):
+        scaler = StandardScaler()
+
+        dat_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets',
+                                'gesture_phase_segmentation')
+
+        # read .csv from provided dataset
+        csv_filename01= os.path.join(dat_file, 'a1_raw.csv')
+        csv_filename02= os.path.join(dat_file, 'a1_va3.csv')
+        csv_filename03= os.path.join(dat_file, 'a2_raw.csv')
+        csv_filename04= os.path.join(dat_file, 'a2_va3.csv')
+        csv_filename05= os.path.join(dat_file, 'a3_raw.csv')
+        csv_filename06= os.path.join(dat_file, 'a3_va3.csv')
+
+        csv_filename07= os.path.join(dat_file, 'b1_raw.csv')
+        csv_filename08= os.path.join(dat_file, 'b1_va3.csv')
+        csv_filename09= os.path.join(dat_file, 'b3_raw.csv')
+        csv_filename10= os.path.join(dat_file, 'b3_va3.csv')
+
+        csv_filename11= os.path.join(dat_file, 'c1_raw.csv')
+        csv_filename12= os.path.join(dat_file, 'c1_va3.csv')
+        csv_filename13= os.path.join(dat_file, 'c3_raw.csv')
+        csv_filename14= os.path.join(dat_file, 'c3_va3.csv')
+
+        # df=pd.read_csv(csv_filename,index_col=0)
+        df1=pd.read_csv(csv_filename01 , skiprows=[1,2,3,4])
+        df2=pd.read_csv(csv_filename02)
+        df3=pd.read_csv(csv_filename03 , skiprows=[1,2,3,4])
+        df4=pd.read_csv(csv_filename04)
+        df5=pd.read_csv(csv_filename05 , skiprows=[1,2,3,4])
+        df6=pd.read_csv(csv_filename06)
+        df7=pd.read_csv(csv_filename07 , skiprows=[1,2,3,4])
+        df8=pd.read_csv(csv_filename08)
+        df9=pd.read_csv(csv_filename09 , skiprows=[1,2,3,4])
+        df10=pd.read_csv(csv_filename10)
+        df11=pd.read_csv(csv_filename11 , skiprows=[1,2,3,4])
+        df12=pd.read_csv(csv_filename12)
+        df13=pd.read_csv(csv_filename13 , skiprows=[1,2,3,4])
+        df14=pd.read_csv(csv_filename14)
+
+        df1.drop('timestamp',axis=1,inplace=True)
+        df1.drop('phase',axis=1,inplace=True)
+        df3.drop('timestamp',axis=1,inplace=True)
+        df3.drop('phase',axis=1,inplace=True)
+        df5.drop('timestamp',axis=1,inplace=True)
+        df5.drop('phase',axis=1,inplace=True)
+        df7.drop('timestamp',axis=1,inplace=True)
+        df7.drop('phase',axis=1,inplace=True)
+        df9.drop('timestamp',axis=1,inplace=True)
+        df9.drop('phase',axis=1,inplace=True)
+        df11.drop('timestamp',axis=1,inplace=True)
+        df11.drop('phase',axis=1,inplace=True)
+        df13.drop('timestamp',axis=1,inplace=True)
+        df13.drop('phase',axis=1,inplace=True)
+
+
+        df2.rename(columns={'Phase': 'phase'}, inplace=True)
+        df4.rename(columns={'Phase': 'phase'}, inplace=True)
+        df6.rename(columns={'Phase': 'phase'}, inplace=True)
+        df8.rename(columns={'Phase': 'phase'}, inplace=True)
+        df10.rename(columns={'Phase': 'phase'}, inplace=True)
+        df12.rename(columns={'Phase': 'phase'}, inplace=True)
+        df14.rename(columns={'Phase': 'phase'}, inplace=True)
+
+
+        p1 = pd.concat([df1,df2],axis=1)
+        p2 = pd.concat([df3,df4],axis=1)
+        p3 = pd.concat([df5,df6],axis=1)
+        p4 = pd.concat([df7,df8],axis=1)
+        p5 = pd.concat([df9,df10],axis=1)
+        p6 = pd.concat([df11,df12],axis=1)
+        p7 = pd.concat([df13,df14],axis=1)
+
+        df= pd.concat([p1,p2,p3,p4,p5,p6,p7])
+        le = LabelEncoder()
+        df['phase'] = le.fit_transform(df['phase'])
+
+        df = df.sample(frac=1)
+        cols = list(df.columns)
+        features = cols
+        features.remove('phase')
+
+        X = df[features]
+        y = df['phase']
+
+        train_features, val_features, train_labels, val_labels = train_test_split(X, y, test_size=split_test_train, random_state=42)
+
+        train_features = scaler.fit_transform(train_features)
+        val_features = scaler.transform(val_features)
+
+        return train_features, train_labels, val_features, val_labels
 class DataLoader:
     def __init__(self, data_set):
         self.data_set = data_set
@@ -188,3 +281,4 @@ class DataLoader:
           return class_instance.load_dataset(split_test_train)
         except KeyError:
           print(f"Dataset {self.data_set} not found")
+          exit(1)

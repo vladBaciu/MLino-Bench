@@ -278,10 +278,13 @@ class CompileAvrBenchmark:
 
         # Use re.findall to find all matching percentage values in the input string
         percentage_values = re.findall(pattern, input_string)
-        for percentage in percentage_values:
+        for i, percentage in enumerate(percentage_values):
             percentage_float = float(percentage)
             if percentage_float > 100:
-                error_message = f"Error: {percentage_float}% is greater than the maximum."
+                if(i == 0):
+                    error_message = f"Text size is greater than the maximum memory size."
+                else:
+                    error_message = f"Data size is greater than the maximum memory size."
                 raise RuntimeError(error_message)
 
     @staticmethod

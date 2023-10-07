@@ -1,9 +1,9 @@
 #Use string input data, integers not allowed :eg field: '1' instead of field: 1
 training:
-  dataset: GasDataLoader
+  dataset: GestureDataLoader
   models_directory: generated_models
   accuracy: True
-  class_accuracy: True
+  class_accuracy: False
 
 target:
   #see Arduino-Makefile examples for more
@@ -22,4 +22,4 @@ runtime:
   template_path:
   language:
   no_of_features:
-  test_samples_on_target: '100'
+  ratio_test_samples_on_target: '20'

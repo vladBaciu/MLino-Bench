@@ -20,7 +20,7 @@ class SerialProfiler:
         self.porter_type    = build_info["runtime"]["porter_type"]
         self.model_dir      = build_info['runtime']['generated_model_dir']
         self.no_of_features = build_info["runtime"]["no_of_features"]
-        self.test_samples   = build_info["runtime"]["test_samples_on_target"]
+        self.ratio_test_samples   = build_info["runtime"]["ratio_test_samples_on_target"]
 
         self.read_npy_files()
 
@@ -99,13 +99,16 @@ class SerialProfiler:
         com.logging.info(f"{self.porter_type}:{self.model_name} Measuring accuracy and inference time ...")
 
         # Check if the user has specified the number of test samples
-        if self.test_samples:
-            test_sample = int(self.test_samples)
+        if self.ratio_test_samples:
+            # Get the specific ratio of test samples
+            test_sample = int(len(self.expected_labels) * int(self.ratio_test_samples)/100)
         else:
             # Use all the test samples
             test_sample = len(self.expected_labels)
 
+        com.logging.info(f"{self.porter_type}:{self.model_name} Sending {test_sample} test vectors...")
         for i in range(0, test_sample):
+            com.logging.info(f"{self.porter_type}:{self.model_name} Sending test vector {i}")
             features = np_f_array[i*self.no_of_features*f_bytes: (i+1)*self.no_of_features*f_bytes]
             str_hex_bytes = ''.join('{:02x}'.format(x) for x in features)
 
