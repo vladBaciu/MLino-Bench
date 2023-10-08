@@ -209,6 +209,7 @@ def generate_makefile():
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"
 
     if ARGS.sam:
+        file_content += "\nARCHITECTURE = sam"
         file_content += "\ninclude $(ARDMK_DIR)/Sam.mk"
     else:
         file_content += "\ninclude $(ARDMK_DIR)/Arduino.mk"

@@ -20,7 +20,7 @@ class SerialProfiler:
         self.porter_type    = build_info["runtime"]["porter_type"]
         self.model_dir      = build_info['runtime']['generated_model_dir']
         self.no_of_features = build_info["runtime"]["no_of_features"]
-        self.ratio_test_samples   = build_info["runtime"]["ratio_test_samples_on_target"]
+        self.ratio_test_samples   = build_info["target"]["ratio_test_samples_on_target"]
 
         self.read_npy_files()
 

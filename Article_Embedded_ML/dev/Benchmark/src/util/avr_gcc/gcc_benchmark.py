@@ -20,7 +20,7 @@ class CompileAvrBenchmark:
         self.build_info = build_info
         self.model_dir, self.model_path, self.model_name, self.porter_type, \
         self.template, self.input_size, self.extension, self.optimization_level, \
-        self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family = self.extract_build_info()
+        self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family, self.compiler = self.extract_build_info()
 
         self.total_model_size = 0
 
@@ -202,7 +202,11 @@ class CompileAvrBenchmark:
             subprocess.run(compile_command, cwd=build_path, check=True)
 
             # Use the 'avr-size' command to get the sizes of different sections
-            size_command = ['avr-size', 'model.o']
+            if self.compiler == "gcc":
+                size_command = ['avr-size', 'model.o']
+            elif self.compiler == "arm":
+                size_command = ['arm-none-eabi-size', 'model.o']
+
             size_output = subprocess.run(
                 size_command,
                 cwd=build_path,
@@ -250,12 +254,17 @@ class CompileAvrBenchmark:
         Returns:
             list: The compile command for the model.
         """
+
+        if self.compiler == "gcc":
+            compiler_cmd = "avr-gcc"
+        elif self.compiler == "arm":
+            compiler_cmd = "arm-none-eabi-gcc"
+
         return [
-            'avr-gcc', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
+            compiler_cmd, '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
             '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
             '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
-            '-D {}'.format(self.model_name.upper()),
-            '-mmcu={}'.format(self.mcu)
+            '-D {}'.format(self.model_name.upper())
         ]
 
     def get_memory_footprint(self, linker_output):
@@ -268,9 +277,18 @@ class CompileAvrBenchmark:
         Returns:
             str: Memory footprint information.
         """
-        text_section = self.parse_linker_output(linker_output, "Program:")
-        data_section = self.parse_linker_output(linker_output, "Data:")
-        return f"Total flash: {text_section} bytes, Total RAM: {data_section} bytes"
+        text_section, data_section, bss_section = 0, 0, 0
+
+        if self.compiler == "gcc":
+            text_section = self.parse_linker_output_avr_gcc(linker_output, "Program:")
+            data_section = self.parse_linker_output_avr_gcc(linker_output, "Data:")
+        elif self.compiler == "arm":
+            text_section = self.parse_linker_output_arm(linker_output, "text")
+            data_section = self.parse_linker_output_arm(linker_output, "data")
+            bss_section = self.parse_linker_output_arm(linker_output, "bss")
+
+        return f"Total flash: {text_section} bytes, Total RAM: {data_section + bss_section} bytes"
+
 
     @staticmethod
     def check_memory_usage(input_string):
@@ -288,7 +306,36 @@ class CompileAvrBenchmark:
                 raise RuntimeError(error_message)
 
     @staticmethod
-    def parse_linker_output(input_string, section_name):
+    def parse_linker_output_arm(input_string, section_name):
+        """
+        Parse linker output to extract memory usage information.
+
+        Args:
+            input_string (str): Linker output string.
+            section_name (str): Name of the memory section to extract.
+
+        Returns:
+            int: Size of the memory section.
+        """
+        bytes_count = 0
+        start_index = input_string.find("text")
+        # Define regular expressions to match numbers
+        number_pattern = r'-?\d+'
+
+        # Use regular expressions to find all the numbers in the string
+        numbers = re.findall(number_pattern, input_string[start_index:])
+
+        # Extract the text, data, and bss sizes
+        if(section_name == "text"):
+            bytes_count = int(numbers[0])
+        elif(section_name == "data"):
+            bytes_count = int(numbers[1])
+        else:
+            bytes_count = int(numbers[2])
+
+        return bytes_count
+    @staticmethod
+    def parse_linker_output_avr_gcc(input_string, section_name):
         """
         Parse linker output to extract memory usage information.
 
@@ -367,8 +414,9 @@ class CompileAvrBenchmark:
          optimization_level = self.build_info["target"]["optimization_level"]
          print_proc_stdout = self.build_info["target"]["compiler_stdout"]
          board = self.build_info["target"]["board"]
-         mcu = self.build_info["target"]["board_sub"]
+         mcu = self.build_info["target"]["mcu"]
+         compiler = self.build_info["target"]["compiler"]
          port = self.build_info["target"]["monitor_port"]
          sam_family = self.build_info["target"]["sam_family"]
 
-         return model_dir, model_path, model_name, porter_type, template, input_size, extension, optimization_level, print_proc_stdout, board, mcu, port, sam_family
+         return model_dir, model_path, model_name, porter_type, template, input_size, extension, optimization_level, print_proc_stdout, board, mcu, port, sam_family, compiler

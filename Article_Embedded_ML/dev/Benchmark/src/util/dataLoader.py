@@ -4,6 +4,7 @@ import glob
 import re
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.datasets import load_iris, load_breast_cancer, load_digits
 from sklearn.model_selection import train_test_split
 
 class GasDataLoader:
@@ -271,6 +272,30 @@ class GestureDataLoader:
         val_features = scaler.transform(val_features)
 
         return train_features, train_labels, val_features, val_labels
+
+class DefaultDataLoader:
+    def __init__(self, data_set='iris'):
+        self.data_set = data_set
+        self.scaler = StandardScaler()
+
+    def load_dataset(self, split_test_train):
+        if self.data_set == 'iris':
+            # Load the Iris dataset
+            data = load_iris()
+        elif self.data_set == 'breast_cancer':
+            # Load the Breast Cancer dataset
+            data = load_breast_cancer()
+        elif self.data_set == 'digits':
+            # Load the Digits dataset
+            data = load_digits()
+        else:
+            raise ValueError(f"Dataset {self.data_set} not found")
+        # Split the dataset into training and testing sets
+        train_features, val_features, train_labels, val_labels= train_test_split(data.data, data.target, test_size=split_test_train, random_state=42)
+        # Scale the features using StandardScaler
+        train_features = self.scaler.fit_transform(train_features)
+        val_features = self.scaler.transform(val_features)
+        return train_features, train_labels, val_features, val_labels
 class DataLoader:
     def __init__(self, data_set):
         self.data_set = data_set
@@ -280,5 +305,5 @@ class DataLoader:
           class_instance = globals()[self.data_set]()
           return class_instance.load_dataset(split_test_train)
         except KeyError:
-          print(f"Dataset {self.data_set} not found")
-          exit(1)
+          class_instance = DefaultDataLoader(self.data_set)
+          return class_instance.load_dataset(split_test_train)

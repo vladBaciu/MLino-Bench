@@ -255,7 +255,7 @@ class ClassifierBuilder():
         """
         # Import the appropriate compiler toolchain based on the target type
         target_type = self.benchmark_info['target']['type']
-        if target_type == 'avr_gcc':
+        if target_type == 'arduino_makefile':
             from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
             return CompileAvrBenchmark(self.benchmark_info, clean_project)
         #elif target_type == 'arm_gcc':
@@ -438,21 +438,21 @@ frameworks  = ['sklearn-porter', 'emlearn', 'micromlgen', 'embml', 'm2cgen']
 
 classifiers = {
     #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
-    #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
+    'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=30, max_depth=10, random_state=50),
+    #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=15, random_state=50),
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=100,random_state=0),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 6), random_state=1)
+    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(16, 16, 16), random_state=1)
     #'linearSVC': sklearn.svm.LinearSVC(C=0.1),
-    #'nuSVC': sklearn.svm.NuSVC(gamma=0.1),
+    #'nuSVC': sklearn.svm.NuSVC(),
     #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
     #'xgboost': XGBClassifier(eval_metric='merror')
 }
 
 sklearnporter_classifiers = {
     #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
+    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=20, max_depth=10, random_state=50),
     #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=100,random_state=0),
@@ -476,7 +476,7 @@ micromlgen_classifiers = {
     #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
     #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
     #'xgboost': XGBClassifier(eval_metric='merror')
-    #'sefr_classifier': SEFR(), #binary classifier
+    'sefr_classifier': SEFR(), #binary classifier
 }
 
 m2gen = {
@@ -505,8 +505,8 @@ if __name__ == "__main__":
 
     builder = ClassifierBuilder(config_data=config_data, log_data=True)
 
-    for name, cls in sklearnporter_classifiers.items():
-        builder.build_classifier(frameworks[0],  name, cls, X_train, X_test, y_train, y_test)
+    for name, cls in classifiers.items():
+        builder.build_classifier(frameworks[2],  name, cls, X_train, X_test, y_train, y_test)
        #builder.build_classifier(frameworks[1],  name, cls)
        #builder.build_classifier(frameworks[2],  name, cls)
        #builder.build_classifier(frameworks[3],  name, cls)
