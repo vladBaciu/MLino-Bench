@@ -1,0 +1,22 @@
+runtime:
+  generated_model_dir: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\generated_models\random_forest\emlearn
+  generated_model_path: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\generated_models\random_forest\emlearn\model.h
+  language: c
+  model_name: random_forest
+  no_of_features: 128
+  porter_type: emlearn
+  ratio_test_samples_on_target: '20'
+  template_path: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\src\api\main.cpp
+target:
+  board: mega
+  board_sub: atmega2560
+  compiler_stdout: false
+  monitor_port: '9'
+  optimization_level: s
+  sam_family: false
+  type: avr_gcc
+training:
+  accuracy: true
+  class_accuracy: false
+  dataset: GasDataLoader
+  models_directory: generated_models

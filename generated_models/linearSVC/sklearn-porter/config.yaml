@@ -1,0 +1,23 @@
+runtime:
+  generated_model_dir: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\generated_models\linearSVC\sklearn-porter
+  generated_model_path: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\generated_models\linearSVC\sklearn-porter\model.h
+  language: c
+  model_name: linearSVC
+  no_of_features: 128
+  porter_type: sklearn-porter
+  template_path: D:\PhD\Workspace\Git_phd\phd\Article_Embedded_ML\dev\Benchmark\src\api\main.cpp
+target:
+  board: arduino_due_x
+  compiler: arm
+  compiler_stdout: false
+  mcu: SAM3X8E
+  monitor_port: '10'
+  optimization_level: s
+  ratio_test_samples_on_target: '25'
+  sam_family: true
+  type: arduino_makefile
+training:
+  accuracy: true
+  class_accuracy: false
+  dataset: GasDataLoader
+  models_directory: generated_models
