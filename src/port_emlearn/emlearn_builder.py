@@ -105,6 +105,13 @@ class EmlearnBuilder:
 
         # Copy classifier-specific header files
         clf_type = str(type(self.classifier_method))
+
+        # Search for classifier type in classifier_headers dictionary
+        for key in classifier_headers.keys():
+            if key in clf_type:
+                clf_type = key
+                break
+
         headers_to_copy = classifier_headers.get(clf_type, [])
         for header in headers_to_copy:
             shutil.copy(os.path.join(os.path.dirname(__file__), 'template', header), dest_dir)
