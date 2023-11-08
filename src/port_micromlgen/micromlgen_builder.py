@@ -82,3 +82,8 @@ class MicromlgenBuilder:
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
 
+    def get_model_language(self):
+        """
+        Get the model language.
+        """
+        return MODEL_LANGUAGE

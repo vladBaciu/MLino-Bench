@@ -235,6 +235,10 @@ class ClassifierBuilder():
         self.benchmark_info['runtime']['generated_model_dir'] = generated_model_dir
         self.benchmark_info['runtime']['generated_model_path'] = generated_model_path
 
+        # Get the model language
+        language = self.builder.get_model_language()
+        self.benchmark_info['runtime']['language'] = language
+
         # Copy the API files to the generated model directory
         self.copy_api_files(generated_model_dir)
 
@@ -540,9 +544,7 @@ embml = {
 def tinymlgen_model(data_size, ouptut_size):
     nn = Sequential()
     nn.add(layers.Dense(units=50, activation='relu', input_shape=data_size))
-    nn.add(layers.Dense(units=30, activation='relu'))
-    nn.add(layers.Dense(units=20, activation='relu'))
-
+    nn.add(layers.Dense(units=50, activation='relu'))
     nn.add(layers.Dense(ouptut_size, activation='softmax'))
 
     # use categorical_crossentropy for multi-class classification

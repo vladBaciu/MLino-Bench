@@ -82,3 +82,9 @@ class EmbmlBuilder:
 
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code + TEMPLATE
         return model_code
+
+    def get_model_language(self):
+        """
+        Get the model language.
+        """
+        return MODEL_LANGUAGE

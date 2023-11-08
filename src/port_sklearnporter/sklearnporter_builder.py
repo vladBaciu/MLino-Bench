@@ -80,3 +80,9 @@ class SkLearnPorterBuilder:
         """
         model_code += "\n" + TEMPLATE
         return model_code
+
+    def get_model_language(self):
+        """
+        Get the model language.
+        """
+        return MODEL_LANGUAGE

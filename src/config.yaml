@@ -1,6 +1,6 @@
 #Use string input data, integers not allowed :eg field: '1' instead of field: 1
 training:
-  dataset: GestureDataLoader
+  dataset: GasDataLoader
   models_directory: generated_models
   accuracy: True
   class_accuracy: False
@@ -15,7 +15,7 @@ target:
   monitor_port: '10'
   optimization_level: s
   compiler_stdout: False
-  ratio_test_samples_on_target: '25'
+  ratio_test_samples_on_target: '20'
 
 runtime:
   porter_type:
