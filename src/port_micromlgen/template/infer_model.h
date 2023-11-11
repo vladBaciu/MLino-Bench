@@ -14,17 +14,17 @@ extern "C" {
 int model_output[OUTPUT_SIZE];
 FEATURE_TYPE input[NUMBER_OF_FEATURES];
 
-#if defined(RANDOM_FOREST)
+#if defined(RANDOMFORRESTCLASSIFIER)
 Eloquent::ML::Port::RandomForest classifier;
 #elif defined(SVC)
 Eloquent::ML::Port::SVM classifier;
-#elif defined(DECISION_TREE)
+#elif defined(DECISIONTREECLASSIFIER)
 Eloquent::ML::Port::DecisionTree classifier;
-#elif defined(GAUSSIAN_NAIVE_BAYES)
+#elif defined(GAUSSIANNB)
 Eloquent::ML::Port::GaussianNB classifier;
-#elif defined(XGBOOST)
+#elif defined(XGBCLASSIFIER)
 Eloquent::ML::Port::XGBClassifier classifier;
-#elif defined(SEFR_CLASSIFIER)
+#elif defined(SEFR)
 Eloquent::ML::Port::SEFR classifier;
 #endif
 

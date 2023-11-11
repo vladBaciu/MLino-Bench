@@ -62,12 +62,12 @@ class MicromlgenBuilder:
         Generate a template based on the model code and model name.
         """
         template_map = {
-            'decision_tree': 'DecisionTree',
-            'random_forest': 'RandomForest',
-            'svc': 'SVM',
-            'gaussian_naive_bayes': 'GaussianNB',
-            'xgboost': 'XGBClassifier',
-            'sefr_classifier': 'SEFR'
+            'DecisionTreeClassifier': 'DecisionTree',
+            'RandomForestClassifier': 'RandomForest',
+            'SVC': 'SVM',
+            'GaussianNB': 'GaussianNB',
+            'XGBClassifier': 'XGBClassifier',
+            'SEFR': 'SEFR'
         }
 
         formatted_template = TEMPLATE.format(template_map.get(model_name, ''))

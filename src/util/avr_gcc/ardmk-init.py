@@ -216,8 +216,8 @@ def generate_makefile():
     if ARGS.sam:
         file_content += "\nARCHITECTURE = sam"
         # Include tf lite files
-        if os.path.basename(os.path.dirname(ARGS.directory)).upper() == "TFKERAS":
-            file_content += "\n include elq/tinyml.mk"
+        if os.path.basename(os.path.dirname(ARGS.directory)).upper() == "SEQUENTIAL":
+            file_content += "\ninclude elq/tinyml.mk"
         file_content += "\ninclude $(ARDMK_DIR)/Sam.mk"
     else:
         file_content += "\ninclude $(ARDMK_DIR)/Arduino.mk"

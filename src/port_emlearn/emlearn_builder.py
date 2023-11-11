@@ -93,11 +93,11 @@ class EmlearnBuilder:
         """
         common_header = 'eml_common.h'
         classifier_headers = {
-            "DecisionTree": ['eml_trees.h'],
-            "RandomForest": ['eml_trees.h'],
-            "ExtraTrees": ['eml_trees.h'],
-            "naive_bayes": ['eml_bayes.h', 'eml_fixedpoint.h'],
-            "neural_network": ['eml_net.h']
+            "DecisionTreeClassifier": ['eml_trees.h'],
+            "RandomForestClassifier": ['eml_trees.h'],
+            "ExtraTreesClassifier": ['eml_trees.h'],
+            "GaussianNB": ['eml_bayes.h', 'eml_fixedpoint.h'],
+            "MLPClassifier": ['eml_net.h']
         }
 
         # Copy common header file

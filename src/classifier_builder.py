@@ -31,10 +31,12 @@ from port_tinymlgen.tinymlgen_builder import TinymlgenBuilder
 TEMPLATE_DIR  = "api"
 TEMPLATE_FILE = "main.cpp"
 
-# Define a dictionary of supported porter frameworks
+# Define a dictionary of supported porter frameworks and default parameters.
+# None indicates that no parameters are required.
+# Only embml requires parameters in fact to decide the size of the fixed point numbers
 SUPPORTED_PORTER_FRAMEWORKS = {
     'sklearn-porter': [('builder', SkLearnPorterBuilder), ('param', None)],
-    'emlearn': [('builder', EmlearnBuilder), ('method', 'inline')],
+    'emlearn': [('builder', EmlearnBuilder), ('method', 'pymodule')],
     'micromlgen': [('builder', MicromlgenBuilder), ('param', None)],
     'embml': [('builder', EmbmlBuilder), ('opt', '-rules -fxp 21 10')],
     'm2cgen': [('builder', M2cgenBuilder), ('param', None)],
@@ -51,7 +53,7 @@ class ClassifierBuilder():
         self.benchmark_info = config_data
         self.log_data = log_data
 
-    def build_classifier(self, port_framework, cls_name, cls_obj, pca, X_train, X_test, y_train, y_test,
+    def build_classifier(self, port_framework, cls_name, cls_obj, pca, X_train, X_test, y_train, y_test, pipeline=None,
                          metrics = {'time_us': True, 'accuracy': True}, clean_project=True):
         """
         Build a classifier using the specified porting framework.
@@ -78,7 +80,8 @@ class ClassifierBuilder():
         self.get_builder()
 
         # Train model
-        self.train_sklearn()
+        if pipeline is None:
+            self.train_sklearn()
 
         # Call the porter and prepare compilation artifacts if necessary
         if not self.call_porter():
@@ -478,67 +481,69 @@ class ClassifierBuilder():
 
         # If no common errors were found, log the status message
         if not common_error_found:
-            self.data_logger.append(((self.port_framework, self.cls_name), status))
+            # If no framework was specified, set as general
+            if self.port_framework is None:
+                self.data_logger.append((('General', 'data'), status))
+            else:
+                self.data_logger.append(((self.port_framework, self.cls_name), status))
 
-frameworks  = ['tinymlgen']
+frameworks  = ['micromlgen']
 
 classifiers = {
-    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
-    #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=15, random_state=50),
-    #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
-    #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(16, 16, 16), random_state=1)
-    #'linearSVC': sklearn.svm.LinearSVC(C=0.1),
-    #'nuSVC': sklearn.svm.NuSVC(),
-    #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
-    #'xgboost': XGBClassifier(eval_metric='merror')
+    'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
+    #'ExtraTreesClassifier': sklearn.ensemble.ExtraTreesClassifier(n_estimators=15, random_state=50),
+    #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    #'GaussianNB': sklearn.naive_bayes.GaussianNB(),
+    #'MLPClassifier': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(16, 16, 16), random_state=1)
+    #'LinearSVC': sklearn.svm.LinearSVC(C=0.1),
+    #'NuSVC': sklearn.svm.NuSVC(),
+    #'AdaBoostClassifier': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
+    #'XGBClassifier': XGBClassifier(eval_metric='merror')
 }
 
 sklearnporter_classifiers = {
-    'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=20, max_depth=10, random_state=50),
-    #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
-    #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
-    #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=100,random_state=0),
-    #'linearSVC': sklearn.svm.LinearSVC(C=0.1),
-    #'nuSVC': sklearn.svm.NuSVC(gamma=0.1),
-    #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
+    'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=20, max_depth=10, random_state=50),
+    #'ExtraTreesClassifier': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
+    #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    #'AdaBoostClassifier': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=100,random_state=0),
+    #'LinearSVC': sklearn.svm.LinearSVC(C=0.1),
+    #'NuSVC': sklearn.svm.NuSVC(gamma=0.1),
+    #'AdaBoostClassifier': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
 }
 
 emlearn_classifiers = {
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
-    #'extra_trees': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
-    #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(3, 3), random_state=1)
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
+    #'ExtraTreesClassifier': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
+    #'GaussianNB': sklearn.naive_bayes.GaussianNB(),
+    #'MLPClassifier': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(3, 3), random_state=1)
     #'sequential': tba
 }
 
 micromlgen_classifiers = {
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'random_forest': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
-    #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
-    #'gaussian_naive_bayes': sklearn.naive_bayes.GaussianNB(),
-    #'xgboost': XGBClassifier(eval_metric='merror')
-    'sefr_classifier': SEFR(), #binary classifier
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=10, random_state=50),
+    #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    #'GaussianNB': sklearn.naive_bayes.GaussianNB(),
+    #'XGBClassifier': XGBClassifier(eval_metric='merror')
+    #'SEFR': SEFR(), #binary classifier
 }
 
 m2gen = {
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier(),
-    #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
-    #'nuSVC': sklearn.svm.NuSVC(gamma=0.1)
-    #'xgboost': XGBClassifier(eval_metric='merror')
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'LinearSVC': sklearn.svm.LinearSVC(C=0.1)
+    #'NuSVC': sklearn.svm.NuSVC(gamma=0.1)
+    #'XGBClassifier': XGBClassifier(eval_metric='merror')
 
 
 }
 embml = {
-    #MLPClassifier for MLP classifiers;
-    #LinearSVC for SVM classifiers with linear kernel;
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-4, hidden_layer_sizes=(5, 6), random_state=1),
-    #'svc': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
-    #'linearSVC': sklearn.svm.LinearSVC(C=0.1)
-    #'decision_tree': sklearn.tree.DecisionTreeClassifier()
+    #'MLPClassifier': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-4, hidden_layer_sizes=(5, 6), random_state=1),
+    #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    #'LinearSVC': sklearn.svm.LinearSVC(C=0.1)
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier()
 }
 
 def tinymlgen_model(data_size, ouptut_size):
@@ -563,15 +568,15 @@ if __name__ == "__main__":
 
     # Create a ClassifierBuilder objectW
     builder = ClassifierBuilder(config_data=config_data, log_data=True)
-    from tensorflow.keras.utils import to_categorical
-    y_train = to_categorical(y_train)
-    print("TRAIN", X_train.shape[1:], len(X_train[0]))
-    builder.build_classifier(frameworks[0], 'tfKeras', tinymlgen_model(X_train.shape[1:], y_train.shape[1]), None, X_train, X_test, y_train, y_test)
-    #for name, cls in classifiers.items():
-    #    for j in frameworks:
-    #        builder.build_classifier(j,  name,
-    #                                 cls, None,
-    #                                 X_train, X_test, y_train, y_test)
+    #from tensorflow.keras.utils import to_categorical
+    #y_train = to_categorical(y_train)
+    #print("TRAIN", X_train.shape[1:], len(X_train[0]))
+    #builder.build_classifier(frameworks[0], 'tfKeras', tinymlgen_model(X_train.shape[1:], y_train.shape[1]), None, X_train, X_test, y_train, y_test)
+    for name, cls in classifiers.items():
+        for j in frameworks:
+            builder.build_classifier(j,  name,
+                                     cls, None,
+                                     X_train, X_test, y_train, y_test)
        #builder.build_classifier(frameworks[1],  name, cls)
        #builder.build_classifier(frameworks[2],  name, cls)
        #builder.build_classifier(frameworks[3],  name, cls)

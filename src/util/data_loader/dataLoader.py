@@ -3,8 +3,8 @@ import os
 import glob
 import re
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.datasets import load_iris, load_breast_cancer, load_digits
+from sklearn.preprocessing import LabelEncoder
+from sklearn.datasets import load_iris, load_breast_cancer, load_digits, load_boston, load_diabetes
 from sklearn.model_selection import train_test_split
 
 class GasDataLoader:
@@ -95,43 +95,33 @@ class GasDataLoader:
 
         return train_labels, train_features, val_labels, val_features
 
-    def load_dataset(self, split_test_train):
+    def load_dataset(self, split_train_test):
         val_features, val_labels = None, None
 
         dataLoader = GasDataLoader()
-        scaler = StandardScaler()
 
         _, _, train_labels, train_features = dataLoader.load_data(0)
-        train_labels, train_features, val_labels, val_features = dataLoader.split_data(train_labels, train_features, split_test_train)
-
-        train_features = scaler.fit_transform(train_features)
-        if split_test_train != 1:
-          val_features = scaler.transform(val_features)
+        train_labels, train_features, val_labels, val_features = dataLoader.split_data(train_labels, train_features, split_train_test)
 
         return train_features, train_labels, val_features, val_labels
 
 
 class SensorlessDriveDataLoader:
     def __init__(self):
-        self.scaler = StandardScaler()
         self.c_names = [f"Feature{i+1}" for i in range(48)] + ["label"]
 
-    def load_dataset(self, split_test_train):
+    def load_dataset(self, split_train_test):
         dat_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets',
                                 'sensorless_drive_diagnostics', 'Sensorless_drive_diagnosis.txt')
         dataset = pd.read_csv(dat_file, sep=" ", header=None, names=self.c_names)
 
         train_features, val_features, train_labels, val_labels = train_test_split(dataset.iloc[:, :-1], dataset["label"],
-                                                                                  train_size=split_test_train, random_state=42)
-
-        train_features = self.scaler.fit_transform(train_features)
-        val_features = self.scaler.transform(val_features)
+                                                                                  train_size=split_train_test, random_state=42)
 
         return train_features, train_labels, val_features, val_labels
 
 class HARDataLoader:
     def __init__(self):
-        self.scaler = StandardScaler()
         self.csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'csv_data')
         self.features_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'features.txt')
         self.train_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'train')
@@ -162,7 +152,7 @@ class HARDataLoader:
         train.to_csv(os.path.join(self.csv_file, 'train.csv'), index=False)
         test.to_csv(os.path.join(self.csv_file, 'test.csv'), index=False)
 
-    def load_dataset(self, split_test_train):
+    def load_dataset(self, split_train_test):
         #Get csv data if not already present
         if not os.path.exists(os.path.join(self.csv_file, 'train.csv')):
             self.get_csv_data()
@@ -178,14 +168,10 @@ class HARDataLoader:
         # Make labels zero-indexed
         val_labels = test_data.Activity.values - 1
 
-        train_features = self.scaler.fit_transform(train_features)
-        val_features = self.scaler.transform(val_features)
-
         return train_features, train_labels, val_features, val_labels
 
 class GestureDataLoader:
-    def load_dataset(self, split_test_train):
-        scaler = StandardScaler()
+    def load_dataset(self, split_train_test):
 
         dat_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'datasets',
                                 'gesture_phase_segmentation')
@@ -269,19 +255,15 @@ class GestureDataLoader:
         X = df[features]
         y = df['phase']
 
-        train_features, val_features, train_labels, val_labels = train_test_split(X, y, train_size=split_test_train, random_state=42)
-
-        train_features = scaler.fit_transform(train_features)
-        val_features = scaler.transform(val_features)
+        train_features, val_features, train_labels, val_labels = train_test_split(X, y, train_size=split_train_test, random_state=42)
 
         return train_features, train_labels, val_features, val_labels
 
 class DefaultDataLoader:
     def __init__(self, data_set='iris'):
         self.data_set = data_set
-        self.scaler = StandardScaler()
 
-    def load_dataset(self, split_test_train):
+    def load_dataset(self, split_train_test):
         if self.data_set == 'iris':
             # Load the Iris dataset
             data = load_iris()
@@ -291,17 +273,21 @@ class DefaultDataLoader:
         elif self.data_set == 'digits':
             # Load the Digits dataset
             data = load_digits()
+        elif self.data_set == 'boston':
+            # Load the Boston Housing dataset
+            data = load_boston()
+        elif self.data_set ==  'diabetes':
+            # Load the Diabetes dataset
+            data = load_diabetes()
         else:
             raise ValueError(f"Dataset {self.data_set} not found")
         # Split the dataset into training and testing sets
-        train_features, val_features, train_labels, val_labels= train_test_split(data.data, data.target, train_size=split_test_train, random_state=42)
-        # Scale the features using StandardScaler
-        train_features = self.scaler.fit_transform(train_features)
-        val_features = self.scaler.transform(val_features)
+        train_features, val_features, train_labels, val_labels= train_test_split(data.data, data.target, train_size=split_train_test, random_state=42)
+
         return train_features, train_labels, val_features, val_labels
 
 class EMGDataLoader:
-    def load_dataset(self, split_test_train):
+    def load_dataset(self, split_train_test):
         data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'datasets', 'emg')
         # Search each directory in the data path and read the csv files
         data = []
@@ -318,11 +304,11 @@ class DataLoader:
     def __init__(self, data_set):
         self.data_set = data_set
 
-    def load_data(self, split_test_train):
+    def load_data(self, split_train_test):
         try:
           class_instance = globals()[self.data_set]()
-          return class_instance.load_dataset(split_test_train)
+          return class_instance.load_dataset(split_train_test)
         except KeyError:
           class_instance = DefaultDataLoader(self.data_set)
-          return class_instance.load_dataset(split_test_train)
+          return class_instance.load_dataset(split_train_test)
 
