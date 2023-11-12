@@ -1,0 +1,27 @@
+#Use string input data, integers not allowed :eg field: '1' instead of field: 1
+training:
+  dataset: iris
+  train_test_split: 0.8
+  models_directory: test_models
+  accuracy: False
+  class_accuracy: False
+
+target:
+  #see Arduino-Makefile examples for more
+  type: arduino_makefile
+  compiler: arm  #arm or gcc
+  board: arduino_due_x
+  mcu: SAM3X8E
+  sam_family: True
+  monitor_port: '10'
+  optimization_level: s
+  compiler_stdout: False
+  ratio_test_samples_on_target: '20'
+
+runtime:
+  porter_type:
+  model_name:
+  generated_model_dir:
+  template_path:
+  language:
+  no_of_features:

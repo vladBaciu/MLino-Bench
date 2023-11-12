@@ -1,6 +1,6 @@
 #Use string input data, integers not allowed :eg field: '1' instead of field: 1
 training:
-  dataset: GasDataLoader
+  dataset: iris
   train_test_split: 0.8
   models_directory: generated_models
   accuracy: False

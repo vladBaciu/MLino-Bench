@@ -1,11 +1,9 @@
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score
 from sklearn.base import BaseEstimator, TransformerMixin
-
-from util.data_loader.dataLoader import DataLoader
-from classifier_builder import ClassifierBuilder
-
-import util.common as com
+from sklearn.metrics import accuracy_score
+import src.util.common as com
+from src.util.data_loader.dataLoader import DataLoader
+from src.classifier_builder import ClassifierBuilder
 
 def load_config():
     return com.yaml_load("config.yaml")

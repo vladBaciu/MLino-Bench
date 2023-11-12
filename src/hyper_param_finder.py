@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.ensemble import RandomForestClassifier
 
-import util.common as com
+import src.util.common as com
 from classifier_builder import ClassifierBuilder
 from util.data_loader.dataLoader import DataLoader
 

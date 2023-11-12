@@ -1,0 +1,24 @@
+runtime:
+  generated_model_dir: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\test_models\SVC\sklearn-porter
+  generated_model_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\test_models\SVC\sklearn-porter\model.h
+  language: c
+  model_name: SVC
+  no_of_features: 4
+  porter_type: sklearn-porter
+  template_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\src\api\main.cpp
+target:
+  board: arduino_due_x
+  compiler: arm
+  compiler_stdout: false
+  mcu: SAM3X8E
+  monitor_port: '10'
+  optimization_level: s
+  ratio_test_samples_on_target: '20'
+  sam_family: true
+  type: arduino_makefile
+training:
+  accuracy: false
+  class_accuracy: false
+  dataset: iris
+  models_directory: test_models
+  train_test_split: 0.8

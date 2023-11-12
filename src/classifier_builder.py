@@ -1,8 +1,7 @@
 import os
 import shutil
 import numpy as np
-import util.common as com
-from util.serial_profiler import SerialProfiler
+
 from sklearn.metrics import accuracy_score
 
 from sklearn.decomposition import PCA
@@ -13,7 +12,6 @@ import sklearn.naive_bayes
 import sklearn.svm
 from xgboost import XGBClassifier
 from sefr import SEFR
-from util.data_loader.dataLoader import DataLoader
 from micromlgen import port
 import tensorflow as tf
 from tensorflow.keras import Sequential, layers
@@ -21,12 +19,17 @@ from tensorflow.keras import Sequential, layers
 from sklearn.base import BaseEstimator
 from tensorflow.keras.models import Model
 
-from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
-from port_emlearn.emlearn_builder import EmlearnBuilder
-from port_micromlgen.micromlgen_builder import MicromlgenBuilder
-from port_embml.embml_builder import EmbmlBuilder
-from port_m2cgen.m2cgen_builder import M2cgenBuilder
-from port_tinymlgen.tinymlgen_builder import TinymlgenBuilder
+import src.util.common as com
+from src.util.serial_profiler import SerialProfiler
+from src.util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
+from src.util.data_loader.dataLoader import DataLoader
+
+from src.port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
+from src.port_emlearn.emlearn_builder import EmlearnBuilder
+from src.port_micromlgen.micromlgen_builder import MicromlgenBuilder
+from src.port_embml.embml_builder import EmbmlBuilder
+from src.port_m2cgen.m2cgen_builder import M2cgenBuilder
+from src.port_tinymlgen.tinymlgen_builder import TinymlgenBuilder
 
 TEMPLATE_DIR  = "api"
 TEMPLATE_FILE = "main.cpp"
@@ -235,8 +238,9 @@ class ClassifierBuilder():
         # Export the model to C
         models_directory = self.benchmark_info['training']['models_directory']
         generated_model_dir, generated_model_path = self.builder.export_to_c(models_directory)
-        self.benchmark_info['runtime']['generated_model_dir'] = generated_model_dir
-        self.benchmark_info['runtime']['generated_model_path'] = generated_model_path
+
+        self.benchmark_info['runtime']['generated_model_dir'] = os.path.abspath(generated_model_dir)
+        self.benchmark_info['runtime']['generated_model_path'] = os.path.abspath(generated_model_path)
 
         # Get the model language
         language = self.builder.get_model_language()
@@ -304,11 +308,7 @@ class ClassifierBuilder():
         # Import the appropriate compiler toolchain based on the target type
         target_type = self.benchmark_info['target']['type']
         if target_type == 'arduino_makefile':
-            from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
             return CompileAvrBenchmark(self.benchmark_info, clean_project)
-        #elif target_type == 'arm_gcc':
-            #from util.arm_gcc.gcc_benchmark import CompileArmBenchmark
-            #return CompileArmBenchmark(self.benchmark_info, clean_project)
         else:
             raise ValueError(f"Unsupported target type: {target_type}")
 

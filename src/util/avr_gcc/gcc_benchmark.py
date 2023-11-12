@@ -1,9 +1,8 @@
 import subprocess
 import os
-import util.common as com
+import src.util.common as com
 import re
 import threading
-
 
 class CompileAvrBenchmark:
     def __init__(self, build_info, clean_project):
