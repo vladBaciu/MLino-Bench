@@ -327,10 +327,10 @@ class ClassifierBuilder():
 
         # Define the file paths for the API files
         api_files = [
-            "internally_implemented.cpp",
-            "internally_implemented.h",
-            "submitter_implemented.cpp",
-            "submitter_implemented.h"
+            "core_benchmark.cpp",
+            "core_benchmark.h",
+            "specific_benchmark.cpp",
+            "specific_benchmark.h"
         ]
 
         # Copy the API files to the framework directory

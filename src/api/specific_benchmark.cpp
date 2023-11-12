@@ -2,8 +2,8 @@
 #include <Arduino.h>
 #include <stdarg.h>
 
-#include "internally_implemented.h"
-#include "submitter_implemented.h"
+#include "core_benchmark.h"
+#include "specific_benchmark.h"
 #include "feature_specific.h"
 
 extern FEATURE_TYPE input[NUMBER_OF_FEATURES];

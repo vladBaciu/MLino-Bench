@@ -17,14 +17,14 @@ replaced by a fixed-size array.
 /// \file
 /// \brief Internally-implemented methods required to perform inference.
 
-#include "internally_implemented.h"
+#include "core_benchmark.h"
 
 #include <Arduino.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "submitter_implemented.h"
+#include "specific_benchmark.h"
 #include "infer_model.h"
 
 // Command buffer (incoming commands from host)

@@ -20,11 +20,11 @@ The file name has been changed and some functions removed.
 #include <stddef.h>
 #include <stdint.h>
 
-#ifndef MLPERF_TINY_V0_1_API_INTERNALLY_IMPLEMENTED_H_
-#define MLPERF_TINY_V0_1_API_INTERNALLY_IMPLEMENTED_H_
+#ifndef MLPERF_TINY_V0_1_API_core_benchmark_H_
+#define MLPERF_TINY_V0_1_API_core_benchmark_H_
 
 #define EE_MONITOR_VERSION "2.2.1"
-#define EE_FW_VERSION "MLMarkIno V0.0.1"
+#define EE_FW_VERSION "MLino Bench V1.0.1"
 
 typedef enum { EE_ARG_CLAIMED, EE_ARG_UNCLAIMED } arg_claimed_t;
 typedef enum { EE_STATUS_OK = 0, EE_STATUS_ERROR } ee_status_t;
@@ -53,4 +53,4 @@ size_t ee_get_buffer(uint8_t* buffer, size_t max_len);
 arg_claimed_t ee_buffer_parse(char *command);
 arg_claimed_t ee_profile_parse(char *command);
 
-#endif /* MLPERF_TINY_V0_1_API_INTERNALLY_IMPLEMENTED_H_ */
+#endif /* MLPERF_TINY_V0_1_API_core_benchmark_H_ */

@@ -1,5 +1,5 @@
-LOCAL_CPP_SRCS   += internally_implemented.cpp
-LOCAL_CPP_SRCS   += submitter_implemented.cpp
+LOCAL_CPP_SRCS   += core_benchmark.cpp
+LOCAL_CPP_SRCS   += specific_benchmark.cpp
 
 LOCAL_CPP_SRCS   += $(wildcard elq/tfl/arm/tensorflow/lite/core/api/*.cpp)
 LOCAL_CPP_SRCS   += $(wildcard elq/tfl/arm/tensorflow/lite/experimental/microfrontend/lib/*.cpp)
