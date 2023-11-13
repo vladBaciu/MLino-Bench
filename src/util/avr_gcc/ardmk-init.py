@@ -194,7 +194,7 @@ def generate_makefile():
             ardmk = "ARDMK_DIR := " + ardmk + "\n"
 
     # Get model name and set it as a define compilation flag
-    file_content += "\nCPPFLAGS += -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper())
+    file_content += "\nCPPFLAGS += -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper()) #make it dependent on model type
 
     # Set pca flag
     if ARGS.pca:

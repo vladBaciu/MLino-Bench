@@ -53,29 +53,27 @@ if __name__ == "__main__":
     MLinoBench.BenchmarkPipeline(pipe, "sklearn-porter")
 
     # Example 2: Compare different frameworks for a decision tree classifier
-    #frameworks = ["sklearn-porter", "emlearn", "micromlgen", "m2cgen", "embml"]
-#
-    #model = sklearn.tree.DecisionTreeClassifier(max_depth=10, random_state=50)
-    #pipe = Pipeline([
-    #    ('data_loader', MLinoBench.LoadTrainTestData()),
-    #    ('scaler', StandardScaler()),
-    #    ('classifier', model)
-    #])
-#
-    #MLinoBench.BenchmarkPipeline(pipe, frameworks)
-#
-    ## Example 3: Benchmark a Neural Network
-#
-    ## Workaround to get input and output size when creating the model. Could be integrated in the pipeline using a wrapper
-    #X_train, y_train, _ , _ = MLinoBench.LoadTrainTestData().transform()
-    #y_train = to_categorical(y_train)
-    #model = tinymlgen_model(X_train.shape[1:], y_train.shape[1])
-#
-    #pipe = Pipeline([
-    #    ('data_loader', MLinoBench.LoadTrainTestData()),
-    #    ('scaler', StandardScaler()),
-    #    ('classifier', CategoricalClassifier(model))
-    #])
-#
-    #MLinoBench.BenchmarkPipeline(pipe, "tinymlgen")
-#
+    frameworks = ["sklearn-porter", "emlearn", "micromlgen", "m2cgen", "embml"]
+
+    model = sklearn.tree.DecisionTreeClassifier(max_depth=10, random_state=50)
+    pipe = Pipeline([
+        ('data_loader', MLinoBench.LoadTrainTestData()),
+        ('scaler', StandardScaler()),
+        ('classifier', model)
+    ])
+
+    MLinoBench.BenchmarkPipeline(pipe, frameworks)
+
+    # Example 3: Benchmark a Neural Network
+    # Workaround to get input and output size when creating the model. Could be integrated in the pipeline using a wrapper
+    X_train, y_train, _ , _ = MLinoBench.LoadTrainTestData().transform()
+    y_train = to_categorical(y_train)
+    model = tinymlgen_model(X_train.shape[1:], y_train.shape[1])
+
+    pipe = Pipeline([
+        ('data_loader', MLinoBench.LoadTrainTestData()),
+        ('scaler', StandardScaler()),
+        ('classifier', CategoricalClassifier(model))
+    ])
+
+    MLinoBench.BenchmarkPipeline(pipe, "tinymlgen")
