@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.classifier_builder import ClassifierBuilder
@@ -22,8 +23,17 @@ classifiers = {
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(description="Load a configuration file.")
+    parser.add_argument('--platform', help="The platform to use.")
+    args = parser.parse_args()
+
     # Load the configuration data
-    config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_due.yaml"))
+    if args.platform == "due":
+        config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_due.yaml"))
+    elif args.platform == "mega":
+        config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_mega.yaml"))
+    else:
+        print("Invalid platform for testing.")
 
     # Load the data
     data_loader = DataLoader(config_data["training"]["dataset"])
