@@ -48,14 +48,14 @@ class EmlearnBuilder:
 
         return framework_dir, model_path
 
-    def generate_size_template(self, model_code, model_name, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """
         size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
         self.copy_porter_headers(size_build_dir)
 
-        formatted_template = TEMPLATE.format(model_name)
+        formatted_template = TEMPLATE.format(self.classifier_method.__class__.__name__)
         model_code += formatted_template
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code

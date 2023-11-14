@@ -64,7 +64,7 @@ class M2cgenBuilder:
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "feature_specific.h"), framework_dir)
 
-    def generate_size_template(self, model_code, model_name, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir):
         """
         Generate a template based on the model code and model name.
         """

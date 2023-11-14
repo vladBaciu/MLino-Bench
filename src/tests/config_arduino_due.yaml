@@ -25,3 +25,4 @@ runtime:
   template_path:
   language:
   no_of_features:
+  model_type:

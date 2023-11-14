@@ -16,9 +16,9 @@ import sklearn.svm
 frameworks = ["sklearn-porter", "emlearn", "micromlgen", "m2cgen", "embml"]
 
 classifiers = {
-    'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
-    'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(),
-    'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
+    'TestDecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    'TestRandomForestClassifier': sklearn.ensemble.RandomForestClassifier(),
+    'TestSVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
 }
 
 if __name__ == "__main__":

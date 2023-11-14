@@ -65,6 +65,8 @@ PARSER.add_argument('--optimization_level', action='store',
                     help='specify the optimization level')
 PARSER.add_argument('--input_size', action='store',
                     help='specify the number of features')
+PARSER.add_argument('--model_type', action='store',
+                    help='specify the model type')
 PARSER.add_argument('-V', '--version', action='version', version='%(prog)s '+ VERSION)
 ARGS = PARSER.parse_args()
 
@@ -194,7 +196,7 @@ def generate_makefile():
             ardmk = "ARDMK_DIR := " + ardmk + "\n"
 
     # Get model name and set it as a define compilation flag
-    file_content += "\nCPPFLAGS += -D{}".format(os.path.basename(os.path.dirname(ARGS.directory)).upper()) #make it dependent on model type
+    file_content += "\nCPPFLAGS += -D{}".format(ARGS.model_type.upper()) #make it dependent on model type
 
     # Set pca flag
     if ARGS.pca:
@@ -216,7 +218,7 @@ def generate_makefile():
     if ARGS.sam:
         file_content += "\nARCHITECTURE = sam"
         # Include tf lite files
-        if os.path.basename(os.path.dirname(ARGS.directory)).upper() == "SEQUENTIAL":
+        if ARGS.model_type.upper() == "SEQUENTIAL": #todo Maybe more options are needed
             file_content += "\ninclude elq/tinyml.mk"
         file_content += "\ninclude $(ARDMK_DIR)/Sam.mk"
     else:

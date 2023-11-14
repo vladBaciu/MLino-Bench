@@ -18,7 +18,7 @@ class CompileAvrBenchmark:
         # Extract build information
         self.build_info = build_info
         self.model_dir, self.model_path, self.model_name, self.porter_type, \
-        self.template, self.input_size, self.extension, self.optimization_level, \
+        self.template, self.input_size, self.extension, self.model_type, self.optimization_level, \
         self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family, self.compiler = self.extract_build_info()
 
         #Search in model_dir if pca.h file exists
@@ -53,7 +53,8 @@ class CompileAvrBenchmark:
                 "--input_size", str(self.input_size),
                 "--board", self.board,
                 "--micro", self.mcu,
-                "--port", self.port
+                "--port", self.port,
+                "--model_type", self.model_type
             ]
             if self.sam_family:
                 ardmk_init_command.append("--sam")
@@ -196,7 +197,7 @@ class CompileAvrBenchmark:
             com.logging.info(f"{self.porter_type}:{self.model_name} computing model size...")
 
             # Generate template and set optimization level
-            model_size_code = builder.generate_size_template(model_size_code, self.model_name, self.model_path)
+            model_size_code = builder.generate_size_template(model_size_code, self.model_path)
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
@@ -206,7 +207,6 @@ class CompileAvrBenchmark:
             compile_command = self.get_compile_command(build_path)
             subprocess.run(compile_command, cwd=build_path, check=True)
 
-            # Use the 'avr-size' command to get the sizes of different sections
             if self.compiler == "gcc":
                 size_command = ['avr-size', 'model.o']
             elif self.compiler == "arm":
@@ -417,6 +417,8 @@ class CompileAvrBenchmark:
          template = self.build_info["runtime"]["template_path"]
          input_size = self.build_info["runtime"]["no_of_features"]
          extension = self.build_info["runtime"]["language"]
+         model_type = self.build_info["runtime"]["model_type"]
+
          optimization_level = self.build_info["target"]["optimization_level"]
          print_proc_stdout = self.build_info["target"]["compiler_stdout"]
          board = self.build_info["target"]["board"]
@@ -425,4 +427,5 @@ class CompileAvrBenchmark:
          port = self.build_info["target"]["monitor_port"]
          sam_family = self.build_info["target"]["sam_family"]
 
-         return model_dir, model_path, model_name, porter_type, template, input_size, extension, optimization_level, print_proc_stdout, board, mcu, port, sam_family, compiler
+         return model_dir, model_path, model_name, porter_type, template, input_size, extension, model_type, \
+                optimization_level, print_proc_stdout, board, mcu, port, sam_family, compiler

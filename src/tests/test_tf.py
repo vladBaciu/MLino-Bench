@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # Create a ClassifierBuilder object
     builder = ClassifierBuilder(config_data=config_data, log_data=True)
 
-    builder.build_classifier(framework, "SEQUENTIAL", tinymlgen_model(X_train.shape[1:], y_train.shape[1]),
+    builder.build_classifier(framework, "myNNModel", tinymlgen_model(X_train.shape[1:], y_train.shape[1]),
                              None, X_train, X_test, y_train, y_test)
 
     builder.print_log_summary()

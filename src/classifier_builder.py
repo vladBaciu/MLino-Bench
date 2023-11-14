@@ -429,6 +429,7 @@ class ClassifierBuilder():
         self.benchmark_info["runtime"]["model_name"] = self.cls_name
         self.benchmark_info["runtime"]["porter_type"] = self.port_framework
         self.benchmark_info["runtime"]["template_path"] = os.path.abspath(os.path.join(TEMPLATE_DIR, TEMPLATE_FILE))
+        self.benchmark_info["runtime"]["model_type"] = self.cls_obj.__class__.__name__
 
     def print_log_summary(self):
         """
