@@ -1,11 +1,19 @@
+import sys
+sys.path.append("..") # Adds higher directory to python modules path.
+
 import numpy as np
-from sklearn.model_selection import cross_val_score, StratifiedKFold
-from sklearn.ensemble import RandomForestClassifier
+
 
 import src.util.common as com
 from classifier_builder import ClassifierBuilder
 from util.data_loader.dataLoader import DataLoader
 
+import sklearn.ensemble
+import sklearn.tree
+import sklearn.neural_network
+import sklearn.naive_bayes
+import sklearn.svm
+from sklearn.model_selection import StratifiedKFold
 
 class CustomRandomSearchCV:
     def __init__(self, estimator, param_distributions, config, n_iter=4, cv=5, random_state=None, metrics=None):
@@ -142,9 +150,11 @@ class CustomRandomSearchCV:
         for train_idx, test_idx in StratifiedKFold(n_splits=self.cv, shuffle=True, random_state=self.random_state).split(X, y):
             X_train, X_test = X[train_idx], X[test_idx]
             y_train, y_test = y[train_idx], y[test_idx]
+
             acc, time_us, model_size = self.builder.build_classifier('sklearn-porter', 'test_cv',
-                                                                     self.estimator, X_train, X_test, y_train, y_test,
-                                                                     self.metrics, clean_project)
+                                                                     self.estimator, None,
+                                                                     X_train, X_test, y_train, y_test,
+                                                                     None, self.metrics, clean_project)
 
             acc_mean += float(acc)
             time_us_mean += float(time_us)
@@ -161,7 +171,7 @@ if __name__ == '__main__':
 
     config_data = com.yaml_load("config.yaml")
     data_loader = DataLoader(config_data["training"]["dataset"])
-    X, y, _, _ = data_loader.load_data(split_test_train=0.8)
+    X, y, _, _ = data_loader.load_data(split_train_test=0.8)
 
     # Define the parameter grid for CustomRandomSearchCV
     param_dist = {
@@ -178,7 +188,7 @@ if __name__ == '__main__':
     }
 
     # Create a base classifier
-    base_clf = RandomForestClassifier()
+    base_clf = sklearn.ensemble.RandomForestClassifier()
 
     # Create CustomRandomSearchCV instance
     custom_random_search = CustomRandomSearchCV(
