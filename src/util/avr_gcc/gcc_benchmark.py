@@ -17,12 +17,9 @@ class CompileAvrBenchmark:
 
         # Extract build information
         self.build_info = build_info
-        self.model_dir, self.model_path, self.model_name, self.porter_type, \
-        self.template, self.input_size, self.extension, self.model_type, self.optimization_level, \
-        self.print_proc_stdout, self.board, self.mcu, self.port, self.sam_family, self.compiler = self.extract_build_info()
 
         #Search in model_dir if pca.h file exists
-        self.pca_file = os.path.join(self.model_dir, 'pca.h')
+        self.pca_file = os.path.join(self.build_info['runtime']['generated_model_dir'], 'pca.h')
         self.pca = os.path.isfile(self.pca_file)
 
         self.total_model_size = 0
@@ -37,31 +34,31 @@ class CompileAvrBenchmark:
         Generate the Arduino Makefile for the project.
         """
         try:
-            makefile_path = os.path.join(self.model_dir, 'Makefile')
+            makefile_path = os.path.join(self.build_info['runtime']['generated_model_dir'], 'Makefile')
 
             # Remove previously generated makefile if it exists
             if os.path.isfile(makefile_path):
-                com.logging.info(f"{self.porter_type}:{self.model_name} deleting old makefile ...")
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} deleting old makefile ...")
                 os.remove(makefile_path)
 
             # Create makefile in model's build directory
             ardmk_init_command = [
                 "python", "ardmk-init.py",
-                "-d", self.model_dir,
-                "-t", "-o", "--template_path", self.template,
-                "--optimization_level", self.optimization_level,
-                "--input_size", str(self.input_size),
-                "--board", self.board,
-                "--micro", self.mcu,
-                "--port", self.port,
-                "--model_type", self.model_type
+                "-d", self.build_info['runtime']['generated_model_dir'],
+                "-t", "-o", "--template_path", self.build_info["runtime"]["template_path"],
+                "--optimization_level", self.build_info["target"]["optimization_level"],
+                "--input_size", str(self.build_info["runtime"]["no_of_features"]),
+                "--board", self.build_info["target"]["board"],
+                "--micro", self.build_info["target"]["mcu"],
+                "--port", self.build_info["target"]["monitor_port"],
+                "--model_type", self.build_info["runtime"]["model_type"]
             ]
-            if self.sam_family:
+            if self.build_info["target"]["sam_family"]:
                 ardmk_init_command.append("--sam")
             if self.pca:
                 ardmk_init_command.append("--pca")
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} generating new makefile ...")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} generating new makefile ...")
 
             subprocess.run(
                 ardmk_init_command,
@@ -73,7 +70,7 @@ class CompileAvrBenchmark:
                 encoding="utf-8"
             )
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} makefile generation: OK")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} makefile generation: OK")
 
         except Exception as e:
             raise RuntimeError(f"Error occurred during 'ardmk-init.py': {e}")
@@ -85,11 +82,11 @@ class CompileAvrBenchmark:
         try:
             make_clean_command = ["make", "clean", "-j8"]
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} cleaning project ...")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} cleaning project ...")
 
             subprocess.run(
                 make_clean_command,
-                cwd=self.model_dir,
+                cwd=self.build_info['runtime']['generated_model_dir'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
@@ -97,7 +94,7 @@ class CompileAvrBenchmark:
                 check=True
             )
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} project cleaning: OK")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} project cleaning: OK")
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error occurred during cleaning: {e.stderr}")
@@ -113,12 +110,12 @@ class CompileAvrBenchmark:
         try:
             make_upload_command = ["make", "upload"]
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary model ...")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} flashing binary model ...")
 
             # Start the subprocess and capture its output for stdout and stderr
             process = subprocess.Popen(
                 make_upload_command,
-                cwd=self.model_dir,
+                cwd=self.build_info['runtime']['generated_model_dir'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
@@ -142,9 +139,9 @@ class CompileAvrBenchmark:
             stderr_thread.join()
 
             if process.returncode == 0:
-                com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary successfully")
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} flashing binary successfully")
             else:
-                com.logging.info(f"{self.porter_type}:{self.model_name} flashing binary failed")
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} flashing binary failed")
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error occurred during flashing: {e.stderr}")
@@ -156,11 +153,11 @@ class CompileAvrBenchmark:
         try:
             make_command = ["make", "-j8"]
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} compiling model ...")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} compiling model ...")
 
             status = subprocess.run(
                 make_command,
-                cwd=self.model_dir,
+                cwd=self.build_info['runtime']['generated_model_dir'],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
@@ -168,7 +165,7 @@ class CompileAvrBenchmark:
                 check=True
             )
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} compilation: OK")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} compilation: OK")
             return status.stdout
 
         except subprocess.CalledProcessError as e:
@@ -185,31 +182,31 @@ class CompileAvrBenchmark:
             str: Size information of the compiled model.
         """
         # Prepare build path
-        build_path = os.path.join(self.model_dir, 'size')
+        build_path = os.path.join(self.build_info['runtime']['generated_model_dir'], 'size')
         if not os.path.exists(build_path):
             os.makedirs(build_path)
 
         try:
             # Read the content of model.h
-            with open(self.model_path) as h_file:
+            with open(self.build_info['runtime']['generated_model_path']) as h_file:
                 model_size_code = h_file.read()
 
-            com.logging.info(f"{self.porter_type}:{self.model_name} computing model size...")
+            com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} computing model size...")
 
             # Generate template and set optimization level
-            model_size_code = builder.generate_size_template(model_size_code, self.model_path)
+            model_size_code = builder.generate_size_template(model_size_code, self.build_info['runtime']['generated_model_path'])
 
             # Write the content of model.h to model.cpp
-            with open(os.path.join(build_path, f'model.{self.extension}'), 'w') as c_file:
+            with open(os.path.join(build_path, f'model.{self.build_info["runtime"]["language"]}'), 'w') as c_file:
                 c_file.write(model_size_code)
 
             # Compile the C code to an object file using GCC
             compile_command = self.get_compile_command(build_path)
             subprocess.run(compile_command, cwd=build_path, check=True)
 
-            if self.compiler == "gcc":
+            if self.build_info["target"]["compiler"] == "gcc":
                 size_command = ['avr-size', 'model.o']
-            elif self.compiler == "arm":
+            elif self.build_info["target"]["compiler"] == "arm":
                 size_command = ['arm-none-eabi-size', 'model.o']
 
             size_output = subprocess.run(
@@ -232,9 +229,9 @@ class CompileAvrBenchmark:
                 data_size = size_tuple[1]
                 bss_size = size_tuple[2]
                 total_size = size_tuple[3]
-                com.logging.info(f"{self.porter_type}:{self.model_name} model size: {total_size} bytes")
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} model size: {total_size} bytes")
             else:
-                com.logging.info(f"{self.porter_type}:{self.model_name}: Failed to parse size information")
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']}: Failed to parse size information")
 
             self.total_model_size = total_size
 
@@ -260,16 +257,16 @@ class CompileAvrBenchmark:
             list: The compile command for the model.
         """
 
-        if self.compiler == "gcc":
+        if self.build_info["target"]["compiler"] == "gcc":
             compiler_cmd = "avr-gcc"
-        elif self.compiler == "arm":
+        elif self.build_info["target"]["compiler"] == "arm":
             compiler_cmd = "arm-none-eabi-gcc"
 
         return [
             compiler_cmd, '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
-            '-O{}'.format(self.optimization_level), '-c', 'model.{}'.format(self.extension),
+            '-O{}'.format(self.build_info["target"]["optimization_level"]), '-c', 'model.{}'.format(self.build_info["runtime"]["language"]),
             '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
-            '-D {}'.format(self.model_name.upper()),
+            '-D {}'.format(self.build_info["runtime"]["model_name"].upper()),
             '-std=c99'
         ]
 
@@ -285,10 +282,10 @@ class CompileAvrBenchmark:
         """
         text_section, data_section, bss_section = 0, 0, 0
 
-        if self.compiler == "gcc":
+        if self.build_info["target"]["compiler"] == "gcc":
             text_section = self.parse_linker_output_avr_gcc(linker_output, "Program:")
             data_section = self.parse_linker_output_avr_gcc(linker_output, "Data:")
-        elif self.compiler == "arm":
+        elif self.build_info["target"]["compiler"] == "arm":
             text_section = self.parse_linker_output_arm(linker_output, "text")
             data_section = self.parse_linker_output_arm(linker_output, "data")
             bss_section = self.parse_linker_output_arm(linker_output, "bss")
@@ -405,27 +402,3 @@ class CompileAvrBenchmark:
             if print_data:
                 print(line.strip())
             output_list.append(line.strip())
-
-    def extract_build_info(self):
-         """
-         Extract build information from the build_info dictionary.
-         """
-         model_dir = self.build_info['runtime']['generated_model_dir']
-         model_path = self.build_info['runtime']['generated_model_path']
-         model_name = self.build_info["runtime"]["model_name"]
-         porter_type = self.build_info["runtime"]["porter_type"]
-         template = self.build_info["runtime"]["template_path"]
-         input_size = self.build_info["runtime"]["no_of_features"]
-         extension = self.build_info["runtime"]["language"]
-         model_type = self.build_info["runtime"]["model_type"]
-
-         optimization_level = self.build_info["target"]["optimization_level"]
-         print_proc_stdout = self.build_info["target"]["compiler_stdout"]
-         board = self.build_info["target"]["board"]
-         mcu = self.build_info["target"]["mcu"]
-         compiler = self.build_info["target"]["compiler"]
-         port = self.build_info["target"]["monitor_port"]
-         sam_family = self.build_info["target"]["sam_family"]
-
-         return model_dir, model_path, model_name, porter_type, template, input_size, extension, model_type, \
-                optimization_level, print_proc_stdout, board, mcu, port, sam_family, compiler
