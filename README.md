@@ -30,8 +30,9 @@ So far, only the following platforms were tested. Feel free to add new platforms
 # Requirements
 
 
-``` git clone <your_repository_url>
-cd <your_repository>
+```
+git clone https://github.com/vladBaciu/MLino-Bench.git
+cd MLino-Bench
 python -m venv venv  # Create a new virtual environment
 source venv/bin/activate  # On Unix/MacOS
 path\to\venv\Scripts\activate  # On Windows
