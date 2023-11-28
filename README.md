@@ -26,3 +26,13 @@ So far, only the following platforms were tested. Feel free to add new platforms
 | Arduino Mega    | ATmega2560     | AVR               | avr-gcc     | Atmel        |
 | Arduino Due     | ATSAM3X8E      | ARM Cortex-M3     | arm-none-eabi-gcc | Atmel |
 | Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
+
+# Requirements
+
+
+``` git clone <your_repository_url>
+cd <your_repository>
+python -m venv venv  # Create a new virtual environment
+source venv/bin/activate  # On Unix/MacOS
+path\to\venv\Scripts\activate  # On Windows
+pip install -r requirements.txt ```
