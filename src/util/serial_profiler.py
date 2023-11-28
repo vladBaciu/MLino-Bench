@@ -21,13 +21,27 @@ class SerialProfiler:
         self.model_dir      = build_info['runtime']['generated_model_dir']
         self.no_of_features = build_info["runtime"]["no_of_features"]
         self.ratio_test_samples   = build_info["target"]["ratio_test_samples_on_target"]
+        self.isteensy = build_info["target"]["mcu_family"] == "teensy"
 
         self.read_npy_files()
 
+        if self.isteensy:
+            ARDUINO_DIR = os.environ.get('ARDUINO_DIR')
+            if ARDUINO_DIR is None:
+                raise RuntimeError("ARDUINO_DIR environment variable is not set.")
+            # Get tools path
+            tools_path = os.path.join(ARDUINO_DIR, "hardware", "tools")
+
+            # Execute teensy reboot script
+            com.logging.info(f"{self.porter_type}:{self.model_name} Restrating Teensy...")
+            os.system(f"{tools_path}/teensy_restart")
+
         try:
             self.mcu_serial = serial.Serial(port=self.get_com_port_name(build_info["target"]["monitor_port"]),
-                                baudrate=115200, timeout=.1)
-            self.wait_ready_ack()
+                                            baudrate=115200, timeout=.1)
+            if not self.isteensy:
+                self.wait_ready_ack()
+
             com.logging.info(f"{self.porter_type}:{self.model_name} Serial connection established: OK")
 
         except serial.SerialException as e:

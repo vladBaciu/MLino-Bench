@@ -51,7 +51,8 @@ PARSER.add_argument('-f', '--freq', default='AUTO', help='clock frequency')
 PARSER.add_argument('-p', '--port', default='AUTO', help='monitor port')
 PARSER.add_argument('--pca', action='store_true', help='pca flag')
 PARSER.add_argument('-n', '--name', default=os.path.basename(os.getcwd()), help='project name')
-PARSER.add_argument('-s', '--sam', action='store_true', help='sam device, will include Sam.mk rather than Arduino.mk')
+PARSER.add_argument('--sam', action='store_true', help='sam device, will include Sam.mk rather than Arduino.mk')
+PARSER.add_argument('--teensy', action='store_true', help='teensy device, will include Teensy.mk rather than Arduino.mk')
 PARSER.add_argument('--cli', action='store_true', help='run with user prompts (requires "Clint" module), rather than args')
 PARSER.add_argument('-P', '--project', action='store_true',
                     help='create boilerplate project with src, lib and bin folder structure')
@@ -212,15 +213,22 @@ def generate_makefile():
     # Set optimization level
     file_content += "\nOPTIMIZATION_LEVEL={}".format(ARGS.optimization_level)
 
+    # Set output artifacts directory
+    build_dir = "build-{}-{}".format(btag, bsub)
+    file_content += "\nOBJDIR={}".format(build_dir)
+
     # Generate also a map file
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"
 
+    # Include tf lite files
+    if ARGS.model_type.upper() == "SEQUENTIAL":
+        file_content += "\ninclude elq/tinyml.mk"
+
     if ARGS.sam:
         file_content += "\nARCHITECTURE = sam"
-        # Include tf lite files
-        if ARGS.model_type.upper() == "SEQUENTIAL": #todo Maybe more options are needed
-            file_content += "\ninclude elq/tinyml.mk"
         file_content += "\ninclude $(ARDMK_DIR)/Sam.mk"
+    elif ARGS.teensy:
+        file_content += "\ninclude $(ARDMK_DIR)/Teensy.mk"
     else:
         file_content += "\ninclude $(ARDMK_DIR)/Arduino.mk"
 

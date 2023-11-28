@@ -53,8 +53,17 @@ class CompileAvrBenchmark:
                 "--port", self.build_info["target"]["monitor_port"],
                 "--model_type", self.build_info["runtime"]["model_type"]
             ]
-            if self.build_info["target"]["sam_family"]:
+
+            if "freq" in self.build_info["target"] and self.build_info["target"]["freq"]:
+                ardmk_init_command.append("--freq")
+                ardmk_init_command.append(self.build_info["target"]["freq"])
+
+            if self.build_info["target"]["mcu_family"] == "sam":
                 ardmk_init_command.append("--sam")
+
+            if self.build_info["target"]["mcu_family"] == "teensy":
+                ardmk_init_command.append("--teensy")
+
             if self.pca:
                 ardmk_init_command.append("--pca")
 

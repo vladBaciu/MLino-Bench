@@ -12,7 +12,7 @@ target:
   compiler: gcc
   board: mega
   mcu: atmega2560
-  sam_family: False
+  mcu_family: atmel
   monitor_port: '8'
   optimization_level: s
   compiler_stdout: False

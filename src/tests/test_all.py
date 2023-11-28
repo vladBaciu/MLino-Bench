@@ -32,8 +32,10 @@ if __name__ == "__main__":
         config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_due.yaml"))
     elif args.platform == "mega":
         config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_mega.yaml"))
+    elif args.platform == "teensy":
+        config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_teensy.yaml"))
     else:
-        print("Invalid platform for testing.")
+        sys.exit("No platform specified.")
 
     # Load the data
     data_loader = DataLoader(config_data["training"]["dataset"])

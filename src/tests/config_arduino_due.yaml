@@ -12,7 +12,7 @@ target:
   compiler: arm  #arm or gcc
   board: arduino_due_x
   mcu: SAM3X8E
-  sam_family: True
+  mcu_family: sam
   monitor_port: '10'
   optimization_level: s
   compiler_stdout: False

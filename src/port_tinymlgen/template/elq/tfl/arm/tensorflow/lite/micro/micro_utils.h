@@ -20,7 +20,7 @@ limitations under the License.
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-
+#include <limits>
 #include "elq/tfl/arm/tensorflow/lite/c/common.h"
 
 namespace tflite {

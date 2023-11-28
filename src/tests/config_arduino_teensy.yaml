@@ -2,7 +2,7 @@
 training:
   dataset: iris
   train_test_split: 0.8
-  models_directory: generated_models
+  models_directory: test_models
   accuracy: False
   class_accuracy: False
 
@@ -10,10 +10,11 @@ target:
   #see Arduino-Makefile examples for more
   type: arduino_makefile
   compiler: arm  #arm or gcc
-  board: arduino_due_x
-  mcu: SAM3X8E
-  mcu_family: sam
-  monitor_port: '11'
+  board: teensy40
+  mcu: imxrt1062
+  mcu_family: teensy
+  freq: '600000000'
+  monitor_port: '16'
   optimization_level: s
   compiler_stdout: False
   ratio_test_samples_on_target: '20'
