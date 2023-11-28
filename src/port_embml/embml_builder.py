@@ -39,7 +39,7 @@ class EmbmlBuilder:
             with open(self.py_model_file, 'wb') as model_file:
                 pickle.dump(self.clf_method, model_file)
             self.porter = embml.sklearnModel(self.py_model_file, self.c_model_file, opts = options)
-        except NotImplementedError:
+        except SystemExit as e:
             return "Model type not supported for export to C."
         except Exception as e:
             return f"An unexpected error occurred during model creation: {e}"
