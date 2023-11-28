@@ -15,3 +15,14 @@ It can also serve various research purposes:
 - It supports feature comparison by providing the capability to analyze and compare the impact and effectiveness of different features in the context of machine learning models.
 
   
+# How
+
+The tool just assembles different porting frameworks with a makefile generator (Arduino-Makefile) and a benchmark API for profiling the model on target. Just plug and play any board supported by the build configuration file and you are ready to go.
+
+So far, only the following platforms were tested:
+
+| Board Name      | MCU            | MCU Architecture | Compiler    | Provider     |
+|-----------------|----------------|-------------------|-------------|--------------|
+| Arduino Mega    | ATmega2560     | AVR               | avr-gcc     | Atmel        |
+| Arduino Due     | ATSAM3X8E      | ARM Cortex-M3     | arm-none-eabi-gcc | Atmel |
+| Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
