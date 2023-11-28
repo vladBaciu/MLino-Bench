@@ -19,7 +19,7 @@ It can also serve various research purposes:
 
 The tool just assembles different porting frameworks with a makefile generator (Arduino-Makefile) and a benchmark API for profiling the model on target. Just plug and play any board supported by the build configuration file and you are ready to go.
 
-So far, only the following platforms were tested:
+So far, only the following platforms were tested. Feel free to add new platforms by creating your own build configuration.
 
 | Board Name      | MCU            | MCU Architecture | Compiler    | Provider     |
 |-----------------|----------------|-------------------|-------------|--------------|
