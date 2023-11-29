@@ -5,72 +5,48 @@
 int predict_0(float features[]) {
     int classes[3];
     
-    if (features[0] <= 5.549999952316284) {
-        if (features[2] <= 2.449999988079071) {
-            classes[0] = 27; 
-            classes[1] = 0; 
-            classes[2] = 0; 
-        } else {
-            classes[0] = 0; 
-            classes[1] = 9; 
-            classes[2] = 0; 
-        }
+    if (features[3] <= 0.75) {
+        classes[0] = 43; 
+        classes[1] = 0; 
+        classes[2] = 0; 
     } else {
-        if (features[0] <= 6.6499998569488525) {
-            if (features[1] <= 3.700000047683716) {
-                if (features[3] <= 1.699999988079071) {
-                    if (features[2] <= 4.950000047683716) {
+        if (features[3] <= 1.75) {
+            if (features[2] <= 5.450000047683716) {
+                if (features[0] <= 4.950000047683716) {
+                    if (features[2] <= 3.899999976158142) {
                         classes[0] = 0; 
-                        classes[1] = 24; 
+                        classes[1] = 1; 
                         classes[2] = 0; 
                     } else {
-                        if (features[1] <= 2.75) {
-                            if (features[2] <= 5.049999952316284) {
-                                classes[0] = 0; 
-                                classes[1] = 0; 
-                                classes[2] = 1; 
-                            } else {
-                                classes[0] = 0; 
-                                classes[1] = 1; 
-                                classes[2] = 0; 
-                            }
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 2; 
-                        }
-                    }
-                } else {
-                    if (features[1] <= 3.100000023841858) {
                         classes[0] = 0; 
                         classes[1] = 0; 
-                        classes[2] = 19; 
-                    } else {
-                        if (features[0] <= 6.049999952316284) {
-                            classes[0] = 0; 
-                            classes[1] = 1; 
-                            classes[2] = 0; 
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 8; 
-                        }
+                        classes[2] = 1; 
                     }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 39; 
+                    classes[2] = 0; 
                 }
             } else {
-                classes[0] = 4; 
+                classes[0] = 0; 
                 classes[1] = 0; 
-                classes[2] = 0; 
+                classes[2] = 1; 
             }
         } else {
-            if (features[3] <= 1.550000011920929) {
-                classes[0] = 0; 
-                classes[1] = 1; 
-                classes[2] = 0; 
+            if (features[0] <= 5.950000047683716) {
+                if (features[2] <= 4.8500001430511475) {
+                    classes[0] = 0; 
+                    classes[1] = 1; 
+                    classes[2] = 0; 
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 5; 
+                }
             } else {
                 classes[0] = 0; 
                 classes[1] = 0; 
-                classes[2] = 23; 
+                classes[2] = 29; 
             }
         }
     }
@@ -89,73 +65,31 @@ int predict_0(float features[]) {
 int predict_1(float features[]) {
     int classes[3];
     
-    if (features[2] <= 2.599999964237213) {
-        classes[0] = 39; 
+    if (features[3] <= 0.7000000029802322) {
+        classes[0] = 43; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[3] <= 1.550000011920929) {
-            if (features[0] <= 6.049999952316284) {
-                classes[0] = 0; 
-                classes[1] = 29; 
-                classes[2] = 0; 
-            } else {
-                if (features[0] <= 6.3500001430511475) {
-                    if (features[1] <= 2.850000023841858) {
-                        if (features[3] <= 1.3499999642372131) {
-                            classes[0] = 0; 
-                            classes[1] = 1; 
-                            classes[2] = 0; 
-                        } else {
-                            if (features[2] <= 5.0) {
-                                classes[0] = 0; 
-                                classes[1] = 1; 
-                                classes[2] = 0; 
-                            } else {
-                                classes[0] = 0; 
-                                classes[1] = 0; 
-                                classes[2] = 5; 
-                            }
-                        }
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 5; 
-                        classes[2] = 0; 
-                    }
+        if (features[3] <= 1.75) {
+            if (features[1] <= 2.649999976158142) {
+                if (features[2] <= 4.950000047683716) {
+                    classes[0] = 0; 
+                    classes[1] = 16; 
+                    classes[2] = 0; 
                 } else {
                     classes[0] = 0; 
-                    classes[1] = 8; 
-                    classes[2] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 3; 
                 }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 31; 
+                classes[2] = 0; 
             }
         } else {
-            if (features[1] <= 3.149999976158142) {
-                if (features[0] <= 6.599999904632568) {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 17; 
-                } else {
-                    if (features[2] <= 5.299999952316284) {
-                        classes[0] = 0; 
-                        classes[1] = 1; 
-                        classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 7; 
-                    }
-                }
-            } else {
-                if (features[3] <= 1.9499999284744263) {
-                    classes[0] = 0; 
-                    classes[1] = 3; 
-                    classes[2] = 0; 
-                } else {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 4; 
-                }
-            }
+            classes[0] = 0; 
+            classes[1] = 0; 
+            classes[2] = 27; 
         }
     }
     int class_idx = 0;
@@ -173,48 +107,14 @@ int predict_1(float features[]) {
 int predict_2(float features[]) {
     int classes[3];
     
-    if (features[2] <= 2.350000023841858) {
-        classes[0] = 42; 
+    if (features[2] <= 2.449999988079071) {
+        classes[0] = 34; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[2] <= 5.049999952316284) {
-            if (features[3] <= 1.6500000357627869) {
-                if (features[3] <= 1.449999988079071) {
-                    classes[0] = 0; 
-                    classes[1] = 27; 
-                    classes[2] = 0; 
-                } else {
-                    if (features[0] <= 6.200000047683716) {
-                        if (features[1] <= 2.600000023841858) {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 1; 
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 3; 
-                            classes[2] = 0; 
-                        }
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 5; 
-                        classes[2] = 0; 
-                    }
-                }
-            } else {
-                if (features[1] <= 2.899999976158142) {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 2; 
-                } else {
-                    classes[0] = 0; 
-                    classes[1] = 5; 
-                    classes[2] = 0; 
-                }
-            }
-        } else {
-            if (features[1] <= 2.75) {
-                if (features[3] <= 1.75) {
+        if (features[3] <= 1.699999988079071) {
+            if (features[1] <= 2.25) {
+                if (features[3] <= 1.25) {
                     classes[0] = 0; 
                     classes[1] = 2; 
                     classes[2] = 0; 
@@ -224,9 +124,49 @@ int predict_2(float features[]) {
                     classes[2] = 2; 
                 }
             } else {
+                if (features[2] <= 5.349999904632568) {
+                    if (features[3] <= 1.449999988079071) {
+                        classes[0] = 0; 
+                        classes[1] = 35; 
+                        classes[2] = 0; 
+                    } else {
+                        if (features[0] <= 6.150000095367432) {
+                            classes[0] = 0; 
+                            classes[1] = 7; 
+                            classes[2] = 0; 
+                        } else {
+                            if (features[0] <= 6.400000095367432) {
+                                classes[0] = 0; 
+                                classes[1] = 0; 
+                                classes[2] = 1; 
+                            } else {
+                                classes[0] = 0; 
+                                classes[1] = 3; 
+                                classes[2] = 0; 
+                            }
+                        }
+                    }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 2; 
+                }
+            }
+        } else {
+            if (features[0] <= 5.950000047683716) {
+                if (features[2] <= 4.8500001430511475) {
+                    classes[0] = 0; 
+                    classes[1] = 1; 
+                    classes[2] = 0; 
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 7; 
+                }
+            } else {
                 classes[0] = 0; 
                 classes[1] = 0; 
-                classes[2] = 31; 
+                classes[2] = 26; 
             }
         }
     }
@@ -246,36 +186,42 @@ int predict_3(float features[]) {
     int classes[3];
     
     if (features[2] <= 2.599999964237213) {
-        classes[0] = 49; 
+        classes[0] = 41; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[3] <= 1.6500000357627869) {
-            if (features[2] <= 4.950000047683716) {
+        if (features[3] <= 1.550000011920929) {
+            if (features[2] <= 5.25) {
                 classes[0] = 0; 
-                classes[1] = 41; 
+                classes[1] = 40; 
                 classes[2] = 0; 
             } else {
-                if (features[1] <= 2.450000047683716) {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 3; 
-                } else {
-                    if (features[1] <= 2.75) {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 1; 
+            }
+        } else {
+            if (features[0] <= 6.549999952316284) {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 22; 
+            } else {
+                if (features[3] <= 1.75) {
+                    if (features[3] <= 1.6500000357627869) {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 1; 
+                    } else {
                         classes[0] = 0; 
                         classes[1] = 1; 
                         classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 2; 
                     }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 14; 
                 }
             }
-        } else {
-            classes[0] = 0; 
-            classes[1] = 0; 
-            classes[2] = 24; 
         }
     }
     int class_idx = 0;
@@ -293,55 +239,25 @@ int predict_3(float features[]) {
 int predict_4(float features[]) {
     int classes[3];
     
-    if (features[3] <= 0.75) {
+    if (features[3] <= 0.7000000029802322) {
         classes[0] = 38; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[0] <= 5.6499998569488525) {
-            if (features[3] <= 1.600000023841858) {
+        if (features[3] <= 1.550000011920929) {
+            if (features[2] <= 4.950000047683716) {
                 classes[0] = 0; 
-                classes[1] = 20; 
+                classes[1] = 41; 
                 classes[2] = 0; 
             } else {
                 classes[0] = 0; 
                 classes[1] = 0; 
-                classes[2] = 1; 
+                classes[2] = 6; 
             }
         } else {
-            if (features[2] <= 4.75) {
-                classes[0] = 0; 
-                classes[1] = 17; 
-                classes[2] = 0; 
-            } else {
-                if (features[3] <= 1.75) {
-                    if (features[0] <= 6.3999998569488525) {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 3; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 3; 
-                        classes[2] = 0; 
-                    }
-                } else {
-                    if (features[0] <= 5.950000047683716) {
-                        if (features[2] <= 4.900000095367432) {
-                            classes[0] = 0; 
-                            classes[1] = 1; 
-                            classes[2] = 0; 
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 5; 
-                        }
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 32; 
-                    }
-                }
-            }
+            classes[0] = 0; 
+            classes[1] = 0; 
+            classes[2] = 35; 
         }
     }
     int class_idx = 0;
@@ -359,42 +275,60 @@ int predict_4(float features[]) {
 int predict_5(float features[]) {
     int classes[3];
     
-    if (features[3] <= 0.800000011920929) {
-        classes[0] = 50; 
+    if (features[2] <= 2.449999988079071) {
+        classes[0] = 42; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[3] <= 1.6500000357627869) {
-            if (features[2] <= 4.8999998569488525) {
+        if (features[3] <= 1.75) {
+            if (features[3] <= 1.3499999642372131) {
                 classes[0] = 0; 
-                classes[1] = 36; 
+                classes[1] = 13; 
                 classes[2] = 0; 
             } else {
-                if (features[0] <= 6.049999952316284) {
-                    classes[0] = 0; 
-                    classes[1] = 1; 
-                    classes[2] = 0; 
+                if (features[2] <= 5.049999952316284) {
+                    if (features[0] <= 5.049999952316284) {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 1; 
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 17; 
+                        classes[2] = 0; 
+                    }
                 } else {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 6; 
+                    if (features[1] <= 2.75) {
+                        if (features[0] <= 6.049999952316284) {
+                            classes[0] = 0; 
+                            classes[1] = 4; 
+                            classes[2] = 0; 
+                        } else {
+                            classes[0] = 0; 
+                            classes[1] = 0; 
+                            classes[2] = 1; 
+                        }
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 4; 
+                    }
                 }
             }
         } else {
-            if (features[1] <= 3.149999976158142) {
-                classes[0] = 0; 
-                classes[1] = 0; 
-                classes[2] = 20; 
-            } else {
-                if (features[0] <= 6.049999952316284) {
-                    classes[0] = 0; 
-                    classes[1] = 1; 
-                    classes[2] = 0; 
-                } else {
+            if (features[0] <= 5.950000047683716) {
+                if (features[1] <= 3.100000023841858) {
                     classes[0] = 0; 
                     classes[1] = 0; 
                     classes[2] = 6; 
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 2; 
+                    classes[2] = 0; 
                 }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 30; 
             }
         }
     }
@@ -414,14 +348,30 @@ int predict_6(float features[]) {
     int classes[3];
     
     if (features[3] <= 0.75) {
-        classes[0] = 45; 
+        classes[0] = 38; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[3] <= 1.75) {
-            if (features[2] <= 5.049999952316284) {
-                if (features[0] <= 4.950000047683716) {
-                    if (features[2] <= 3.899999976158142) {
+        if (features[2] <= 4.950000047683716) {
+            if (features[2] <= 4.75) {
+                if (features[2] <= 4.450000047683716) {
+                    classes[0] = 0; 
+                    classes[1] = 31; 
+                    classes[2] = 0; 
+                } else {
+                    if (features[3] <= 1.600000023841858) {
+                        classes[0] = 0; 
+                        classes[1] = 13; 
+                        classes[2] = 0; 
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 1; 
+                    }
+                }
+            } else {
+                if (features[2] <= 4.8500001430511475) {
+                    if (features[0] <= 6.049999952316284) {
                         classes[0] = 0; 
                         classes[1] = 1; 
                         classes[2] = 0; 
@@ -432,24 +382,32 @@ int predict_6(float features[]) {
                     }
                 } else {
                     classes[0] = 0; 
-                    classes[1] = 30; 
-                    classes[2] = 0; 
-                }
-            } else {
-                if (features[3] <= 1.550000011920929) {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 4; 
-                } else {
-                    classes[0] = 0; 
-                    classes[1] = 1; 
+                    classes[1] = 3; 
                     classes[2] = 0; 
                 }
             }
         } else {
-            classes[0] = 0; 
-            classes[1] = 0; 
-            classes[2] = 38; 
+            if (features[0] <= 6.049999952316284) {
+                if (features[3] <= 1.699999988079071) {
+                    if (features[1] <= 2.450000047683716) {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 1; 
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 1; 
+                        classes[2] = 0; 
+                    }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 4; 
+                }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 26; 
+            }
         }
     }
     int class_idx = 0;
@@ -467,61 +425,85 @@ int predict_6(float features[]) {
 int predict_7(float features[]) {
     int classes[3];
     
-    if (features[2] <= 2.599999964237213) {
-        classes[0] = 49; 
-        classes[1] = 0; 
-        classes[2] = 0; 
-    } else {
-        if (features[3] <= 1.75) {
-            if (features[2] <= 5.049999952316284) {
-                if (features[0] <= 4.950000047683716) {
-                    if (features[3] <= 1.350000023841858) {
-                        classes[0] = 0; 
-                        classes[1] = 2; 
-                        classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 3; 
-                    }
-                } else {
-                    if (features[2] <= 4.950000047683716) {
-                        classes[0] = 0; 
-                        classes[1] = 33; 
-                        classes[2] = 0; 
-                    } else {
-                        if (features[3] <= 1.600000023841858) {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 1; 
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 3; 
-                            classes[2] = 0; 
-                        }
-                    }
-                }
+    if (features[0] <= 5.549999952316284) {
+        if (features[3] <= 0.800000011920929) {
+            classes[0] = 40; 
+            classes[1] = 0; 
+            classes[2] = 0; 
+        } else {
+            if (features[2] <= 4.450000047683716) {
+                classes[0] = 0; 
+                classes[1] = 11; 
+                classes[2] = 0; 
             } else {
-                if (features[3] <= 1.550000011920929) {
+                if (features[1] <= 2.75) {
                     classes[0] = 0; 
                     classes[1] = 0; 
-                    classes[2] = 3; 
+                    classes[2] = 1; 
                 } else {
-                    if (features[2] <= 5.450000047683716) {
-                        classes[0] = 0; 
-                        classes[1] = 2; 
-                        classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 1; 
-                    }
+                    classes[0] = 0; 
+                    classes[1] = 2; 
+                    classes[2] = 0; 
                 }
             }
+        }
+    } else {
+        if (features[3] <= 1.699999988079071) {
+            if (features[0] <= 7.099999904632568) {
+                if (features[0] <= 6.3500001430511475) {
+                    if (features[1] <= 2.850000023841858) {
+                        if (features[3] <= 1.3499999642372131) {
+                            classes[0] = 0; 
+                            classes[1] = 2; 
+                            classes[2] = 0; 
+                        } else {
+                            if (features[3] <= 1.449999988079071) {
+                                classes[0] = 0; 
+                                classes[1] = 0; 
+                                classes[2] = 1; 
+                            } else {
+                                if (features[1] <= 2.75) {
+                                    classes[0] = 0; 
+                                    classes[1] = 3; 
+                                    classes[2] = 0; 
+                                } else {
+                                    classes[0] = 0; 
+                                    classes[1] = 0; 
+                                    classes[2] = 1; 
+                                }
+                            }
+                        }
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 10; 
+                        classes[2] = 0; 
+                    }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 12; 
+                    classes[2] = 0; 
+                }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 1; 
+            }
         } else {
-            classes[0] = 0; 
-            classes[1] = 0; 
-            classes[2] = 23; 
+            if (features[0] <= 5.950000047683716) {
+                if (features[2] <= 4.900000095367432) {
+                    classes[0] = 0; 
+                    classes[1] = 2; 
+                    classes[2] = 0; 
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 7; 
+                }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 27; 
+            }
         }
     }
     int class_idx = 0;
@@ -539,61 +521,49 @@ int predict_7(float features[]) {
 int predict_8(float features[]) {
     int classes[3];
     
-    if (features[1] <= 3.350000023841858) {
-        if (features[3] <= 1.550000011920929) {
-            if (features[3] <= 0.6000000014901161) {
-                classes[0] = 10; 
-                classes[1] = 0; 
-                classes[2] = 0; 
-            } else {
-                if (features[3] <= 1.449999988079071) {
+    if (features[3] <= 0.800000011920929) {
+        classes[0] = 38; 
+        classes[1] = 0; 
+        classes[2] = 0; 
+    } else {
+        if (features[3] <= 1.75) {
+            if (features[2] <= 5.349999904632568) {
+                if (features[2] <= 5.049999952316284) {
                     classes[0] = 0; 
-                    classes[1] = 39; 
+                    classes[1] = 36; 
                     classes[2] = 0; 
                 } else {
-                    if (features[2] <= 4.950000047683716) {
-                        classes[0] = 0; 
-                        classes[1] = 5; 
-                        classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 1; 
-                    }
-                }
-            }
-        } else {
-            if (features[3] <= 1.8499999642372131) {
-                if (features[0] <= 6.049999952316284) {
-                    if (features[1] <= 3.100000023841858) {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 1; 
-                    } else {
+                    if (features[0] <= 6.150000095367432) {
                         classes[0] = 0; 
                         classes[1] = 2; 
                         classes[2] = 0; 
+                    } else {
+                        classes[0] = 0; 
+                        classes[1] = 0; 
+                        classes[2] = 1; 
                     }
-                } else {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 6; 
                 }
             } else {
                 classes[0] = 0; 
                 classes[1] = 0; 
-                classes[2] = 21; 
+                classes[2] = 3; 
             }
-        }
-    } else {
-        if (features[0] <= 6.0) {
-            classes[0] = 31; 
-            classes[1] = 0; 
-            classes[2] = 0; 
         } else {
-            classes[0] = 0; 
-            classes[1] = 0; 
-            classes[2] = 4; 
+            if (features[2] <= 4.8500001430511475) {
+                if (features[0] <= 6.049999952316284) {
+                    classes[0] = 0; 
+                    classes[1] = 2; 
+                    classes[2] = 0; 
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 0; 
+                    classes[2] = 1; 
+                }
+            } else {
+                classes[0] = 0; 
+                classes[1] = 0; 
+                classes[2] = 37; 
+            }
         }
     }
     int class_idx = 0;
@@ -612,72 +582,54 @@ int predict_9(float features[]) {
     int classes[3];
     
     if (features[3] <= 0.800000011920929) {
-        classes[0] = 45; 
+        classes[0] = 38; 
         classes[1] = 0; 
         classes[2] = 0; 
     } else {
-        if (features[0] <= 6.75) {
+        if (features[2] <= 5.049999952316284) {
             if (features[2] <= 4.75) {
-                if (features[3] <= 1.600000023841858) {
-                    classes[0] = 0; 
-                    classes[1] = 29; 
-                    classes[2] = 0; 
-                } else {
-                    classes[0] = 0; 
-                    classes[1] = 0; 
-                    classes[2] = 2; 
-                }
+                classes[0] = 0; 
+                classes[1] = 35; 
+                classes[2] = 0; 
             } else {
-                if (features[1] <= 2.549999952316284) {
-                    if (features[2] <= 4.950000047683716) {
-                        classes[0] = 0; 
-                        classes[1] = 4; 
-                        classes[2] = 0; 
-                    } else {
-                        classes[0] = 0; 
-                        classes[1] = 0; 
-                        classes[2] = 1; 
-                    }
-                } else {
-                    if (features[0] <= 6.599999904632568) {
-                        if (features[0] <= 6.049999952316284) {
-                            if (features[0] <= 5.900000095367432) {
-                                classes[0] = 0; 
-                                classes[1] = 0; 
-                                classes[2] = 3; 
+                if (features[1] <= 3.049999952316284) {
+                    if (features[0] <= 6.5) {
+                        if (features[0] <= 6.25) {
+                            classes[0] = 0; 
+                            classes[1] = 0; 
+                            classes[2] = 6; 
+                        } else {
+                            if (features[1] <= 2.600000023841858) {
+                                if (features[2] <= 4.950000047683716) {
+                                    classes[0] = 0; 
+                                    classes[1] = 1; 
+                                    classes[2] = 0; 
+                                } else {
+                                    classes[0] = 0; 
+                                    classes[1] = 0; 
+                                    classes[2] = 1; 
+                                }
                             } else {
                                 classes[0] = 0; 
-                                classes[1] = 1; 
-                                classes[2] = 0; 
+                                classes[1] = 0; 
+                                classes[2] = 1; 
                             }
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 8; 
                         }
                     } else {
-                        if (features[1] <= 3.049999952316284) {
-                            classes[0] = 0; 
-                            classes[1] = 2; 
-                            classes[2] = 0; 
-                        } else {
-                            classes[0] = 0; 
-                            classes[1] = 0; 
-                            classes[2] = 3; 
-                        }
+                        classes[0] = 0; 
+                        classes[1] = 2; 
+                        classes[2] = 0; 
                     }
+                } else {
+                    classes[0] = 0; 
+                    classes[1] = 6; 
+                    classes[2] = 0; 
                 }
             }
         } else {
-            if (features[3] <= 1.550000011920929) {
-                classes[0] = 0; 
-                classes[1] = 1; 
-                classes[2] = 0; 
-            } else {
-                classes[0] = 0; 
-                classes[1] = 0; 
-                classes[2] = 21; 
-            }
+            classes[0] = 0; 
+            classes[1] = 0; 
+            classes[2] = 30; 
         }
     }
     int class_idx = 0;

@@ -1,0 +1,26 @@
+runtime:
+  generated_model_dir: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\test_models\TestSVC\embml
+  generated_model_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\test_models\TestSVC\embml\model.h
+  language: c
+  model_name: TestSVC
+  model_type: SVC
+  no_of_features: 4
+  porter_type: embml
+  template_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\src\api\main.cpp
+target:
+  board: teensy40
+  compiler: arm
+  compiler_stdout: false
+  freq: '600000000'
+  mcu: imxrt1062
+  mcu_family: teensy
+  monitor_port: '16'
+  optimization_level: s
+  ratio_test_samples_on_target: '20'
+  type: arduino_makefile
+training:
+  accuracy: false
+  class_accuracy: false
+  dataset: iris
+  models_directory: test_models
+  train_test_split: 0.8

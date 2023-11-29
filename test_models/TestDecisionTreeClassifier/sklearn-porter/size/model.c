@@ -33,7 +33,7 @@ int predict(float features[4]) {
                         classes[1] = 0; 
                         classes[2] = 3; 
                     } else {
-                        if (features[2] <= 5.450000047683716) {
+                        if (features[0] <= 6.949999809265137) {
                             classes[0] = 0; 
                             classes[1] = 2; 
                             classes[2] = 0; 

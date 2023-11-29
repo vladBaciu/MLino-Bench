@@ -1,7 +1,7 @@
 #include <string.h>
 void predict(double * input, double * output) {
     double var0[3];
-    if ((input[2]) <= (2.449999988079071)) {
+    if ((input[3]) <= (0.800000011920929)) {
         memcpy(var0, (double[]){1.0, 0.0, 0.0}, 3 * sizeof(double));
     } else {
         if ((input[2]) <= (4.75)) {
@@ -27,10 +27,10 @@ void predict(double * input, double * output) {
                 }
             } else {
                 if ((input[2]) <= (4.8500001430511475)) {
-                    if ((input[0]) <= (5.950000047683716)) {
-                        memcpy(var0, (double[]){0.0, 1.0, 0.0}, 3 * sizeof(double));
-                    } else {
+                    if ((input[1]) <= (3.100000023841858)) {
                         memcpy(var0, (double[]){0.0, 0.0, 1.0}, 3 * sizeof(double));
+                    } else {
+                        memcpy(var0, (double[]){0.0, 1.0, 0.0}, 3 * sizeof(double));
                     }
                 } else {
                     memcpy(var0, (double[]){0.0, 0.0, 1.0}, 3 * sizeof(double));

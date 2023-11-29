@@ -52,12 +52,12 @@ namespace Eloquent {
 
                                 else {
                                     if (x[2] <= 4.8500001430511475) {
-                                        if (x[0] <= 5.950000047683716) {
-                                            return 1;
+                                        if (x[1] <= 3.100000023841858) {
+                                            return 2;
                                         }
 
                                         else {
-                                            return 2;
+                                            return 1;
                                         }
                                     }
 

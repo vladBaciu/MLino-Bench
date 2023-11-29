@@ -9,6 +9,8 @@ CPPFLAGS += -DSEQUENTIAL
 CPPFLAGS += -DNUMBER_OF_FEATURES=4
 CPPFLAGS += -ID:/PhD/Workspace/Embedded_ML_Article_2/Workspace/mlino_bench/test_models/myNNModel/tinymlgen
 OPTIMIZATION_LEVEL=s
+OBJDIR=build-arduino_due_x-SAM3X8E
 OTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map
+include elq/tinyml.mk
 ARCHITECTURE = sam
 include $(ARDMK_DIR)/Sam.mk

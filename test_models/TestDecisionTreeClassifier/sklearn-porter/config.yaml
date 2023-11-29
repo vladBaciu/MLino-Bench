@@ -8,14 +8,15 @@ runtime:
   porter_type: sklearn-porter
   template_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\src\api\main.cpp
 target:
-  board: mega
-  compiler: gcc
+  board: teensy40
+  compiler: arm
   compiler_stdout: false
-  mcu: atmega2560
-  monitor_port: '8'
+  freq: '600000000'
+  mcu: imxrt1062
+  mcu_family: teensy
+  monitor_port: '16'
   optimization_level: s
   ratio_test_samples_on_target: '20'
-  sam_family: false
   type: arduino_makefile
 training:
   accuracy: false

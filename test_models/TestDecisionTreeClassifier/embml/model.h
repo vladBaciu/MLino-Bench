@@ -12,7 +12,7 @@ FixedNum instance[INPUT_SIZE + 1];
 
 
 int classify(){
-	if (instance[3] <= (FixedNum)0x00000333){
+	if (instance[2] <= (FixedNum)0x000009cd){
 		return 0;
 	}
 	else {
@@ -45,11 +45,11 @@ int classify(){
 			}
 			else {
 				if (instance[2] <= (FixedNum)0x00001366){
-					if (instance[1] <= (FixedNum)0x00000c66){
-						return 2;
+					if (instance[0] <= (FixedNum)0x000017cd){
+						return 1;
 					}
 					else {
-						return 1;
+						return 2;
 					}
 				}
 				else {
