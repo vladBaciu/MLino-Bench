@@ -16,7 +16,7 @@ target:
   monitor_port: '8'
   optimization_level: s
   compiler_stdout: False
-  ratio_test_samples_on_target: '20'
+  ratio_test_samples_on_target: '100'
 
 runtime:
   porter_type:
