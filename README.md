@@ -44,8 +44,8 @@ python -m venv venv  # Create a new virtual environment
 source venv/bin/activate  # On Unix/MacOS
 path\to\venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
-```
-
+```  
+- For Teensy, please install it from [here](https://www.pjrc.com/teensy/td_download.html)
 # How to start
 
 1. I recommend to start with one of the boards mentioned above, plug it to the USB port, properly modify the `config.yaml` file and start to runt the example file or the tests. For the tested boards, the configuration file from `src/tests/` can be used.
