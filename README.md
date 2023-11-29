@@ -28,12 +28,27 @@ So far, only the following platforms were tested. Feel free to add new platforms
 | Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
 
 # Requirements
-
-
+- Download the following makefile project: [Arduino Makefile](https://github.com/sudar/Arduino-Makefile). I recommend you to use [make[(https://cygwin.com/packages/summary/make-src.html) from Cygwin.
+- Add installation path to system variables as `ARDMK_DIR`.
+- Install Arduino IDE (1.8.6 recommended)
+- Add installation path to system variables as `ARDUINO_DIR`
+- Add ARDUINO_PACKAGE_DIR to system variables as `c:/Users/yourUser/AppData/Local/Arduino15/packages` 
+- Depending on your target platform, you need to set the compiler path as follows:
+    - `AVR_TOOLS_DIR = C:/Users/yourUser/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7` (compiler version might differ)
+    - `ARM_TOOLS_DIR = C:/Users/yourUser/AppData/Local/Arduino15/packages/arduino/tools/arm-none-eabi-gcc/4.8.3-2014q1`  (compiler version might differ)
+- Install the requirements file in a virtual environment.
 ```
 git clone https://github.com/vladBaciu/MLino-Bench.git
 cd MLino-Bench
 python -m venv venv  # Create a new virtual environment
 source venv/bin/activate  # On Unix/MacOS
 path\to\venv\Scripts\activate  # On Windows
-pip install -r requirements.txt ```
+pip install -r requirements.txt
+```
+
+# How to start
+
+1. I recommend to start with one of the boards mentioned above, plug it to the USB port, properly modify the `config.yaml` file and start to runt the example file or the tests. For the tested boards, the configuration file from `src/tests/` can be used.
+2. If you want to use your custom dataset, not the ones already included, you need to modify the `load_custom_data` function in `src/mlino_pipeline.py` file.
+   
+
