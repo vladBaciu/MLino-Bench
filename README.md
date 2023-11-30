@@ -28,7 +28,7 @@ So far, only the following platforms were tested. Feel free to add new platforms
 | Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
 
 # Requirements
-- Download the following makefile project: [Arduino Makefile](https://github.com/sudar/Arduino-Makefile). I recommend you to use [make[(https://cygwin.com/packages/summary/make-src.html) from Cygwin.
+- Download the following makefile project: [Arduino Makefile](https://github.com/sudar/Arduino-Makefile). I recommend you to use [make](https://cygwin.com/packages/summary/make-src.html) from Cygwin.
 - Add installation path to system variables as `ARDMK_DIR`.
 - Install Arduino IDE (1.8.6 recommended)
 - Add installation path to system variables as `ARDUINO_DIR`
