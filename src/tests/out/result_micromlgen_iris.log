@@ -1,0 +1,10 @@
+
+
+=============== Builder log messages: ===============
+
+
+micromlgen TestDecisionTreeClassifier:
+	Model size: text: 296; data: 0; bss: 0; total: 296 bytes
+	Total flash: 0 bytes, Total RAM: 51200 bytes
+	On-target accuracy: 1.0
+	Classification time: 0.13333333333333333 us

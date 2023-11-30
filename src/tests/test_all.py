@@ -1,6 +1,8 @@
 import sys
 import os
 import argparse
+import io
+
 sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.classifier_builder import ClassifierBuilder
@@ -25,6 +27,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Load a configuration file.")
     parser.add_argument('--platform', help="The platform to use.")
+    parser.add_argument('--output', help="The output file name.")
     args = parser.parse_args()
 
     # Load the configuration data
@@ -49,4 +52,23 @@ if __name__ == "__main__":
                                      cls, None,
                                      X_train, X_test, y_train, y_test)
 
+    captured_output = io.StringIO()
+
+    # Redirect the standard output to the StringIO object
+    sys.stdout = captured_output
+
     builder.print_log_summary()
+
+    sys.stdout = sys.__stdout__
+
+    # Get the captured content as a string
+    captured_data = captured_output.getvalue()
+
+    args.output = os.path.join(os.path.dirname(__file__), 'out', args.output + '.log')
+
+    # Save the captured data to a file
+    with open(args.output , "w") as file:
+        file.write(captured_data)
+
+    # Close the StringIO object
+    captured_output.close()
