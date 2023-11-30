@@ -53,6 +53,11 @@ pip install -r requirements.txt
 3. For adding new platforms, please check [this project](https://github.com/sudar/Arduino-Makefile) to see exactly if it is supported or how the configuration should look like.
 
 # Project structure
+`datasets` - directory that includes data sets used as an example
 
-   
+`generated_models` - output directory for generated builds using the example script
+
+`src` - source code directory
+
+`test_models` - output directory for generated builds using the test scripts
 
