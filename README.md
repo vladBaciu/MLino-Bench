@@ -51,5 +51,8 @@ pip install -r requirements.txt
 1. I recommend to start with one of the boards mentioned above, plug it to the USB port, properly modify the `config.yaml` file and start to runt the example file or the tests. For the tested boards, the configuration file from `src/tests/` can be used.
 2. If you want to use your custom dataset, not the ones already included, you need to modify the `load_custom_data` function in `src/mlino_pipeline.py` file.
 3. For adding new platforms, please check [this project](https://github.com/sudar/Arduino-Makefile) to see exactly if it is supported or how the configuration should look like.
+
+# Project structure
+
    
 
