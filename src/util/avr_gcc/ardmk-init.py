@@ -220,7 +220,7 @@ def generate_makefile():
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"
 
     # Include tf lite files
-    if ARGS.model_type.upper() == "SEQUENTIAL":
+    if ARGS.model_type.upper() == "SEQUENTIAL" or ARGS.model_type.upper() == "TFLITE":
         file_content += "\ninclude elq/tinyml.mk"
 
     if ARGS.sam:

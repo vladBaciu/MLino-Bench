@@ -1,5 +1,6 @@
 import os
 import shutil
+import hexdump
 import src.util.common as com
 from tinymlgen import port
 
@@ -30,10 +31,31 @@ class TinymlgenBuilder:
         """
         Train the classifier and create a porter for export.
         """
+
+        # Check if the model is interpreter object
         try:
             self.porter = port(self.clf_method, variable_name='tinymlgen_model', pretty_print=False, optimize=False)
-        except NotImplementedError:
-            return "Model type not supported for export to C."
+        except AttributeError:
+            variable_name = 'tinymlgen_model'
+            # Maybe it's a pretrained model
+            bytes = hexdump.dump(self.clf_method).split(' ')
+            c_array = ', '.join(['0x%02x' % int(byte, 16) for byte in bytes])
+            c = 'const unsigned char %s[] DATA_ALIGN_ATTRIBUTE = {%s};' % (variable_name, c_array)
+            c += '\nconst int %s_len = %d;' % (variable_name, len(bytes))
+            preamble = '''
+        #ifdef __has_attribute
+        #define HAVE_ATTRIBUTE(x) __has_attribute(x)
+        #else
+        #define HAVE_ATTRIBUTE(x) 0
+        #endif
+        #if HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__))
+        #define DATA_ALIGN_ATTRIBUTE __attribute__((aligned(4)))
+        #else
+        #define DATA_ALIGN_ATTRIBUTE
+        #endif
+
+        '''
+            self.porter = preamble + c
         except Exception as e:
             return f"An unexpected error occurred during model creation: {e}"
 

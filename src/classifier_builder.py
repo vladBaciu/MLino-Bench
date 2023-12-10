@@ -10,7 +10,7 @@ import sklearn.tree
 import sklearn.neural_network
 import sklearn.naive_bayes
 import sklearn.svm
-from xgboost import XGBClassifier
+#from xgboost import XGBClassifier
 from sefr import SEFR
 from micromlgen import port
 import tensorflow as tf
@@ -429,7 +429,12 @@ class ClassifierBuilder():
         self.benchmark_info["runtime"]["model_name"] = self.cls_name
         self.benchmark_info["runtime"]["porter_type"] = self.port_framework
         self.benchmark_info["runtime"]["template_path"] = os.path.abspath(os.path.join(TEMPLATE_DIR, TEMPLATE_FILE))
-        self.benchmark_info["runtime"]["model_type"] = self.cls_obj.__class__.__name__
+
+        # If model type is bytes (pretrained), set the model type as TFLITE
+        if self.cls_obj.__class__.__name__ == 'bytes':
+            self.benchmark_info["runtime"]["model_type"] = "TFLITE"
+        else:
+            self.benchmark_info["runtime"]["model_type"] = self.cls_obj.__class__.__name__
 
     def print_log_summary(self):
         """

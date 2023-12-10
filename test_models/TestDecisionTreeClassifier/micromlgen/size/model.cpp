@@ -12,7 +12,7 @@ namespace Eloquent {
                     * Predict class for features vector
                     */
                     int predict(float *x) {
-                        if (x[3] <= 0.800000011920929) {
+                        if (x[2] <= 2.449999988079071) {
                             return 0;
                         }
 

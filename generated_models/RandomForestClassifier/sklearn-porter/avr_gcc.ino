@@ -3,8 +3,8 @@
 /* Generated with uCMLPerf */
 /* Include model file */
 #include <Arduino.h>
-#include "internally_implemented.h"
-#include "submitter_implemented.h"
+#include "core_benchmark.h"
+#include "specific_benchmark.h"
 
 void setup() {
     Serial.begin(115200);

@@ -3,22 +3,24 @@ runtime:
   generated_model_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\generated_models\RandomForestClassifier\sklearn-porter\model.h
   language: c
   model_name: RandomForestClassifier
-  no_of_features: 128
+  model_type: RandomForestClassifier
+  no_of_features: 4
   porter_type: sklearn-porter
   template_path: D:\PhD\Workspace\Embedded_ML_Article_2\Workspace\mlino_bench\src\api\main.cpp
 target:
-  board: arduino_due_x
+  board: teensy40
   compiler: arm
   compiler_stdout: false
-  mcu: SAM3X8E
-  monitor_port: '10'
+  freq: '600000000'
+  mcu: imxrt1062
+  mcu_family: teensy
+  monitor_port: '16'
   optimization_level: s
-  ratio_test_samples_on_target: '20'
-  sam_family: true
+  ratio_test_samples_on_target: '100'
   type: arduino_makefile
 training:
   accuracy: false
   class_accuracy: false
-  dataset: GasDataLoader
+  dataset: iris
   models_directory: generated_models
   train_test_split: 0.8

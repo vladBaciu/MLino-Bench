@@ -33,7 +33,11 @@ class BenchmarkPipeline():
         except:
             self.model = self.pipe.named_steps["classifier"]
 
-        self.model_name =  type(self.model).__name__
+        # Workaround when importing a pre-trained TF model
+        if(type(self.model).__name__ == "bytes"):
+            self.model_name = "pretrained_tflite"
+        else:
+            self.model_name =  type(self.model).__name__
 
     def train_model(self, X_train, y_train):
         self.pipe.fit(X_train, y_train)

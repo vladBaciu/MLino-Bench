@@ -111,8 +111,7 @@ class SensorlessDriveDataLoader:
         self.c_names = [f"Feature{i+1}" for i in range(48)] + ["label"]
 
     def load_dataset(self, split_train_test):
-        dat_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets',
-                                'sensorless_drive_diagnostics', 'Sensorless_drive_diagnosis.txt')
+        dat_file = os.path.join('..', 'datasets', 'sensorless_drive_diagnostics', 'Sensorless_drive_diagnosis.txt')
         dataset = pd.read_csv(dat_file, sep=" ", header=None, names=self.c_names)
 
         train_features, val_features, train_labels, val_labels = train_test_split(dataset.iloc[:, :-1], dataset["label"],
@@ -122,11 +121,11 @@ class SensorlessDriveDataLoader:
 
 class HARDataLoader:
     def __init__(self):
-        self.csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'csv_data')
-        self.features_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'features.txt')
-        self.train_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'train')
-        self.test_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'datasets', 'har', 'test')
-        self.N_FEATURES = 80
+        self.csv_file = os.path.join('..', 'datasets', 'har', 'csv_data')
+        self.features_file = os.path.join('..', 'datasets', 'har', 'features.txt')
+        self.train_file = os.path.join('..', 'datasets', 'har', 'train')
+        self.test_file = os.path.join('..', 'datasets', 'har', 'test')
+        self.N_FEATURES = 561
 
     def get_csv_data(self):
         # Create directories if they don't exist
@@ -173,7 +172,7 @@ class HARDataLoader:
 class GestureDataLoader:
     def load_dataset(self, split_train_test):
 
-        dat_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'datasets',
+        dat_file = os.path.join('..', '..', 'datasets',
                                 'gesture_phase_segmentation')
 
         # read .csv from provided dataset
@@ -288,7 +287,7 @@ class DefaultDataLoader:
 
 class EMGDataLoader:
     def load_dataset(self, split_train_test):
-        data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'datasets', 'emg')
+        data_path = os.path.join('..', 'datasets', 'emg')
         # Search each directory in the data path and read the csv files
         data = []
         for directory in os.listdir(data_path):
