@@ -28,7 +28,7 @@ So far, only the following platforms were tested. Feel free to add new platforms
 | Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
 
 # Requirements
-- Download the following makefile project: [Arduino Makefile](https://github.com/sudar/Arduino-Makefile). I recommend you to use [make[(https://cygwin.com/packages/summary/make-src.html) from Cygwin.
+- Download the following makefile project: [Arduino Makefile](https://github.com/sudar/Arduino-Makefile). I recommend you to use [make](https://cygwin.com/packages/summary/make-src.html) from Cygwin.
 - Add installation path to system variables as `ARDMK_DIR`.
 - Install Arduino IDE (1.8.6 recommended)
 - Add installation path to system variables as `ARDUINO_DIR`
@@ -51,5 +51,13 @@ pip install -r requirements.txt
 1. I recommend to start with one of the boards mentioned above, plug it to the USB port, properly modify the `config.yaml` file and start to runt the example file or the tests. For the tested boards, the configuration file from `src/tests/` can be used.
 2. If you want to use your custom dataset, not the ones already included, you need to modify the `load_custom_data` function in `src/mlino_pipeline.py` file.
 3. For adding new platforms, please check [this project](https://github.com/sudar/Arduino-Makefile) to see exactly if it is supported or how the configuration should look like.
-   
+
+# Project structure
+`datasets` - directory that includes data sets used as an example
+
+`generated_models` - output directory for generated builds using the example script
+
+`src` - source code directory
+
+`test_models` - output directory for generated builds using the test scripts
 
