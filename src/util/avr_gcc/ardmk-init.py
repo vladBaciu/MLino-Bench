@@ -227,7 +227,7 @@ def generate_makefile():
         file_content += "\nARCHITECTURE = sam"
         file_content += "\ninclude $(ARDMK_DIR)/Sam.mk"
     elif ARGS.teensy:
-        file_content += "\nOBJDIR={}/{}".format(ARGS.directory.replace("\\", "/"), build_dir)
+        #file_content += "\nOBJDIR={}/{}".format(ARGS.directory.replace("\\", "/"), build_dir)
         file_content += "\ninclude $(ARDMK_DIR)/Teensy.mk"
     else:
         file_content += "\ninclude $(ARDMK_DIR)/Arduino.mk"

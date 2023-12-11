@@ -1,6 +1,6 @@
 # MLino Bench: Evaluate machine learning models on resource-constrained devices
 
-Streamline the entire lifecycle of machine learning models on embedded devices. From training and porting to compiling, loading, and profiling, MLino Bench provides an end-to-end solution for seamlessly integrating Scikit-learn models into resource-constrained environments. Choose from a variety of porter frameworks, including sklearn-porter, micromlgen, m2cgen, emlearn, embml and tinymlgen to seamlessly port Scikit-learn/Tensorflow models to formats suitable for embedded devices. 
+Streamline the entire lifecycle of machine learning models on embedded devices. From training and porting to compiling, loading, and profiling, MLino Bench provides an end-to-end solution for seamlessly integrating Scikit-learn models into resource-constrained environments. Choose from a variety of porter frameworks, including sklearn-porter, micromlgen, m2cgen, emlearn, embml and tinymlgen to seamlessly port Scikit-learn/Tensorflow models to formats suitable for embedded devices.
 
 ![image](https://github.com/vladBaciu/MLino-Bench/assets/24388880/e850b3d7-f146-43b7-b1f6-b5e21320db2e)
 
@@ -14,7 +14,7 @@ It can also serve various research purposes:
 - Researchers can employ the tool for model comparison, specifically assessing models with different parameters. This functionality is valuable for fine-tuning and optimizing models based on specific research objectives.
 - It supports feature comparison by providing the capability to analyze and compare the impact and effectiveness of different features in the context of machine learning models.
 
-  
+
 # How
 
 The tool just assembles different porting frameworks with a makefile generator (Arduino-Makefile) and a benchmark API for profiling the model on target. Just plug and play any board supported by the build configuration file and you are ready to go.
@@ -32,7 +32,7 @@ So far, only the following platforms were tested. Feel free to add new platforms
 - Add installation path to system variables as `ARDMK_DIR`.
 - Install Arduino IDE (1.8.6 recommended)
 - Add installation path to system variables as `ARDUINO_DIR`
-- Add ARDUINO_PACKAGE_DIR to system variables as `c:/Users/yourUser/AppData/Local/Arduino15/packages` 
+- Add ARDUINO_PACKAGE_DIR to system variables as `c:/Users/yourUser/AppData/Local/Arduino15/packages`
 - Depending on your target platform, you need to set the compiler path as follows:
     - `AVR_TOOLS_DIR = C:/Users/yourUser/AppData/Local/Arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7` (compiler version might differ)
     - `ARM_TOOLS_DIR = C:/Users/yourUser/AppData/Local/Arduino15/packages/arduino/tools/arm-none-eabi-gcc/4.8.3-2014q1`  (compiler version might differ)
@@ -44,7 +44,7 @@ python -m venv venv  # Create a new virtual environment
 source venv/bin/activate  # On Unix/MacOS
 path\to\venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
-```  
+```
 - For Teensy, please install it from [here](https://www.pjrc.com/teensy/td_download.html)
 # How to start
 
@@ -61,3 +61,11 @@ pip install -r requirements.txt
 
 `test_models` - output directory for generated builds using the test scripts
 
+
+
+# Issues
+
+- If teensy_post_compile fails due to the file path, either uncomment the following line in ardmk-init.py or take a look at this [PR](https://github.com/sudar/Arduino-Makefile/pull/682)
+```
+    #file_content += "\nOBJDIR={}/{}".format(ARGS.directory.replace("\\", "/"), build_dir)
+```
