@@ -65,7 +65,7 @@ pip install -r requirements.txt
 
 # Issues
 
-- If teensy_post_compile fails due to the file path, either uncomment the following line in ardmk-init.py or take a look at this [PR](https://github.com/sudar/Arduino-Makefile/pull/682)
+- If teensy_post_compile fails due to the file path, either uncomment the following line in ardmk-init.py or take a look at this [PR]([https://github.com/sudar/Arduino-Makefile/pull/682](https://github.com/sudar/Arduino-Makefile/pull/683))
 ```
     #file_content += "\nOBJDIR={}/{}".format(ARGS.directory.replace("\\", "/"), build_dir)
 ```
