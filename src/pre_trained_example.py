@@ -54,7 +54,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.train == False:
-        tflite_model_path = r"..\models\har\fca_10_har_quant_fullint_micro.tflite"
+        tflite_model_path = r"..\models\gesture\fca_10_gesture_quant_fullint_micro.tflite"
 
         # Read the TFLite model as bytes
         with open(tflite_model_path, 'rb') as file:
@@ -73,8 +73,9 @@ if __name__ == "__main__":
 
     if args.train == True:
         model = keras.Sequential([
-            layers.Dense(10, activation='relu', input_shape=(561,)),
-            layers.Dense(6, activation='softmax')
+            layers.Dense(10, activation='relu', input_shape=(50,)),
+            layers.Dense(50, activation='relu'),
+            layers.Dense(5, activation='softmax')
         ])
 
         # Compile the model
@@ -100,7 +101,7 @@ if __name__ == "__main__":
 
         converter = tf.lite.TFLiteConverter.from_keras_model(model)
         tflite_model = converter.convert()
-        tflite_file = r'..\models\har\fca_10_har_default.tflite'
+        tflite_file = r'..\models\gesture\fca_10_gesture_default.tflite'
         # Save the TFLite model to a file
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
@@ -108,7 +109,7 @@ if __name__ == "__main__":
         # Quantization of weights (but not the activations)
         converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
         tflite_model = converter.convert()
-        tflite_file = r"..\models\har\fca_10_har_quant.tflite"
+        tflite_file = r"..\models\gesture\fca_10_gesture_quant.tflite"
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
@@ -121,7 +122,7 @@ if __name__ == "__main__":
         converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
         converter.representative_dataset = representative_dataset_gen
         tflite_model = converter.convert()
-        tflite_file = r"..\models\har\fca_10_har_quant_fullint.tflite"
+        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint.tflite"
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
@@ -131,7 +132,7 @@ if __name__ == "__main__":
         converter.representative_dataset = representative_dataset_gen
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         tflite_model = converter.convert()
-        tflite_file = r"..\models\har\fca_10_har_quant_fullint_micro.tflite"
+        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint_micro.tflite"
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
@@ -142,7 +143,7 @@ if __name__ == "__main__":
         converter.inference_input_type = tf.int8  # or tf.uint8
         converter.inference_output_type = tf.int8  # or tf.uint8
         tflite_model = converter.convert()
-        tflite_file = r"..\models\har\fca_10_har_quant_fullint_micro_intio.tflite"
+        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint_micro_intio.tflite"
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 

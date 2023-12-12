@@ -8,6 +8,7 @@ from sklearn.datasets import load_iris, load_breast_cancer, load_digits, load_bo
 from sklearn.model_selection import train_test_split
 
 class GasDataLoader:
+    #todo remove
     #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 6), random_state=1)
     #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
 
@@ -116,6 +117,12 @@ class SensorlessDriveDataLoader:
 
         train_features, val_features, train_labels, val_labels = train_test_split(dataset.iloc[:, :-1], dataset["label"],
                                                                                   train_size=split_train_test, random_state=42)
+
+        # Transform data to numpy arrays
+        train_features = train_features.values
+        train_labels = train_labels.astype(np.uint8)
+        val_features = val_features.values
+        val_labels = val_labels.astype(np.uint8)
 
         return train_features, train_labels, val_features, val_labels
 
@@ -260,6 +267,12 @@ class GestureDataLoader:
         y = df['phase']
 
         train_features, val_features, train_labels, val_labels = train_test_split(X, y, train_size=split_train_test, random_state=42)
+
+        # Transform data to numpy arrays
+        train_features = train_features.values
+        train_labels = train_labels.astype(np.uint8)
+        val_features = val_features.values
+        val_labels = val_labels.astype(np.uint8)
 
         return train_features, train_labels, val_features, val_labels
 
