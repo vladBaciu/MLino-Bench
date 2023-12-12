@@ -14,7 +14,7 @@ EmlTreesNode model_nodes[12] = {
   { 3, 1.75, 7, 10 },
   { 2, 4.950000047683716, 4, 8 },
   { 3, 1.550000011920929, 5, 9 },
-  { 0, 6.949999809265137, 4, 5 },
+  { 2, 5.450000047683716, 4, 5 },
   { 2, 4.8500001430511475, 11, 5 },
   { 1, 3.100000023841858, 5, 4 } 
 };
@@ -46,7 +46,7 @@ static inline int32_t model_predict_tree_0(const float *features, int32_t featur
                           if (features[3] < 1.550000011920929) {
                               return 2;
                           } else {
-                              if (features[0] < 6.949999809265137) {
+                              if (features[2] < 5.450000047683716) {
                                   return 1;
                               } else {
                                   return 2;

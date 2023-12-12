@@ -4,145 +4,121 @@
     #include <eml_trees.h>
     
 
-EmlTreesNode model_nodes[88] = {
-  { 3, 0.800000011920929, 1, 2 },
+EmlTreesNode model_nodes[76] = {
+  { 2, 2.599999964237213, 1, 2 },
   { -1, 0, -1, -1 },
-  { 3, 1.6500000357627869, 3, 9 },
-  { 0, 7.099999904632568, 4, 8 },
-  { 0, 6.049999952316284, 5, 6 },
+  { 3, 1.75, 3, 8 },
+  { 1, 2.25, 4, 7 },
+  { 0, 5.5, 5, 6 },
   { -1, 1, -1, -1 },
-  { 1, 2.850000023841858, 7, 5 },
-  { 2, 5.0, 5, 8 },
   { -1, 2, -1, -1 },
-  { 1, 3.149999976158142, 10, 12 },
-  { 3, 1.75, 11, 8 },
-  { 0, 5.799999952316284, 8, 5 },
-  { 0, 6.049999952316284, 5, 8 },
-  { 3, 0.800000011920929, 1, 14 },
-  { 3, 1.550000011920929, 15, 20 },
-  { 1, 2.25, 8, 16 },
-  { 0, 6.0, 5, 17 },
-  { 0, 6.3500001430511475, 18, 5 },
-  { 1, 2.850000023841858, 19, 5 },
-  { 2, 5.0, 5, 8 },
-  { 0, 6.150000095367432, 21, 24 },
-  { 2, 4.650000095367432, 5, 22 },
-  { 3, 1.8499999642372131, 23, 8 },
-  { 0, 5.950000047683716, 5, 8 },
-  { 3, 1.75, 25, 8 },
-  { 3, 1.6500000357627869, 8, 5 },
-  { 2, 2.5, 1, 27 },
-  { 0, 6.049999952316284, 28, 29 },
-  { 3, 1.699999988079071, 5, 8 },
-  { 3, 1.550000011920929, 30, 8 },
-  { 2, 4.8999998569488525, 5, 8 },
-  { 3, 0.75, 1, 32 },
-  { 0, 6.1499998569488525, 33, 40 },
-  { 2, 4.700000047683716, 34, 36 },
-  { 2, 4.450000047683716, 5, 35 },
-  { 1, 2.75, 8, 5 },
-  { 1, 2.75, 37, 8 },
-  { 2, 5.049999952316284, 8, 38 },
-  { 2, 5.349999904632568, 39, 8 },
-  { 0, 5.900000095367432, 8, 5 },
-  { 0, 6.799999952316284, 41, 8 },
-  { 2, 4.700000047683716, 5, 8 },
-  { 2, 2.599999964237213, 1, 43 },
-  { 2, 4.75, 44, 46 },
-  { 0, 4.950000047683716, 45, 5 },
-  { 1, 2.450000047683716, 5, 8 },
-  { 0, 6.049999952316284, 47, 8 },
-  { 1, 3.100000023841858, 48, 5 },
-  { 0, 5.950000047683716, 8, 49 },
-  { 2, 5.049999952316284, 8, 5 },
-  { 2, 2.449999988079071, 1, 51 },
-  { 2, 5.049999952316284, 52, 8 },
-  { 0, 4.950000047683716, 8, 53 },
-  { 3, 1.75, 5, 54 },
-  { 1, 3.100000023841858, 8, 5 },
-  { 2, 2.449999988079071, 1, 56 },
-  { 0, 5.75, 57, 58 },
-  { 3, 1.75, 5, 8 },
-  { 0, 7.049999952316284, 59, 8 },
-  { 3, 1.75, 60, 8 },
-  { 1, 2.649999976158142, 61, 62 },
-  { 2, 4.950000047683716, 5, 8 },
-  { 2, 5.049999952316284, 5, 63 },
-  { 1, 2.75, 5, 8 },
-  { 0, 5.549999952316284, 65, 68 },
-  { 1, 2.75, 66, 67 },
-  { 2, 2.149999976158142, 1, 5 },
-  { 3, 1.0, 1, 5 },
-  { 0, 6.75, 69, 73 },
-  { 3, 1.75, 70, 8 },
-  { 3, 0.7000000029802322, 1, 71 },
-  { 1, 2.850000023841858, 72, 5 },
-  { 2, 4.950000047683716, 5, 8 },
-  { 3, 1.550000011920929, 5, 8 },
-  { 2, 2.599999964237213, 1, 75 },
-  { 3, 1.6500000357627869, 76, 8 },
-  { 0, 7.049999952316284, 77, 8 },
-  { 2, 5.349999904632568, 78, 8 },
-  { 1, 2.25, 79, 80 },
-  { 0, 5.5, 5, 8 },
-  { 0, 6.200000047683716, 5, 81 },
-  { 2, 5.0, 5, 8 },
-  { 2, 2.300000011920929, 1, 83 },
-  { 3, 1.6500000357627869, 84, 86 },
-  { 0, 7.099999904632568, 85, 8 },
-  { 2, 5.349999904632568, 5, 8 },
-  { 2, 5.049999952316284, 87, 8 },
-  { 2, 4.900000095367432, 8, 5 } 
+  { 2, 5.049999952316284, 5, 6 },
+  { 0, 6.049999952316284, 9, 6 },
+  { 2, 4.8500001430511475, 5, 6 },
+  { 2, 2.449999988079071, 1, 11 },
+  { 2, 4.75, 12, 14 },
+  { 0, 4.950000047683716, 13, 5 },
+  { 3, 1.350000023841858, 5, 6 },
+  { 0, 6.049999952316284, 15, 6 },
+  { 0, 5.8500001430511475, 6, 5 },
+  { 2, 2.599999964237213, 1, 17 },
+  { 3, 1.6500000357627869, 18, 6 },
+  { 0, 5.950000047683716, 5, 19 },
+  { 1, 2.25, 6, 20 },
+  { 1, 2.850000023841858, 21, 23 },
+  { 2, 5.0, 5, 22 },
+  { 0, 6.049999952316284, 5, 6 },
+  { 2, 5.3500001430511475, 5, 6 },
+  { 2, 2.449999988079071, 1, 25 },
+  { 3, 1.75, 26, 6 },
+  { 0, 7.049999952316284, 27, 6 },
+  { 2, 4.950000047683716, 5, 28 },
+  { 1, 2.899999976158142, 29, 5 },
+  { 3, 1.550000011920929, 6, 5 },
+  { 3, 0.7000000029802322, 1, 31 },
+  { 2, 4.8500001430511475, 32, 34 },
+  { 3, 1.649999976158142, 5, 33 },
+  { 1, 3.100000023841858, 6, 5 },
+  { 3, 1.75, 35, 6 },
+  { 2, 5.349999904632568, 36, 6 },
+  { 1, 2.350000023841858, 6, 5 },
+  { 0, 5.450000047683716, 38, 39 },
+  { 2, 2.600000023841858, 1, 5 },
+  { 3, 1.75, 40, 6 },
+  { 3, 1.3499999642372131, 41, 42 },
+  { 1, 3.5999999046325684, 5, 1 },
+  { 2, 5.349999904632568, 43, 6 },
+  { 3, 1.550000011920929, 44, 5 },
+  { 2, 4.950000047683716, 5, 6 },
+  { 3, 0.800000011920929, 1, 46 },
+  { 3, 1.75, 47, 6 },
+  { 2, 4.950000047683716, 48, 50 },
+  { 2, 4.450000047683716, 5, 49 },
+  { 0, 5.150000095367432, 6, 5 },
+  { 3, 1.550000011920929, 6, 5 },
+  { 3, 0.800000011920929, 1, 52 },
+  { 3, 1.75, 53, 57 },
+  { 2, 5.049999952316284, 54, 56 },
+  { 1, 2.549999952316284, 55, 5 },
+  { 0, 4.950000047683716, 6, 5 },
+  { 3, 1.550000011920929, 6, 5 },
+  { 2, 4.900000095367432, 58, 6 },
+  { 0, 5.950000047683716, 5, 6 },
+  { 3, 0.800000011920929, 1, 60 },
+  { 2, 4.75, 61, 63 },
+  { 1, 2.549999952316284, 62, 5 },
+  { 3, 1.5, 5, 6 },
+  { 2, 4.950000047683716, 64, 6 },
+  { 3, 1.649999976158142, 5, 6 },
+  { 3, 0.800000011920929, 1, 66 },
+  { 0, 6.25, 67, 72 },
+  { 3, 1.6500000357627869, 68, 70 },
+  { 3, 1.3499999642372131, 5, 69 },
+  { 1, 2.75, 6, 5 },
+  { 0, 5.8500001430511475, 6, 71 },
+  { 1, 3.100000023841858, 6, 5 },
+  { 2, 4.799999952316284, 5, 73 },
+  { 0, 6.599999904632568, 6, 74 },
+  { 3, 1.75, 75, 6 },
+  { 2, 5.400000095367432, 5, 6 } 
 };
 
-int32_t model_tree_roots[10] = { 0, 13, 26, 31, 42, 50, 55, 64, 74, 82 };
+int32_t model_tree_roots[10] = { 0, 10, 16, 24, 30, 37, 45, 51, 59, 65 };
 
 EmlTrees model = {
-        88,
+        76,
         model_nodes,	  
         10,
         model_tree_roots,
     };
 
 static inline int32_t model_predict_tree_0(const float *features, int32_t features_length) {
-          if (features[3] < 0.800000011920929) {
+          if (features[2] < 2.599999964237213) {
               return 0;
           } else {
-              if (features[3] < 1.6500000357627869) {
-                  if (features[0] < 7.099999904632568) {
-                      if (features[0] < 6.049999952316284) {
+              if (features[3] < 1.75) {
+                  if (features[1] < 2.25) {
+                      if (features[0] < 5.5) {
                           return 1;
                       } else {
-                          if (features[1] < 2.850000023841858) {
-                              if (features[2] < 5.0) {
-                                  return 1;
-                              } else {
-                                  return 2;
-                              }
-                          } else {
-                              return 1;
-                          }
+                          return 2;
+                      }
+                  } else {
+                      if (features[2] < 5.049999952316284) {
+                          return 1;
+                      } else {
+                          return 2;
+                      }
+                  }
+              } else {
+                  if (features[0] < 6.049999952316284) {
+                      if (features[2] < 4.8500001430511475) {
+                          return 1;
+                      } else {
+                          return 2;
                       }
                   } else {
                       return 2;
-                  }
-              } else {
-                  if (features[1] < 3.149999976158142) {
-                      if (features[3] < 1.75) {
-                          if (features[0] < 5.799999952316284) {
-                              return 2;
-                          } else {
-                              return 1;
-                          }
-                      } else {
-                          return 2;
-                      }
-                  } else {
-                      if (features[0] < 6.049999952316284) {
-                          return 1;
-                      } else {
-                          return 2;
-                      }
                   }
               }
           }
@@ -150,143 +126,12 @@ static inline int32_t model_predict_tree_0(const float *features, int32_t featur
         
 
 static inline int32_t model_predict_tree_1(const float *features, int32_t features_length) {
-          if (features[3] < 0.800000011920929) {
-              return 0;
-          } else {
-              if (features[3] < 1.550000011920929) {
-                  if (features[1] < 2.25) {
-                      return 2;
-                  } else {
-                      if (features[0] < 6.0) {
-                          return 1;
-                      } else {
-                          if (features[0] < 6.3500001430511475) {
-                              if (features[1] < 2.850000023841858) {
-                                  if (features[2] < 5.0) {
-                                      return 1;
-                                  } else {
-                                      return 2;
-                                  }
-                              } else {
-                                  return 1;
-                              }
-                          } else {
-                              return 1;
-                          }
-                      }
-                  }
-              } else {
-                  if (features[0] < 6.150000095367432) {
-                      if (features[2] < 4.650000095367432) {
-                          return 1;
-                      } else {
-                          if (features[3] < 1.8499999642372131) {
-                              if (features[0] < 5.950000047683716) {
-                                  return 1;
-                              } else {
-                                  return 2;
-                              }
-                          } else {
-                              return 2;
-                          }
-                      }
-                  } else {
-                      if (features[3] < 1.75) {
-                          if (features[3] < 1.6500000357627869) {
-                              return 2;
-                          } else {
-                              return 1;
-                          }
-                      } else {
-                          return 2;
-                      }
-                  }
-              }
-          }
-        }
-        
-
-static inline int32_t model_predict_tree_2(const float *features, int32_t features_length) {
-          if (features[2] < 2.5) {
-              return 0;
-          } else {
-              if (features[0] < 6.049999952316284) {
-                  if (features[3] < 1.699999988079071) {
-                      return 1;
-                  } else {
-                      return 2;
-                  }
-              } else {
-                  if (features[3] < 1.550000011920929) {
-                      if (features[2] < 4.8999998569488525) {
-                          return 1;
-                      } else {
-                          return 2;
-                      }
-                  } else {
-                      return 2;
-                  }
-              }
-          }
-        }
-        
-
-static inline int32_t model_predict_tree_3(const float *features, int32_t features_length) {
-          if (features[3] < 0.75) {
-              return 0;
-          } else {
-              if (features[0] < 6.1499998569488525) {
-                  if (features[2] < 4.700000047683716) {
-                      if (features[2] < 4.450000047683716) {
-                          return 1;
-                      } else {
-                          if (features[1] < 2.75) {
-                              return 2;
-                          } else {
-                              return 1;
-                          }
-                      }
-                  } else {
-                      if (features[1] < 2.75) {
-                          if (features[2] < 5.049999952316284) {
-                              return 2;
-                          } else {
-                              if (features[2] < 5.349999904632568) {
-                                  if (features[0] < 5.900000095367432) {
-                                      return 2;
-                                  } else {
-                                      return 1;
-                                  }
-                              } else {
-                                  return 2;
-                              }
-                          }
-                      } else {
-                          return 2;
-                      }
-                  }
-              } else {
-                  if (features[0] < 6.799999952316284) {
-                      if (features[2] < 4.700000047683716) {
-                          return 1;
-                      } else {
-                          return 2;
-                      }
-                  } else {
-                      return 2;
-                  }
-              }
-          }
-        }
-        
-
-static inline int32_t model_predict_tree_4(const float *features, int32_t features_length) {
-          if (features[2] < 2.599999964237213) {
+          if (features[2] < 2.449999988079071) {
               return 0;
           } else {
               if (features[2] < 4.75) {
                   if (features[0] < 4.950000047683716) {
-                      if (features[1] < 2.450000047683716) {
+                      if (features[3] < 1.350000023841858) {
                           return 1;
                       } else {
                           return 2;
@@ -296,18 +141,109 @@ static inline int32_t model_predict_tree_4(const float *features, int32_t featur
                   }
               } else {
                   if (features[0] < 6.049999952316284) {
-                      if (features[1] < 3.100000023841858) {
-                          if (features[0] < 5.950000047683716) {
-                              return 2;
+                      if (features[0] < 5.8500001430511475) {
+                          return 2;
+                      } else {
+                          return 1;
+                      }
+                  } else {
+                      return 2;
+                  }
+              }
+          }
+        }
+        
+
+static inline int32_t model_predict_tree_2(const float *features, int32_t features_length) {
+          if (features[2] < 2.599999964237213) {
+              return 0;
+          } else {
+              if (features[3] < 1.6500000357627869) {
+                  if (features[0] < 5.950000047683716) {
+                      return 1;
+                  } else {
+                      if (features[1] < 2.25) {
+                          return 2;
+                      } else {
+                          if (features[1] < 2.850000023841858) {
+                              if (features[2] < 5.0) {
+                                  return 1;
+                              } else {
+                                  if (features[0] < 6.049999952316284) {
+                                      return 1;
+                                  } else {
+                                      return 2;
+                                  }
+                              }
                           } else {
-                              if (features[2] < 5.049999952316284) {
+                              if (features[2] < 5.3500001430511475) {
+                                  return 1;
+                              } else {
+                                  return 2;
+                              }
+                          }
+                      }
+                  }
+              } else {
+                  return 2;
+              }
+          }
+        }
+        
+
+static inline int32_t model_predict_tree_3(const float *features, int32_t features_length) {
+          if (features[2] < 2.449999988079071) {
+              return 0;
+          } else {
+              if (features[3] < 1.75) {
+                  if (features[0] < 7.049999952316284) {
+                      if (features[2] < 4.950000047683716) {
+                          return 1;
+                      } else {
+                          if (features[1] < 2.899999976158142) {
+                              if (features[3] < 1.550000011920929) {
                                   return 2;
                               } else {
                                   return 1;
                               }
+                          } else {
+                              return 1;
                           }
+                      }
+                  } else {
+                      return 2;
+                  }
+              } else {
+                  return 2;
+              }
+          }
+        }
+        
+
+static inline int32_t model_predict_tree_4(const float *features, int32_t features_length) {
+          if (features[3] < 0.7000000029802322) {
+              return 0;
+          } else {
+              if (features[2] < 4.8500001430511475) {
+                  if (features[3] < 1.649999976158142) {
+                      return 1;
+                  } else {
+                      if (features[1] < 3.100000023841858) {
+                          return 2;
                       } else {
                           return 1;
+                      }
+                  }
+              } else {
+                  if (features[3] < 1.75) {
+                      if (features[2] < 5.349999904632568) {
+                          if (features[1] < 2.350000023841858) {
+                              return 2;
+                          } else {
+                              return 1;
+                          }
+                      } else {
+                          return 2;
                       }
                   } else {
                       return 2;
@@ -318,21 +254,33 @@ static inline int32_t model_predict_tree_4(const float *features, int32_t featur
         
 
 static inline int32_t model_predict_tree_5(const float *features, int32_t features_length) {
-          if (features[2] < 2.449999988079071) {
-              return 0;
+          if (features[0] < 5.450000047683716) {
+              if (features[2] < 2.600000023841858) {
+                  return 0;
+              } else {
+                  return 1;
+              }
           } else {
-              if (features[2] < 5.049999952316284) {
-                  if (features[0] < 4.950000047683716) {
-                      return 2;
-                  } else {
-                      if (features[3] < 1.75) {
+              if (features[3] < 1.75) {
+                  if (features[3] < 1.3499999642372131) {
+                      if (features[1] < 3.5999999046325684) {
                           return 1;
                       } else {
-                          if (features[1] < 3.100000023841858) {
-                              return 2;
+                          return 0;
+                      }
+                  } else {
+                      if (features[2] < 5.349999904632568) {
+                          if (features[3] < 1.550000011920929) {
+                              if (features[2] < 4.950000047683716) {
+                                  return 1;
+                              } else {
+                                  return 2;
+                              }
                           } else {
                               return 1;
                           }
+                      } else {
+                          return 2;
                       }
                   }
               } else {
@@ -343,83 +291,63 @@ static inline int32_t model_predict_tree_5(const float *features, int32_t featur
         
 
 static inline int32_t model_predict_tree_6(const float *features, int32_t features_length) {
-          if (features[2] < 2.449999988079071) {
+          if (features[3] < 0.800000011920929) {
               return 0;
           } else {
-              if (features[0] < 5.75) {
-                  if (features[3] < 1.75) {
-                      return 1;
-                  } else {
-                      return 2;
-                  }
-              } else {
-                  if (features[0] < 7.049999952316284) {
-                      if (features[3] < 1.75) {
-                          if (features[1] < 2.649999976158142) {
-                              if (features[2] < 4.950000047683716) {
-                                  return 1;
-                              } else {
-                                  return 2;
-                              }
-                          } else {
-                              if (features[2] < 5.049999952316284) {
-                                  return 1;
-                              } else {
-                                  if (features[1] < 2.75) {
-                                      return 1;
-                                  } else {
-                                      return 2;
-                                  }
-                              }
-                          }
+              if (features[3] < 1.75) {
+                  if (features[2] < 4.950000047683716) {
+                      if (features[2] < 4.450000047683716) {
+                          return 1;
                       } else {
-                          return 2;
+                          if (features[0] < 5.150000095367432) {
+                              return 2;
+                          } else {
+                              return 1;
+                          }
                       }
                   } else {
-                      return 2;
+                      if (features[3] < 1.550000011920929) {
+                          return 2;
+                      } else {
+                          return 1;
+                      }
                   }
+              } else {
+                  return 2;
               }
           }
         }
         
 
 static inline int32_t model_predict_tree_7(const float *features, int32_t features_length) {
-          if (features[0] < 5.549999952316284) {
-              if (features[1] < 2.75) {
-                  if (features[2] < 2.149999976158142) {
-                      return 0;
-                  } else {
-                      return 1;
-                  }
-              } else {
-                  if (features[3] < 1.0) {
-                      return 0;
-                  } else {
-                      return 1;
-                  }
-              }
+          if (features[3] < 0.800000011920929) {
+              return 0;
           } else {
-              if (features[0] < 6.75) {
-                  if (features[3] < 1.75) {
-                      if (features[3] < 0.7000000029802322) {
-                          return 0;
-                      } else {
-                          if (features[1] < 2.850000023841858) {
-                              if (features[2] < 4.950000047683716) {
-                                  return 1;
-                              } else {
-                                  return 2;
-                              }
+              if (features[3] < 1.75) {
+                  if (features[2] < 5.049999952316284) {
+                      if (features[1] < 2.549999952316284) {
+                          if (features[0] < 4.950000047683716) {
+                              return 2;
                           } else {
                               return 1;
                           }
+                      } else {
+                          return 1;
                       }
                   } else {
-                      return 2;
+                      if (features[3] < 1.550000011920929) {
+                          return 2;
+                      } else {
+                          return 1;
+                      }
                   }
               } else {
-                  if (features[3] < 1.550000011920929) {
-                      return 1;
+                  if (features[2] < 4.900000095367432) {
+                      if (features[0] < 5.950000047683716) {
+                          return 1;
+                      } else {
+                          return 2;
+                      }
                   } else {
                       return 2;
                   }
@@ -429,65 +357,77 @@ static inline int32_t model_predict_tree_7(const float *features, int32_t featur
         
 
 static inline int32_t model_predict_tree_8(const float *features, int32_t features_length) {
-          if (features[2] < 2.599999964237213) {
+          if (features[3] < 0.800000011920929) {
               return 0;
           } else {
-              if (features[3] < 1.6500000357627869) {
-                  if (features[0] < 7.049999952316284) {
-                      if (features[2] < 5.349999904632568) {
-                          if (features[1] < 2.25) {
-                              if (features[0] < 5.5) {
-                                  return 1;
-                              } else {
-                                  return 2;
-                              }
-                          } else {
-                              if (features[0] < 6.200000047683716) {
-                                  return 1;
-                              } else {
-                                  if (features[2] < 5.0) {
-                                      return 1;
-                                  } else {
-                                      return 2;
-                                  }
-                              }
-                          }
+              if (features[2] < 4.75) {
+                  if (features[1] < 2.549999952316284) {
+                      if (features[3] < 1.5) {
+                          return 1;
+                      } else {
+                          return 2;
+                      }
+                  } else {
+                      return 1;
+                  }
+              } else {
+                  if (features[2] < 4.950000047683716) {
+                      if (features[3] < 1.649999976158142) {
+                          return 1;
                       } else {
                           return 2;
                       }
                   } else {
                       return 2;
                   }
-              } else {
-                  return 2;
               }
           }
         }
         
 
 static inline int32_t model_predict_tree_9(const float *features, int32_t features_length) {
-          if (features[2] < 2.300000011920929) {
+          if (features[3] < 0.800000011920929) {
               return 0;
           } else {
-              if (features[3] < 1.6500000357627869) {
-                  if (features[0] < 7.099999904632568) {
-                      if (features[2] < 5.349999904632568) {
+              if (features[0] < 6.25) {
+                  if (features[3] < 1.6500000357627869) {
+                      if (features[3] < 1.3499999642372131) {
                           return 1;
                       } else {
-                          return 2;
+                          if (features[1] < 2.75) {
+                              return 2;
+                          } else {
+                              return 1;
+                          }
                       }
                   } else {
-                      return 2;
+                      if (features[0] < 5.8500001430511475) {
+                          return 2;
+                      } else {
+                          if (features[1] < 3.100000023841858) {
+                              return 2;
+                          } else {
+                              return 1;
+                          }
+                      }
                   }
               } else {
-                  if (features[2] < 5.049999952316284) {
-                      if (features[2] < 4.900000095367432) {
+                  if (features[2] < 4.799999952316284) {
+                      return 1;
+                  } else {
+                      if (features[0] < 6.599999904632568) {
                           return 2;
                       } else {
-                          return 1;
+                          if (features[3] < 1.75) {
+                              if (features[2] < 5.400000095367432) {
+                                  return 1;
+                              } else {
+                                  return 2;
+                              }
+                          } else {
+                              return 2;
+                          }
                       }
-                  } else {
-                      return 2;
                   }
               }
           }

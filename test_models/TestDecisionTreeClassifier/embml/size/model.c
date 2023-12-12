@@ -37,7 +37,7 @@ int classify(){
 						return 2;
 					}
 					else {
-						if (instance[2] <= (FixedNum)0x000015cd){
+						if (instance[0] <= (FixedNum)0x00001bcd){
 							return 1;
 						}
 						else {

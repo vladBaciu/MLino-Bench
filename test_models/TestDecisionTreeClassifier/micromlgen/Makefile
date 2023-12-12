@@ -11,5 +11,4 @@ CPPFLAGS += -DNUMBER_OF_FEATURES=4
 CPPFLAGS += -ID:/PhD/Workspace/Embedded_ML_Article_2/Workspace/mlino_bench/test_models/TestDecisionTreeClassifier/micromlgen
 OPTIMIZATION_LEVEL=s
 OTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map
-OBJDIR=D:/PhD/Workspace/Embedded_ML_Article_2/Workspace/mlino_bench/test_models/TestDecisionTreeClassifier/micromlgen/build-teensy40-imxrt1062
 include $(ARDMK_DIR)/Teensy.mk

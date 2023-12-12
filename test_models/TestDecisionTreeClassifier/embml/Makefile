@@ -10,6 +10,5 @@ CPPFLAGS += -DDECISIONTREECLASSIFIER
 CPPFLAGS += -DNUMBER_OF_FEATURES=4
 CPPFLAGS += -ID:/PhD/Workspace/Embedded_ML_Article_2/Workspace/mlino_bench/test_models/TestDecisionTreeClassifier/embml
 OPTIMIZATION_LEVEL=s
-OBJDIR=build-teensy40-imxrt1062
 OTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map
 include $(ARDMK_DIR)/Teensy.mk

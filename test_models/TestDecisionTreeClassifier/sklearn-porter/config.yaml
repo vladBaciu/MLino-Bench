@@ -16,7 +16,7 @@ target:
   mcu_family: teensy
   monitor_port: '16'
   optimization_level: s
-  ratio_test_samples_on_target: '20'
+  ratio_test_samples_on_target: '100'
   type: arduino_makefile
 training:
   accuracy: false
