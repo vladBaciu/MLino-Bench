@@ -30,6 +30,11 @@ if __name__ == "__main__":
     parser.add_argument('--output', help="The output file name.")
     args = parser.parse_args()
 
+    #if output not specified, generate a file with a timestamp
+    if args.output is None:
+        import datetime
+        args.output = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "_test.txt"
+
     # Load the configuration data
     if args.platform == "due":
         config_data = com.yaml_load(os.path.join(os.path.dirname(__file__), "config_arduino_due.yaml"))
