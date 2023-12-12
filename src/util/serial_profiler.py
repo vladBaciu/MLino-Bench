@@ -132,6 +132,7 @@ class SerialProfiler:
 
             self.mcu_serial.write(bytes(f"db load {self.no_of_features*f_bytes}%", 'utf-8'))
             data = self.wait_ready_ack()
+            #print(data)
 
             packet_size = 16 if (self.no_of_features * f_bytes) > 16 else (self.no_of_features * f_bytes)
             # Send chuncks of packet_size bytes
@@ -147,6 +148,7 @@ class SerialProfiler:
             self.mcu_serial.write(bytes(f"infer {INFER_ITER} {WARMUP_ITER}%", 'utf-8'))
             data = self.wait_ready_ack()
             inference_result.append(self.get_inference_result(data))
+            #print(data)
 
             time = self.get_ellapsed_time(data)
             if time:

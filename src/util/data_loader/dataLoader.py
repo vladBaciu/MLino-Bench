@@ -167,13 +167,18 @@ class HARDataLoader:
         # Make labels zero-indexed
         val_labels = test_data.Activity.values - 1
 
+        # Transform data to numpy arrays
+        train_features = train_features.values
+        train_labels = train_labels.astype(np.uint8)
+        val_features = val_features.values
+        val_labels = val_labels.astype(np.uint8)
+
         return train_features, train_labels, val_features, val_labels
 
 class GestureDataLoader:
     def load_dataset(self, split_train_test):
 
-        dat_file = os.path.join('..', '..', 'datasets',
-                                'gesture_phase_segmentation')
+        dat_file = os.path.join('..', 'datasets', 'gesture_phase_segmentation')
 
         # read .csv from provided dataset
         csv_filename01= os.path.join(dat_file, 'a1_raw.csv')
