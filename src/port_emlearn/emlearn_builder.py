@@ -97,7 +97,7 @@ class EmlearnBuilder:
             "RandomForestClassifier": ['eml_trees.h'],
             "ExtraTreesClassifier": ['eml_trees.h'],
             "GaussianNB": ['eml_bayes.h', 'eml_fixedpoint.h'],
-            "MLPClassifier": ['eml_net.h']
+            "MLPClassifier": ['eml_net.h', 'eml_net_common.h', 'eml_net_fixedpoint.h']
         }
 
         # Copy common header file if it doesn't exist
