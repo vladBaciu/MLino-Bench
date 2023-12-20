@@ -100,8 +100,9 @@ class EmlearnBuilder:
             "MLPClassifier": ['eml_net.h']
         }
 
-        # Copy common header file
-        shutil.copy2(os.path.join(os.path.dirname(__file__), 'template', common_header), dest_dir)
+        # Copy common header file if it doesn't exist
+        if not os.path.isfile(os.path.join(dest_dir, common_header)):
+            shutil.copy2(os.path.join(os.path.dirname(__file__), 'template', common_header), dest_dir)
 
         # Copy classifier-specific header files
         clf_type = str(type(self.classifier_method))
@@ -113,5 +114,7 @@ class EmlearnBuilder:
                 break
 
         headers_to_copy = classifier_headers.get(clf_type, [])
+        # Copy classifier-specific header files if they don't exist
         for header in headers_to_copy:
-            shutil.copy(os.path.join(os.path.dirname(__file__), 'template', header), dest_dir)
+            if not os.path.isfile(os.path.join(dest_dir, header)):
+                shutil.copy(os.path.join(os.path.dirname(__file__), 'template', header), dest_dir)
