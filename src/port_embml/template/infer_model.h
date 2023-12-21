@@ -21,7 +21,7 @@ int model_output[OUTPUT_SIZE] = {0UL};
 FEATURE_TYPE input[NUMBER_OF_FEATURES] = {0U};
 
 static inline void th_initModel(void) {}
-#if !defined(SKLEARN_MLP) && !defined(SVC)
+#if !defined(MLPCLASSIFIER) && !defined(SVC)
 static inline void th_infer(void){model_output[0] = classify();}
 #else
 static inline void th_infer(void){
