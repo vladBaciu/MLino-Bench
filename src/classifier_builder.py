@@ -457,19 +457,16 @@ class ClassifierBuilder():
             else:
                 merged_errors[(framework, classifier)] = [message]
 
+        # Print the summary of error messages
+        print("\n\n=============== Builder log messages: ===============\n\n")
         # Dump execution output to log txt file
         with open(os.path.join(self.benchmark_info['runtime']['generated_model_dir'], "log.txt"), 'w') as f:
             for (framework, classifier), messages in merged_errors.items():
+                print(f"{framework} {classifier}:")
                 f.write(f"{framework} {classifier}:\n")
                 for message in messages:
                     f.write(f"\t{message}\n")
-
-        # Print the summary of error messages
-        print("\n\n=============== Builder log messages: ===============\n\n")
-        for (framework, classifier), messages in merged_errors.items():
-            print(f"{framework} {classifier}:")
-            for message in messages:
-                print(f"\t{message}")
+                    print(f"\t{message}")
 
     def logger_builder(self, cc_toolchain, status):
         """

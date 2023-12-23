@@ -14,8 +14,8 @@ import mlino_pipeline as MLinoBench
 def tinymlgen_model(data_size, ouptut_size):
 
     nn = Sequential()
-    nn.add(layers.Dense(units=50, activation='relu', input_shape=data_size))
-    nn.add(layers.Dense(units=50, activation='relu'))
+    nn.add(layers.Dense(units=10, activation='relu', input_shape=data_size))
+    nn.add(layers.Dense(units=10, activation='relu'))
     nn.add(layers.Dense(ouptut_size, activation='softmax'))
 
     # use categorical_crossentropy for multi-class classification
@@ -29,7 +29,7 @@ class CategoricalClassifier(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
         y = to_categorical(y)
-        self.model.fit(X, y, epochs=10, batch_size=32)
+        self.model.fit(X, y, epochs=100, batch_size=32)
         return self
 
     def predict(self, X):
