@@ -120,9 +120,9 @@ class SensorlessDriveDataLoader:
 
         # Transform data to numpy arrays
         train_features = train_features.values
-        train_labels = train_labels.astype(np.uint8)
+        train_labels = train_labels.astype(np.uint8) - 1
         val_features = val_features.values
-        val_labels = val_labels.astype(np.uint8)
+        val_labels = val_labels.astype(np.uint8) - 1
 
         return train_features, train_labels, val_features, val_labels
 
