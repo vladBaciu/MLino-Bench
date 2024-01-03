@@ -12,6 +12,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.utils import to_categorical
 import argparse
+import os
 
 class CategoricalClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, model, interpreter):
@@ -53,8 +54,10 @@ if __name__ == "__main__":
     # Parse the command-line arguments
     args = parser.parse_args()
 
+    dname = MLinoBench.LoadTrainTestData().config["training"]["dataset"]
+
     if args.train == False:
-        tflite_model_path = r"..\models\gesture\fca_10_gesture_quant_fullint_micro.tflite"
+        tflite_model_path = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
 
         # Read the TFLite model as bytes
         with open(tflite_model_path, 'rb') as file:
@@ -72,20 +75,21 @@ if __name__ == "__main__":
         MLinoBench.BenchmarkPipeline(pipe, "tinymlgen")
 
     if args.train == True:
+
+        X_train, y_train , X_test, y_test = MLinoBench.LoadTrainTestData().transform()
+
         model = keras.Sequential([
-            layers.Dense(10, activation='relu', input_shape=(50,)),
+            layers.Dense(10, activation='relu', input_shape=(X_train.shape[1],)),
             layers.Dense(50, activation='relu'),
-            layers.Dense(5, activation='softmax')
+            layers.Dense(len(np.union1d(y_train, y_test)), activation='softmax')
         ])
 
         # Compile the model
         optimizer = keras.optimizers.Adam(learning_rate=0.001)
         model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-#
+
         # Display the model summary
         model.summary()
-
-        X_train, y_train , X_test, y_test = MLinoBench.LoadTrainTestData().transform()
 
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
@@ -99,17 +103,16 @@ if __name__ == "__main__":
 
         test_loss, test_accuracy = model.evaluate(X_test, y_test)
 
+        #Create directory
+        try:
+            os.mkdir(r'..\models\{}'.format(dname))
+        except OSError:
+            print ("Creation of the directory %s failed" % r'..\models\{}'.format(dname))
+
         converter = tf.lite.TFLiteConverter.from_keras_model(model)
         tflite_model = converter.convert()
-        tflite_file = r'..\models\gesture\fca_10_gesture_default.tflite'
+        tflite_file = r'..\models\{}\fca_default.tflite'.format(dname)
         # Save the TFLite model to a file
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
-
-        # Quantization of weights (but not the activations)
-        converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\gesture\fca_10_gesture_quant.tflite"
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
@@ -118,32 +121,65 @@ if __name__ == "__main__":
                 sample = np.expand_dims(sample.astype(np.float32), axis=0)
                 yield [sample]
 
+        # Quantization of weights (but not the activations)
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS]
+        tflite_model = converter.convert()
+        tflite_file = r"..\models\{}\fca_quant.tflite".format(dname)
+        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+            f.write(tflite_model)
+
         # Full integer quantization of weights and activations
-        converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
         converter.representative_dataset = representative_dataset_gen
         tflite_model = converter.convert()
-        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint.tflite"
+        tflite_file = r"..\models\{}\fca_quant_fullint.tflite".format(dname)
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
 
         # Full integer quantization of weights and activations for micro
-        converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
         converter.representative_dataset = representative_dataset_gen
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         tflite_model = converter.convert()
-        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint_micro.tflite"
+        tflite_file = r"..\models\{}\fca_quant_fullint_micro.tflite".format(dname)
+        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+            f.write(tflite_model)
+
+        # 16-bit activations with 8-bit weights (experimental)
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.representative_dataset = representative_dataset_gen
+        converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8,
+                                               tf.lite.OpsSet.TFLITE_BUILTINS]
+        tflite_model = converter.convert()
+        tflite_file = r"..\models\{}\fca_quant_16x8_micro.tflite".format(dname)
+        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+            f.write(tflite_model)
+
+        # Float16 quantization
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.representative_dataset = representative_dataset_gen
+        converter.target_spec.supported_types = [tf.float16]
+        tflite_model = converter.convert()
+        tflite_file = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
         # Full integer quantization of weights and activations for micro, int8 input and output
-        converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
         converter.representative_dataset = representative_dataset_gen
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         converter.inference_input_type = tf.int8  # or tf.uint8
         converter.inference_output_type = tf.int8  # or tf.uint8
         tflite_model = converter.convert()
-        tflite_file = r"..\models\gesture\fca_10_gesture_quant_fullint_micro_intio.tflite"
+        tflite_file = r"..\models\{}\fca_quant_fullint_micro_intio.tflite".format(dname)
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
