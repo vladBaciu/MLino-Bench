@@ -7,9 +7,22 @@ import sklearn.neural_network
 import sklearn.naive_bayes
 import sklearn.svm
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import numpy as np
 import mlino_pipeline as MLinoBench
 
+
+class FeatureQuantization(BaseEstimator, ClassifierMixin):
+    def __init__(self, quant_type):
+        self.quant_type = quant_type
+
+    def fit(self, X, y):
+        return self
+
+    def transform(self, X):
+        max_val = np.iinfo(self.quant_type).max
+        return (X * max_val).astype(self.quant_type)
 
 if __name__ == "__main__":
 
@@ -34,3 +47,20 @@ if __name__ == "__main__":
     ])
 
     MLinoBench.BenchmarkPipeline(pipe, frameworks)
+
+    # Example 3: Feature quantization
+    model = sklearn.ensemble.RandomForestClassifier(max_depth=5, n_estimators=10, random_state=50)
+    # Example 3: SVC classifier with linear kernel
+    #model = sklearn.svm.LinearSVC(C=0.1, fit_intercept=True)
+    # Example 4: SVC classifier with linear kernel
+    #model = sklearn.svm.SVC(gamma = 0.05, kernel='linear')
+    #Example 5: Benchmark a MLP classifier
+    #model = sklearn.neural_network.MLPClassifier(hidden_layer_sizes=(10, 10), max_iter=20)
+    pipe = Pipeline([
+        ('data_loader', MLinoBench.LoadTrainTestData()),
+        ('scaler', MinMaxScaler()),
+        ('quantizer', FeatureQuantization(np.int8)),
+        ('classifier', model)
+    ])
+
+    MLinoBench.BenchmarkPipeline(pipe, "sklearn-porter")
