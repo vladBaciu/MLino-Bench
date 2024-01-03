@@ -10,14 +10,21 @@ GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'cpp'
 GENERATED_FILE_NAME = "model"
 TEMPLATE = """
+#define NO_OF_FEATURES {}
+float features[NO_OF_FEATURES] __attribute__((used)) = {{0, }};
+Eloquent::ML::Port::{} classifier __attribute__((used));
+
 int main(void) {{
-    float features[1];
-    Eloquent::ML::Port::{0} classifier;
+
+    for (int i = 0; i < NO_OF_FEATURES; ++i) {{
+        features[i] = i;
+    }}
+
     int result = classifier.predict(features);
+
     return result;
 }}
 """
-
 
 class MicromlgenBuilder:
     """
@@ -57,7 +64,7 @@ class MicromlgenBuilder:
 
         return framework_dir, model_path
 
-    def generate_size_template(self, model_code, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir, no_of_features):
         """
         Generate a template based on the model code and model name.
         """
@@ -70,7 +77,7 @@ class MicromlgenBuilder:
             'SEFR': 'SEFR'
         }
 
-        formatted_template = TEMPLATE.format(template_map.get(self.clf_method.__class__.__name__), '')
+        formatted_template = TEMPLATE.format(no_of_features, template_map.get(self.clf_method.__class__.__name__))
         model_code += formatted_template
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code

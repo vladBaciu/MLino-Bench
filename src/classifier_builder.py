@@ -39,7 +39,7 @@ TEMPLATE_FILE = "main.cpp"
 # Only embml requires parameters in fact to decide the size of the fixed point numbers
 SUPPORTED_PORTER_FRAMEWORKS = {
     'sklearn-porter': [('builder', SkLearnPorterBuilder), ('param', None)],
-    'emlearn': [('builder', EmlearnBuilder), ('method', 'pymodule')],
+    'emlearn': [('builder', EmlearnBuilder), ('dtype', 'float')],
     'micromlgen': [('builder', MicromlgenBuilder), ('param', None)],
     'embml': [('builder', EmbmlBuilder), ('opt', '-rules -fxp 21 10')],
     'm2cgen': [('builder', M2cgenBuilder), ('param', None)],

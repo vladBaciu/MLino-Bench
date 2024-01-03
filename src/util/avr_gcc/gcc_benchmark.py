@@ -3,6 +3,7 @@ import os
 import src.util.common as com
 import re
 import threading
+import shutil
 
 class CompileAvrBenchmark:
     def __init__(self, build_info, clean_project):
@@ -108,6 +109,12 @@ class CompileAvrBenchmark:
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error occurred during cleaning: {e.stderr}")
 
+        # Remove other build directories if exist and starts with 'build-'
+        for dir in os.listdir(self.build_info['runtime']['generated_model_dir']):
+            if dir.startswith('build-'):
+                com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} deleting old build directory ...")
+                shutil.rmtree(os.path.join(self.build_info['runtime']['generated_model_dir'], dir))
+
     def read_and_print_stream(self, stream, prefix):
         for line in stream:
             print(f"{prefix}: {line}", end='')
@@ -203,7 +210,9 @@ class CompileAvrBenchmark:
             com.logging.info(f"{self.build_info['runtime']['porter_type']}:{self.build_info['runtime']['model_name']} computing model size...")
 
             # Generate template and set optimization level
-            model_size_code = builder.generate_size_template(model_size_code, self.build_info['runtime']['generated_model_path'])
+            model_size_code = builder.generate_size_template(model_size_code,
+                                                             self.build_info['runtime']['generated_model_path'],
+                                                             self.build_info['runtime']['no_of_features'])
 
             # Write the content of model.h to model.cpp
             with open(os.path.join(build_path, f'model.{self.build_info["runtime"]["language"]}'), 'w') as c_file:
@@ -272,8 +281,11 @@ class CompileAvrBenchmark:
             compiler_cmd = "arm-none-eabi-gcc"
 
         return [
-            compiler_cmd, '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
-            '-O{}'.format(self.build_info["target"]["optimization_level"]), '-c', 'model.{}'.format(self.build_info["runtime"]["language"]),
+            compiler_cmd,
+            '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
+            '-O{}'.format(self.build_info["target"]["optimization_level"]), #commented out when feature buffer needs to be included
+            #'-O0',
+            '-c', 'model.{}'.format(self.build_info["runtime"]["language"]),
             '-o', 'model.o', '-I{}'.format(build_path.replace("\\", "/")),
             '-D {}'.format(self.build_info["runtime"]["model_name"].upper()),
             '-std=c99'

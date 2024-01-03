@@ -73,14 +73,14 @@ class EmbmlBuilder:
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "feature_specific.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "FixedNum.h"), framework_dir)
 
-    def generate_size_template(self, model_code, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir, no_of_features):
         """
         Generate a template based on the model code and model name.
         """
         size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
         shutil.copy(os.path.join(os.path.dirname(model_build_dir), "FixedNum.h"), size_build_dir)
 
-        model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code + TEMPLATE
+        model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code + TEMPLATE.format(no_of_features)
         return model_code
 
     def get_model_language(self):

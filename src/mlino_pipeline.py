@@ -64,7 +64,7 @@ class BenchmarkPipeline():
         steps = self.pipe.steps
 
         # Remove the stage you don't want
-        # In this example, we remove the 'scaler' stage
+        # In this example, we remove the 'data_loader' stage
         steps = [step for step in steps if step[0] != 'data_loader']
 
         # Create a new pipeline with the remaining stages

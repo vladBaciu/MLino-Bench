@@ -73,6 +73,10 @@ class SerialProfiler:
         self.expected_labels = np.load(os.path.join(self.model_dir, "y_labels.npy"))
         self.input_data = np.load(os.path.join(self.model_dir, "y_data.npy"))
 
+    def get_u8_data_bytes(self):
+        np_u8_array = np.uint8(self.input_data)
+        return np_u8_array.tobytes()
+
     def get_f32_data_bytes(self):
         np_f32_array = np.float32(self.input_data)
         return np_f32_array.tobytes()
@@ -109,10 +113,13 @@ class SerialProfiler:
         diff_ellapsed_time = 0
 
         f_bytes = self.get_fsize()
+        print("Feature size: ", f_bytes)
         if f_bytes == 8:
             np_f_array = self.get_f64_data_bytes()
-        else:
+        elif f_bytes == 4:
             np_f_array = self.get_f32_data_bytes()
+        else:
+            np_f_array = self.get_u8_data_bytes()
 
         com.logging.info(f"{self.porter_type}:{self.model_name} Measuring accuracy and inference time ...")
 

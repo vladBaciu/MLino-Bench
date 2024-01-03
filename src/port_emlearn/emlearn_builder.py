@@ -10,9 +10,15 @@ GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE = """
+#define NO_OF_FEATURES {}
+{} features[NO_OF_FEATURES] __attribute__((used)) = {{0, }};
 int main(void) {{
-    float features[1];
-    int result = model_predict(features, 1);
+
+    for (int i = 0; i < NO_OF_FEATURES; ++i) {{
+        features[i] = i;
+    }}
+
+    int result = model_predict(features, NO_OF_FEATURES);
     return result;
 }}
 """
@@ -25,13 +31,15 @@ class EmlearnBuilder:
     def __init__(self, classifier):
         self.classifier_name, self.classifier_method = classifier
         self.porter = None
+        self.quant_type = None
 
-    def invokePorter(self, method_name):
+    def invokePorter(self, f_type):
         """
         Train the classifier and convert it using emlearn.
         """
+        self.quant_type = f_type
         try:
-            self.porter = emlearn.convert(self.classifier_method, method = method_name)
+            self.porter = emlearn.convert(self.classifier_method, method = 'pymodule', dtype= self.quant_type)
         except (NotImplementedError, ValueError) as e:
             return f"Model type not supported for emlearn conversion: {e}"
         except Exception as e:
@@ -44,18 +52,19 @@ class EmlearnBuilder:
         model_path, framework_dir = self.create_output_paths(output_dir_name)
 
         self.porter.save(file=model_path)
+
         self.copy_porter_headers(framework_dir)
 
         return framework_dir, model_path
 
-    def generate_size_template(self, model_code, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir, no_of_features):
         """
         Generate a template based on the model code and model name.
         """
         size_build_dir = os.path.join(os.path.dirname(model_build_dir), 'size')
         self.copy_porter_headers(size_build_dir)
 
-        formatted_template = TEMPLATE.format(self.classifier_method.__class__.__name__)
+        formatted_template = TEMPLATE.format(no_of_features, self.quant_type)
         model_code += formatted_template
         model_code = "#include <stdlib.h>\n" + "#include <stdint.h>\n" + "#include <math.h>\n" + model_code
         return model_code
@@ -86,6 +95,14 @@ class EmlearnBuilder:
         """
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template/feature_specific.h"), framework_dir)
+
+        #Open feature_specific.h and replace the feature type
+        with open(os.path.join(framework_dir, "feature_specific.h"), "r") as f:
+            lines = f.readlines()
+
+        with open(os.path.join(framework_dir, "feature_specific.h"), "w") as f:
+            for line in lines:
+                f.write(line.replace("F_QUANT_TYPE", self.quant_type))
 
     def copy_porter_headers(self, dest_dir):
         """

@@ -8,9 +8,6 @@ from sklearn.datasets import load_iris, load_breast_cancer, load_digits, load_bo
 from sklearn.model_selection import train_test_split
 
 class GasDataLoader:
-    #todo remove
-    #'sklearn_mlp': sklearn.neural_network.MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 6), random_state=1)
-    #'adaBoost': sklearn.ensemble.AdaBoostClassifier(base_estimator=sklearn.tree.DecisionTreeClassifier(max_depth=4, random_state=0), n_estimators=20,random_state=0),
 
     def _load_file(self, filename):
         """internal function that loads one .dat file at the time

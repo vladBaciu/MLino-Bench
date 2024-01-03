@@ -10,15 +10,22 @@ GENERATED_FILE_EXT = 'h'
 MODEL_LANGUAGE = 'c'
 GENERATED_FILE_NAME = "model"
 TEMPLATE = """
-int main(void) {
+#define NO_OF_FEATURES {}
 #if !defined(SVC) && !defined(ADABOOST) && !defined(NUSVC)
-    float features[1];
+    float features[NO_OF_FEATURES] __attribute__((used)) = {{0, }};
 #else
-    double features[1];
+    double features[NO_OF_FEATURES] __attribute__((used)) = {{0, }};
 #endif
+
+int main(void) {{
+
+    for (int i = 0; i < NO_OF_FEATURES; ++i) {{
+        features[i] = i;
+    }}
+
     int result = predict(features);
     return result;
-}
+}}
 """
 
 
@@ -74,11 +81,12 @@ class SkLearnPorterBuilder:
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "infer_model.h"), framework_dir)
         shutil.copy(os.path.join(os.path.dirname(__file__), "template", "feature_specific.h"), framework_dir)
 
-    def generate_size_template(self, model_code, model_build_dir):
+    def generate_size_template(self, model_code, model_build_dir, no_of_features):
         """
         Generate a template based on the model code and model name.
         """
-        model_code += "\n" + TEMPLATE
+        template = TEMPLATE.format(no_of_features)
+        model_code += "\n" + template
         return model_code
 
     def get_model_language(self):
