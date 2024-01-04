@@ -35,7 +35,7 @@ class BenchmarkPipeline():
 
         # Workaround when importing a pre-trained TF model
         if(type(self.model).__name__ == "bytes"):
-            self.model_name = "pretrained_tflite"
+            self.model_name = "TFLite"
         else:
             self.model_name =  type(self.model).__name__
 

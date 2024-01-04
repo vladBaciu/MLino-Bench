@@ -214,7 +214,7 @@ def generate_makefile():
     file_content += "\nOPTIMIZATION_LEVEL={}".format(ARGS.optimization_level)
 
     # Set output artifacts directory
-    build_dir = "build-{}-{}".format(btag, bsub)
+    build_dir = "build-{}-{}".format(btag, bsub) #if compilation fails due to long paths, the build name could be reduced
 
     # Generate also a map file
     file_content += "\nOTHER_LIBS =-Wl,-Map,$(OBJDIR)/$(TARGET).map"

@@ -57,7 +57,7 @@ if __name__ == "__main__":
     dname = MLinoBench.LoadTrainTestData().config["training"]["dataset"]
 
     if args.train == False:
-        tflite_model_path = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
+        tflite_model_path = r"..\models\{}\fca_default.tflite".format(dname)
 
         # Read the TFLite model as bytes
         with open(tflite_model_path, 'rb') as file:
@@ -65,6 +65,14 @@ if __name__ == "__main__":
 
         interpreter = tf.lite.Interpreter(model_path=tflite_model_path)
         interpreter.allocate_tensors()
+
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        print("Input shape: ", input_details[0]['shape'])
+        print("Input type: ", input_details[0]['dtype'])
+        print("Output shape: ", output_details[0]['shape'])
+        print("Output type: ", output_details[0]['dtype'])
 
         pipe = Pipeline([
             ('data_loader', MLinoBench.LoadTrainTestData()),
@@ -121,24 +129,52 @@ if __name__ == "__main__":
                 sample = np.expand_dims(sample.astype(np.float32), axis=0)
                 yield [sample]
 
-        # Quantization of weights (but not the activations)
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS]
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant.tflite".format(dname)
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
+        if False: #not for micro
+            # Quantization of weights (but not the activations)
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.target_spec.supported_ops = [ tf.lite.OpsSet.TFLITE_BUILTINS,  # enable TensorFlow Lite ops.
+                                                    tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
+                                                ]
+            tflite_model = converter.convert()
+            tflite_file = r"..\models\{}\fca_quant.tflite".format(dname)
+            with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+                f.write(tflite_model)
 
-        # Full integer quantization of weights and activations
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.representative_dataset = representative_dataset_gen
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant_fullint.tflite".format(dname)
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
+            # Full integer quantization of weights and activations
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.representative_dataset = representative_dataset_gen
+            converter.target_spec.supported_ops = [ tf.lite.OpsSet.TFLITE_BUILTINS,  # enable TensorFlow Lite ops.
+                                              tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
+                                          ]
+            tflite_model = converter.convert()
+            tflite_file = r"..\models\{}\fca_quant_fullint.tflite".format(dname)
+            with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+                f.write(tflite_model)
 
+            # Float16 quantization
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.target_spec.supported_types = [tf.float16]
+            converter.target_spec.supported_ops = [ tf.lite.OpsSet.TFLITE_BUILTINS,  # enable TensorFlow Lite ops.
+                                  tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
+                              ]
+            tflite_model = converter.convert()
+            tflite_file = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
+            with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+                f.write(tflite_model)
+
+            # 16-bit activations with 8-bit weights (experimental)
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            converter.representative_dataset = representative_dataset_gen
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8,
+                                                   tf.lite.OpsSet.SELECT_TF_OPS]
+            tflite_model = converter.convert()
+            tflite_file = r"..\models\{}\fca_quant_16x8_micro.tflite".format(dname)
+            with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+                f.write(tflite_model)
 
         # Full integer quantization of weights and activations for micro
         converter = tf.lite.TFLiteConverter.from_keras_model(model)
@@ -150,38 +186,18 @@ if __name__ == "__main__":
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
-        # 16-bit activations with 8-bit weights (experimental)
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.representative_dataset = representative_dataset_gen
-        converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8,
-                                               tf.lite.OpsSet.TFLITE_BUILTINS]
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant_16x8_micro.tflite".format(dname)
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
-
-        # Float16 quantization
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.representative_dataset = representative_dataset_gen
-        converter.target_spec.supported_types = [tf.float16]
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
-
-        # Full integer quantization of weights and activations for micro, int8 input and output
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.representative_dataset = representative_dataset_gen
-        converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-        converter.inference_input_type = tf.int8  # or tf.uint8
-        converter.inference_output_type = tf.int8  # or tf.uint8
-        tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant_fullint_micro_intio.tflite".format(dname)
-        with tf.io.gfile.GFile(tflite_file, 'wb') as f:
-            f.write(tflite_model)
+        if False: #serial input data is not quantized
+            # Full integer quantization of weights and activations for micro, int8 input and output
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            converter.optimizations = [tf.lite.Optimize.DEFAULT]
+            converter.representative_dataset = representative_dataset_gen
+            converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+            converter.inference_input_type = tf.int8  # or tf.uint8
+            converter.inference_output_type = tf.int8  # or tf.uint8
+            tflite_model = converter.convert()
+            tflite_file = r"..\models\{}\fca_quant_fullint_micro_intio.tflite".format(dname)
+            with tf.io.gfile.GFile(tflite_file, 'wb') as f:
+                f.write(tflite_model)
 
         print(f'Test Loss: {test_loss:.4f}')
         print(f'Test Accuracy: {test_accuracy:.4f}')

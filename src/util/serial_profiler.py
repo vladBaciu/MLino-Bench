@@ -164,6 +164,7 @@ class SerialProfiler:
                 # Break if board is not responding anymore: e.g AdaBoost dynamic mem allocation.
                 break
 
+        #print(self.expected_labels[0:100], inference_result)
         acc = accuracy_score(self.expected_labels[0:test_sample], inference_result)
         com.logging.info(f"{self.porter_type}:{self.model_name} On target accuracy: {acc}")
 
