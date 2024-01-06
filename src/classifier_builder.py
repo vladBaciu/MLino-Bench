@@ -13,16 +13,12 @@ import sklearn.svm
 #from xgboost import XGBClassifier
 from sefr import SEFR
 from micromlgen import port
-import tensorflow as tf
-from tensorflow.keras import Sequential, layers
 
-from sklearn.base import BaseEstimator
 from tensorflow.keras.models import Model
 
 import src.util.common as com
 from src.util.serial_profiler import SerialProfiler
 from src.util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
-from src.util.data_loader.dataLoader import DataLoader
 
 from src.port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
 from src.port_emlearn.emlearn_builder import EmlearnBuilder
@@ -497,10 +493,9 @@ class ClassifierBuilder():
             else:
                 self.data_logger.append(((self.port_framework, self.cls_name), status))
 
-frameworks  = ['micromlgen']
-
+# Tested at some point
 classifiers = {
-    'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
     #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=10, max_depth=10, random_state=50),
     #'ExtraTreesClassifier': sklearn.ensemble.ExtraTreesClassifier(n_estimators=15, random_state=50),
     #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
@@ -513,7 +508,7 @@ classifiers = {
 }
 
 sklearnporter_classifiers = {
-    'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
+    #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier(),
     #'RandomForestClassifier': sklearn.ensemble.RandomForestClassifier(n_estimators=20, max_depth=10, random_state=50),
     #'ExtraTreesClassifier': sklearn.ensemble.ExtraTreesClassifier(n_estimators=10, random_state=50),
     #'SVC': sklearn.svm.SVC(gamma = 0.05, kernel='linear'),
@@ -556,43 +551,3 @@ embml = {
     #'DecisionTreeClassifier': sklearn.tree.DecisionTreeClassifier()
 }
 
-def tinymlgen_model(data_size, ouptut_size):
-    nn = Sequential()
-    nn.add(layers.Dense(units=50, activation='relu', input_shape=data_size))
-    nn.add(layers.Dense(units=50, activation='relu'))
-    nn.add(layers.Dense(ouptut_size, activation='softmax'))
-
-    # use categorical_crossentropy for multi-class classification
-    nn.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-    return nn
-
-if __name__ == "__main__":
-
-    # Load the configuration data
-    config_data = com.yaml_load("config.yaml")
-
-    # Load the data
-    data_loader = DataLoader(config_data["training"]["dataset"])
-    X_train, y_train, X_test, y_test = data_loader.load_data(0.8)
-
-    # Create a ClassifierBuilder objectW
-    builder = ClassifierBuilder(config_data=config_data, log_data=True)
-    #from tensorflow.keras.utils import to_categorical
-    #y_train = to_categorical(y_train)
-    #print("TRAIN", X_train.shape[1:], len(X_train[0]))
-    #builder.build_classifier(frameworks[0], 'tfKeras', tinymlgen_model(X_train.shape[1:], y_train.shape[1]), None, X_train, X_test, y_train, y_test)
-    for name, cls in classifiers.items():
-        for j in frameworks:
-            builder.build_classifier(j,  name,
-                                     cls, None,
-                                     X_train, X_test, y_train, y_test)
-       #builder.build_classifier(frameworks[1],  name, cls)
-       #builder.build_classifier(frameworks[2],  name, cls)
-       #builder.build_classifier(frameworks[3],  name, cls)
-    #for name, cls in classifiers.items():
-    #    builder.build_classifier(frameworks[2],  name, cls)
-    #for name, cls in embml.items():
-    #    builder.build_classifier(frameworks[3],  name, cls)
-
-    builder.print_log_summary()

@@ -50,12 +50,6 @@ if __name__ == "__main__":
 
     # Example 3: Feature quantization
     model = sklearn.ensemble.RandomForestClassifier(max_depth=5, n_estimators=10, random_state=50)
-    # Example 3: SVC classifier with linear kernel
-    #model = sklearn.svm.LinearSVC(C=0.1, fit_intercept=True)
-    # Example 4: SVC classifier with linear kernel
-    #model = sklearn.svm.SVC(gamma = 0.05, kernel='linear')
-    #Example 5: Benchmark a MLP classifier
-    #model = sklearn.neural_network.MLPClassifier(hidden_layer_sizes=(10, 10), max_iter=20)
     pipe = Pipeline([
         ('data_loader', MLinoBench.LoadTrainTestData()),
         ('scaler', MinMaxScaler()),
