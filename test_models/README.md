@@ -1,0 +1,1 @@
+Workspace directory for test scripts (src/tests). Contains the build system only for the last tests executed/commited.
