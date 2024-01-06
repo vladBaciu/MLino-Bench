@@ -19,7 +19,11 @@ void th_printf(const char *fmt, ... ){
 
     if (r > 0)
     {
+#ifdef USE_PROGAMMING_PORT
+      SerialUSB.print(print_buf);
+#else
       Serial.print(print_buf);
+#endif
     }
 }
 
@@ -50,7 +54,11 @@ void th_command_ready(char volatile *p_command) {
 
 char th_getchar()
 {
+#ifdef USE_PROGAMMING_PORT
+    return SerialUSB.read();
+#else
     return Serial.read();
+#endif
 }
 
 size_t th_strnlen(const char *str, size_t maxlen) {

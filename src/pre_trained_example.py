@@ -57,7 +57,7 @@ if __name__ == "__main__":
     dname = MLinoBench.LoadTrainTestData().config["training"]["dataset"]
 
     if args.train == False:
-        tflite_model_path = r"..\models\{}\fca_default.tflite".format(dname)
+        tflite_model_path = r"..\pretrained_models\{}\fca_default.tflite".format(dname)
 
         # Read the TFLite model as bytes
         with open(tflite_model_path, 'rb') as file:
@@ -113,13 +113,13 @@ if __name__ == "__main__":
 
         #Create directory
         try:
-            os.mkdir(r'..\models\{}'.format(dname))
+            os.mkdir(r'..\pretrained_models\{}'.format(dname))
         except OSError:
-            print ("Creation of the directory %s failed" % r'..\models\{}'.format(dname))
+            print ("Creation of the directory %s failed" % r'..\pretrained_models\{}'.format(dname))
 
         converter = tf.lite.TFLiteConverter.from_keras_model(model)
         tflite_model = converter.convert()
-        tflite_file = r'..\models\{}\fca_default.tflite'.format(dname)
+        tflite_file = r'..\pretrained_models\{}\fca_default.tflite'.format(dname)
         # Save the TFLite model to a file
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
@@ -137,7 +137,7 @@ if __name__ == "__main__":
                                                     tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
                                                 ]
             tflite_model = converter.convert()
-            tflite_file = r"..\models\{}\fca_quant.tflite".format(dname)
+            tflite_file = r"..\pretrained_models\{}\fca_quant.tflite".format(dname)
             with tf.io.gfile.GFile(tflite_file, 'wb') as f:
                 f.write(tflite_model)
 
@@ -149,7 +149,7 @@ if __name__ == "__main__":
                                               tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
                                           ]
             tflite_model = converter.convert()
-            tflite_file = r"..\models\{}\fca_quant_fullint.tflite".format(dname)
+            tflite_file = r"..\pretrained_models\{}\fca_quant_fullint.tflite".format(dname)
             with tf.io.gfile.GFile(tflite_file, 'wb') as f:
                 f.write(tflite_model)
 
@@ -161,7 +161,7 @@ if __name__ == "__main__":
                                   tf.lite.OpsSet.SELECT_TF_OPS  # enable TensorFlow ops.
                               ]
             tflite_model = converter.convert()
-            tflite_file = r"..\models\{}\fca_quant_float16_micro.tflite".format(dname)
+            tflite_file = r"..\pretrained_models\{}\fca_quant_float16_micro.tflite".format(dname)
             with tf.io.gfile.GFile(tflite_file, 'wb') as f:
                 f.write(tflite_model)
 
@@ -172,7 +172,7 @@ if __name__ == "__main__":
             converter.target_spec.supported_ops = [tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8,
                                                    tf.lite.OpsSet.SELECT_TF_OPS]
             tflite_model = converter.convert()
-            tflite_file = r"..\models\{}\fca_quant_16x8_micro.tflite".format(dname)
+            tflite_file = r"..\pretrained_models\{}\fca_quant_16x8_micro.tflite".format(dname)
             with tf.io.gfile.GFile(tflite_file, 'wb') as f:
                 f.write(tflite_model)
 
@@ -182,7 +182,7 @@ if __name__ == "__main__":
         converter.representative_dataset = representative_dataset_gen
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         tflite_model = converter.convert()
-        tflite_file = r"..\models\{}\fca_quant_fullint_micro.tflite".format(dname)
+        tflite_file = r"..\pretrained_models\{}\fca_quant_fullint_micro.tflite".format(dname)
         with tf.io.gfile.GFile(tflite_file, 'wb') as f:
             f.write(tflite_model)
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
             converter.inference_input_type = tf.int8  # or tf.uint8
             converter.inference_output_type = tf.int8  # or tf.uint8
             tflite_model = converter.convert()
-            tflite_file = r"..\models\{}\fca_quant_fullint_micro_intio.tflite".format(dname)
+            tflite_file = r"..\pretrained_models\{}\fca_quant_fullint_micro_intio.tflite".format(dname)
             with tf.io.gfile.GFile(tflite_file, 'wb') as f:
                 f.write(tflite_model)
 

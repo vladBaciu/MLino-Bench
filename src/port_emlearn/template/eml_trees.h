@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 typedef struct _EmlTreesNode {
-    int8_t feature;
+    int16_t feature;
     float value;
     int16_t left;
     int16_t right;

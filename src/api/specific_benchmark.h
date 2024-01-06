@@ -37,6 +37,8 @@ methods from th_libc.h and all testharness methods from th_lib.h are here.
 #define EE_CFG_ENERGY_MODE 0
 #endif
 
+//#define USE_PROGAMMING_PORT
+
 // This is a visual cue to the user when reviewing logs or plugging an
 // unknown device into the system.
 #if EE_CFG_ENERGY_MODE == 1
