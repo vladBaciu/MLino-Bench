@@ -23,8 +23,8 @@ So far, only the following platforms were tested. Feel free to add new platforms
 
 | Board Name      | MCU            | MCU Architecture | Compiler    | Provider     |
 |-----------------|----------------|-------------------|-------------|--------------|
-| Arduino Mega    | ATmega2560     | AVR               | avr-gcc     | Atmel        |
-| Arduino Due     | ATSAM3X8E      | ARM Cortex-M3     | arm-none-eabi-gcc | Atmel |
+| Arduino Mega    | ATmega2560     | AVR               | avr-gcc     | Microchip (Atmel)        |
+| Arduino Due     | ATSAM3X8E      | ARM Cortex-M3     | arm-none-eabi-gcc | Microchip (Atmel)  |
 | Teensy 4.0      | IMXRT1062      | ARM Cortex-M7     | arm-none-eabi-gcc | NXP  |
 
 # Requirements
