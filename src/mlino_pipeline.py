@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 import src.util.common as com
 from src.util.data_loader.dataLoader import DataLoader
 from src.classifier_builder import ClassifierBuilder
@@ -42,13 +42,24 @@ class BenchmarkPipeline():
     def train_model(self, X_train, y_train):
         self.pipe.fit(X_train, y_train)
 
+        # Get training accuracy
+        y_pred = self.pipe.predict(X_train)
+        accuracy = accuracy_score(y_train, y_pred)
+        com.logging.info(f"Train accuracy: {accuracy}")
+        self.builder.logger_builder(None, f"Train accuracy: {accuracy}")
+
     def test_model(self, X_test, y_test):
         y_pred = self.pipe.predict(X_test)
+
+        # Get accuracy
         accuracy = accuracy_score(y_test, y_pred)
+        com.logging.info(f"Test accuracy: {accuracy}")
+        self.builder.logger_builder(None, f"Test accuracy: {accuracy}")
 
-        com.logging.info(f"Test accuracy {accuracy}")
-        self.builder.logger_builder(None, f"Test ACC: {accuracy}")
-
+        # Get F1 score
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        com.logging.info(f"Test F1 score {f1}")
+        self.builder.logger_builder(None, f"Test F1: {f1}")
 
     def get_preprocessed_data(self, X):
         # Create a new pipeline with only the preprocessing steps
