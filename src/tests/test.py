@@ -4,9 +4,9 @@ import argparse
 sys.path.append("..") # Adds higher directory to python modules path.
 import io
 
-from src.classifier_builder import ClassifierBuilder
-from src.util.data_loader.dataLoader import DataLoader
-from src.util import common as com
+from classifier_builder import ClassifierBuilder
+from util.data_loader.dataLoader import DataLoader
+from util import common as com
 
 import sklearn.ensemble
 import sklearn.tree

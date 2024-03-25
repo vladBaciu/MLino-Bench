@@ -1,6 +1,6 @@
 import subprocess
 import os
-import src.util.common as com
+import util.common as com
 import re
 import threading
 import shutil

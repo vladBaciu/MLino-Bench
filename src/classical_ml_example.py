@@ -1,6 +1,3 @@
-import sys
-sys.path.append("..") # Adds higher directory to python modules path.
-
 import sklearn.ensemble
 import sklearn.tree
 import sklearn.neural_network

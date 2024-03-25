@@ -1,7 +1,7 @@
 import os
 import shutil
 import hexdump
-import src.util.common as com
+import util.common as com
 from tinymlgen import port
 
 

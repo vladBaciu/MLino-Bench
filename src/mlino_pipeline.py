@@ -1,12 +1,18 @@
+
+import os
+
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import accuracy_score, f1_score
-import src.util.common as com
-from src.util.data_loader.dataLoader import DataLoader
-from src.classifier_builder import ClassifierBuilder
+import util.common as com
+from util.data_loader.dataLoader import DataLoader
+from classifier_builder import ClassifierBuilder
 
 def load_config():
-    return com.yaml_load("config.yaml")
+    #get current directory
+    current_dir = os.path.dirname(__file__)
+    #load the configuration file
+    return com.yaml_load(os.path.join(current_dir, "config.yaml"))
 
 class BenchmarkPipeline():
     def __init__(self, pipeline, frameworks):

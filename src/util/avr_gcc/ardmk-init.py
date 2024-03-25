@@ -267,6 +267,7 @@ def write_template(filename):
     if ARGS.verbose:
         print(ARD_TEMPLATE)
     if ARGS.template_path is not None:
+        template_content = ""
         template_file_path = ARGS.template_path
         # Read the content from the template file
         try:

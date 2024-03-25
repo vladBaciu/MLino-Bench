@@ -4,7 +4,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 import numpy as np
 
 
-import src.util.common as com
+import util.common as com
 from classifier_builder import ClassifierBuilder
 from util.data_loader.dataLoader import DataLoader
 

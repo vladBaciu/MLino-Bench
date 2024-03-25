@@ -7,6 +7,26 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.datasets import load_iris, load_breast_cancer, load_digits, load_boston, load_diabetes
 from sklearn.model_selection import train_test_split
 
+dataset_directory = ''
+class DataLoader:
+    def __init__(self, data_set):
+        self.data_set = data_set
+        # Get the current directory of script.py
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+        # Navigate up two directories to reach /root/
+        root_directory = os.path.abspath(os.path.join(current_directory, '..', '..', '..'))
+        # Navigate to /root/dataset/
+        global dataset_directory
+        dataset_directory = os.path.join(root_directory, 'datasets')
+
+    def load_data(self, split_train_test):
+        try:
+          class_instance = globals()[self.data_set]()
+          return class_instance.load_dataset(split_train_test)
+        except KeyError:
+          class_instance = DefaultDataLoader(self.data_set)
+          return class_instance.load_dataset(split_train_test)
+
 class GasDataLoader:
 
     def _load_file(self, filename):
@@ -104,12 +124,13 @@ class GasDataLoader:
         return train_features, train_labels, val_features, val_labels
 
 
-class SensorlessDriveDataLoader:
+class SensorlessDriveDataLoader():
     def __init__(self):
         self.c_names = [f"Feature{i+1}" for i in range(48)] + ["label"]
 
     def load_dataset(self, split_train_test):
-        dat_file = os.path.join('..', 'datasets', 'sensorless_drive_diagnostics', 'Sensorless_drive_diagnosis.txt')
+        global dataset_directory
+        dat_file = os.path.join(dataset_directory, 'sensorless_drive_diagnostics', 'Sensorless_drive_diagnosis.txt')
         dataset = pd.read_csv(dat_file, sep=" ", header=None, names=self.c_names)
 
         train_features, val_features, train_labels, val_labels = train_test_split(dataset.iloc[:, :-1], dataset["label"],
@@ -125,10 +146,11 @@ class SensorlessDriveDataLoader:
 
 class HARDataLoader:
     def __init__(self):
-        self.csv_file = os.path.join('..', 'datasets', 'har', 'csv_data')
-        self.features_file = os.path.join('..', 'datasets', 'har', 'features.txt')
-        self.train_file = os.path.join('..', 'datasets', 'har', 'train')
-        self.test_file = os.path.join('..', 'datasets', 'har', 'test')
+        global dataset_directory
+        self.csv_file = os.path.join(dataset_directory, 'har', 'csv_data')
+        self.features_file = os.path.join(dataset_directory, 'har', 'features.txt')
+        self.train_file = os.path.join(dataset_directory, 'har', 'train')
+        self.test_file = os.path.join(dataset_directory, 'har', 'test')
         self.N_FEATURES = 561
 
     def get_csv_data(self):
@@ -182,7 +204,8 @@ class HARDataLoader:
 class GestureDataLoader:
     def load_dataset(self, split_train_test):
 
-        dat_file = os.path.join('..', 'datasets', 'gesture_phase_segmentation')
+        global dataset_directory
+        dat_file = os.path.join(dataset_directory, 'gesture_phase_segmentation')
 
         # read .csv from provided dataset
         csv_filename01= os.path.join(dat_file, 'a1_raw.csv')
@@ -302,7 +325,8 @@ class DefaultDataLoader:
 
 class EMGDataLoader:
     def load_dataset(self, split_train_test):
-        data_path = os.path.join('..', 'datasets', 'emg')
+        global dataset_directory
+        data_path = os.path.join(dataset_directory, 'emg')
         # Search each directory in the data path and read the csv files
         data = []
         for directory in os.listdir(data_path):
@@ -314,15 +338,5 @@ class EMGDataLoader:
 
         return data, None, None, None
 
-class DataLoader:
-    def __init__(self, data_set):
-        self.data_set = data_set
 
-    def load_data(self, split_train_test):
-        try:
-          class_instance = globals()[self.data_set]()
-          return class_instance.load_dataset(split_train_test)
-        except KeyError:
-          class_instance = DefaultDataLoader(self.data_set)
-          return class_instance.load_dataset(split_train_test)
 

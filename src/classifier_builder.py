@@ -16,16 +16,16 @@ from micromlgen import port
 
 from tensorflow.keras.models import Model
 
-import src.util.common as com
-from src.util.serial_profiler import SerialProfiler
-from src.util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
+import util.common as com
+from util.serial_profiler import SerialProfiler
+from util.avr_gcc.gcc_benchmark import CompileAvrBenchmark
 
-from src.port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
-from src.port_emlearn.emlearn_builder import EmlearnBuilder
-from src.port_micromlgen.micromlgen_builder import MicromlgenBuilder
-from src.port_embml.embml_builder import EmbmlBuilder
-from src.port_m2cgen.m2cgen_builder import M2cgenBuilder
-from src.port_tinymlgen.tinymlgen_builder import TinymlgenBuilder
+from port_sklearnporter.sklearnporter_builder import SkLearnPorterBuilder
+from port_emlearn.emlearn_builder import EmlearnBuilder
+from port_micromlgen.micromlgen_builder import MicromlgenBuilder
+from port_embml.embml_builder import EmbmlBuilder
+from port_m2cgen.m2cgen_builder import M2cgenBuilder
+from port_tinymlgen.tinymlgen_builder import TinymlgenBuilder
 
 TEMPLATE_DIR  = "api"
 TEMPLATE_FILE = "main.cpp"
@@ -424,7 +424,7 @@ class ClassifierBuilder():
         self.benchmark_info["runtime"]["no_of_features"] = self.X_train.shape[1]
         self.benchmark_info["runtime"]["model_name"] = self.cls_name
         self.benchmark_info["runtime"]["porter_type"] = self.port_framework
-        self.benchmark_info["runtime"]["template_path"] = os.path.abspath(os.path.join(TEMPLATE_DIR, TEMPLATE_FILE))
+        self.benchmark_info["runtime"]["template_path"] = os.path.join(os.path.dirname(__file__), TEMPLATE_DIR, TEMPLATE_FILE)
 
         # If model type is bytes (pretrained), set the model type as TFLITE
         if self.cls_obj.__class__.__name__ == 'bytes':

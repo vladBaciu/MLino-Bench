@@ -1,6 +1,6 @@
 import os
 import shutil
-import src.util.common as com
+import util.common as com
 from sklearn_porter import Porter
 
 
