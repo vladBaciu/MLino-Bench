@@ -16,8 +16,9 @@ def load_config():
 
 class BenchmarkPipeline():
     def __init__(self, pipeline, frameworks):
-        self.model, self.model_name = None, None
 
+        self.model, self.model_name = None, None
+        com.logging.info("Setting up pipeline ...")
         self.config = load_config()
         self.builder = self.load_builder()
         self.pipe = pipeline
@@ -30,6 +31,7 @@ class BenchmarkPipeline():
         return ClassifierBuilder(config_data=self.config, log_data=True)
 
     def benchmark_framework(self, framework, X_train, X_test, y_train, y_test):
+        com.logging.info("Lunching pipeline executor ...")
         self.builder.build_classifier(framework, self.model_name, self.model, None,
                                       X_train, X_test, y_train, y_test, self.pipe)
 
