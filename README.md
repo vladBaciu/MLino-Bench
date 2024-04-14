@@ -52,6 +52,38 @@ pip install -r requirements.txt
 2. If you want to use your custom dataset, not the ones already included, you need to modify the `load_custom_data` function in `src/mlino_pipeline.py` file.
 3. For adding new platforms, please check [this project](https://github.com/sudar/Arduino-Makefile) to see exactly if it is supported or how the configuration should look like.
 
+# Config file
+```
+#Use string input data, integers not allowed :eg field: '1' instead of field: 1
+training:
+  dataset: -> dataset to be used [e.g 'GestureDataLoader' or 'custom']
+  train_test_split: -> train test split [e.g 0.8, 0.7]
+  models_directory: -> output directory name
+  accuracy: -> display accuracy in the final output log [False/True]
+  class_accuracy: -> display class accuracy in the final output log [False/True]
+
+target:
+  #see Arduino-Makefile examples for more
+  type: -> only arduino_makefile supported for the moment
+  compiler: -> compiler used  [arm/gcc]
+  board: -> board name [check Arduino Makefile]
+  mcu: -> MCU name if needed [check Arduino Makefile]
+  mcu_family: -> family type [teensy, atmel, sam]
+  freq: -> cpu frequency
+  monitor_port: -> serial port [e.g '6']
+  optimization_level: -> compiler optimisation level [e.g 's' for size]
+  compiler_stdout: -> print more debug info [False/True]
+  ratio_test_samples_on_target: number of test vectors to be sent over serial [e.g '100' for all test vectors]
+
+runtime: [not used, only during runtime]
+  porter_type:
+  model_name:
+  generated_model_dir:
+  template_path:
+  language:
+  no_of_features:
+  model_type:
+```
 # Project structure
 `datasets` - directory that includes data sets used as an example
 
