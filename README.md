@@ -59,8 +59,8 @@ training:
   dataset: -> dataset to be used [e.g 'GestureDataLoader' or 'custom']
   train_test_split: -> train test split [e.g 0.8, 0.7]
   models_directory: -> output directory name
-  accuracy: -> display accuracy in the final output log [False/True]
-  class_accuracy: -> display class accuracy in the final output log [False/True]
+  accuracy: -> display accuracy in the final output log. Not used for the pipeline [False/True]
+  class_accuracy: -> display class accuracy in the final output log. Not used for the pipeline [False/True]
 
 target:
   #see Arduino-Makefile examples for more
