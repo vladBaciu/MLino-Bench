@@ -133,7 +133,7 @@ class LoadTrainTestData(BaseEstimator, TransformerMixin):
 
     def transform(self, X=None):
         if self.config["training"]["dataset"] == "custom":
-            self.X_train, self.y_train, self.X_test, self.y_test = self.load_custom_data(self.config)
+            self.X_train, self.y_train, self.X_test, self.y_test = self.load_custom_data()
             com.logging.info("Loading custom data")
             self.X_train, self.y_train, self.X_test, self.y_test = self.load_custom_data()
         else:
@@ -143,7 +143,7 @@ class LoadTrainTestData(BaseEstimator, TransformerMixin):
             self.X_train, self.y_train, self.X_test, self.y_test = data_loader.load_data(self.train_test_split)
         return self.X_train, self.y_train, self.X_test, self.y_test
 
-    def load_custom_data(config):
+    def load_custom_data(self):
         # Replace this with your actual data loading code
         # Retun X_train, y_train, X_test, y_test
         X_train, y_train, X_test, y_test = [], [], [], []
