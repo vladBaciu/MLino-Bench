@@ -72,6 +72,9 @@ class BenchmarkPipeline():
     def get_preprocessed_data(self, X):
         # Create a new pipeline with only the preprocessing steps
         preprocessing_steps = [(name, step) for name, step in self.pipe.steps if name != 'classifier']
+        if len(preprocessing_steps) == 0:
+            return X
+
         preprocessing_pipe = Pipeline(preprocessing_steps)
 
         # Fit and transform the data with the preprocessing pipeline
@@ -122,6 +125,7 @@ class BenchmarkPipeline():
 class LoadTrainTestData(BaseEstimator, TransformerMixin):
     def __init__(self):
         self.config = load_config()
+        self.train_test_split = self.config["training"]["train_test_split"]
         self.X_train, self.y_train, self.X_test, self.y_test =  [], [], [], []
 
     def fit(self, X, y=None):
@@ -131,10 +135,12 @@ class LoadTrainTestData(BaseEstimator, TransformerMixin):
         if self.config["training"]["dataset"] == "custom":
             self.X_train, self.y_train, self.X_test, self.y_test = self.load_custom_data(self.config)
             com.logging.info("Loading custom data")
+            self.X_train, self.y_train, self.X_test, self.y_test = self.load_custom_data()
         else:
             data_loader = DataLoader(self.config["training"]["dataset"])
             self.X_train, self.y_train, self.X_test, self.y_test = data_loader.load_data(self.config["training"]["train_test_split"])
             com.logging.info(f"Loading {self.config['training']['dataset']} dataset")
+            self.X_train, self.y_train, self.X_test, self.y_test = data_loader.load_data(self.train_test_split)
         return self.X_train, self.y_train, self.X_test, self.y_test
 
     def load_custom_data(config):
