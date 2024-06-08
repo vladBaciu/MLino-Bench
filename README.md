@@ -1,6 +1,6 @@
 # MLino Bench: Evaluate machine learning models on resource-constrained devices
 
-Streamline the entire lifecycle of machine learning models on embedded devices. From training and porting to compiling, loading, and profiling, MLino Bench provides an end-to-end solution for seamlessly integrating Scikit-learn models into resource-constrained environments. Choose from a variety of porter frameworks, including sklearn-porter, micromlgen, m2cgen, emlearn, embml and tinymlgen to seamlessly port Scikit-learn/Tensorflow models to formats suitable for embedded devices.
+Streamline the entire lifecycle of machine learning models on embedded devices. From training and porting to compiling, loading, and profiling, MLino Bench provides an end-to-end solution for seamlessly integrating Scikit-learn/TFlite models into resource-constrained environments. Choose from a variety of porter frameworks, including sklearn-porter, micromlgen, m2cgen, emlearn, embml and tinymlgen to seamlessly port Scikit-learn/Tensorflow models to formats suitable for embedded devices.
 
 ![image](https://github.com/vladBaciu/MLino-Bench/assets/24388880/e850b3d7-f146-43b7-b1f6-b5e21320db2e)
 
