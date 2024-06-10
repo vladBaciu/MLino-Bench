@@ -101,3 +101,8 @@ runtime: [not used, only during runtime]
 ```
     #file_content += "\nOBJDIR={}/{}".format(ARGS.directory.replace("\\", "/"), build_dir)
 ```
+
+# Future work
+- Power measurement
+- AutoML
+
