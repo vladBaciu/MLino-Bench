@@ -93,6 +93,20 @@ runtime: [not used, only during runtime]
 
 `test_models` - output directory for generated builds using the test scripts
 
+# Citation
+If you find this useful for your research, please cite:
+
+```
+@article{baciu2024mlino,
+  title={MLino bench: A comprehensive benchmarking tool for evaluating ML models on edge devices},
+  author={Baciu, Vlad-Eusebiu and Stiens, Johan and da Silva, Bruno},
+  journal={Journal of Systems Architecture},
+  pages={103262},
+  year={2024},
+  publisher={Elsevier}
+}
+```
+
 
 
 # Issues
